@@ -1,0 +1,14 @@
+setup.py
+lp_segment/__init__.py
+lp_segment/tokenizer.py
+nlp_segment/__init__.py
+nlp_segment/dictionary.py
+nlp_segment/segmentor.py
+nlp_segment/tokenizer.py
+nlp_segment.egg-info/PKG-INFO
+nlp_segment.egg-info/SOURCES.txt
+nlp_segment.egg-info/dependency_links.txt
+nlp_segment.egg-info/requires.txt
+nlp_segment.egg-info/top_level.txt
+tests/__init__.py
+tests/test_segment.py

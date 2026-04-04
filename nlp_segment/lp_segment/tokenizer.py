@@ -1,0 +1,59 @@
+def forward_max_match(text, dictionary, max_len=15):
+    result = []
+    i = 0
+    while i < len(text):
+        matched = False
+        for j in range(min(max_len, len(text) - i), 0, -1):
+            word = text[i:i + j]
+            if dictionary.search_in_dict(word):
+                result.append(word)
+                i += j
+                matched = True
+                break
+        if not matched:
+            result.append(text[i])
+            i += 1
+    return result
+
+
+def backward_max_match(text, dictionary, max_len=15):
+    result = []
+    i = len(text)
+    while i > 0:
+        matched = False
+        for j in range(min(max_len, i), 0, -1):
+            word = text[i - j:i]
+            if dictionary.search_in_dict(word):
+                result.insert(0, word)
+                i -= j
+                matched = True
+                break
+        if not matched:
+            result.insert(0, text[i - 1])
+            i -= 1
+    return result
+
+
+def choose_best_result(forward_result, backward_result):
+    forward_single = sum(1 for word in forward_result if len(word) == 1)
+    backward_single = sum(1 for word in backward_result if len(word) == 1)
+
+    if forward_single < backward_single:
+        return forward_result
+    elif backward_single < forward_single:
+        return backward_result
+    else:
+        if len(forward_result) <= len(backward_result):
+            return forward_result
+        else:
+            return backward_result
+
+
+def bidirectional_max_match(text, dictionary, max_len=15):
+    forward_result = forward_max_match(text, dictionary, max_len)
+    backward_result = backward_max_match(text, dictionary, max_len)
+
+    if forward_result == backward_result:
+        return forward_result
+
+    return choose_best_result(forward_result, backward_result)
