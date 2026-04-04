@@ -117,9 +117,8 @@ nlp_segment/
 │   ├── __init__.py       # 包导出
 │   ├── segmentor.py      # 分词器核心类
 │   ├── tokenizer.py      # 分词算法实现
+│   ├── trie.py           # Trie 树实现
 │   └── dictionary.py     # 词典管理类
-├── lp_segment/           # 子模块（兼容旧版本）
-│   └── tokenizer.py      #  tokenizer 兼容层
 ├── tests/                # 测试用例
 │   └── test_segment.py   # 单元测试
 ├── requirements.txt      # 依赖清单
@@ -623,9 +622,8 @@ nlp_segment/
 │   ├── __init__.py              # 包导出，公开 Segmentor 类
 │   ├── segmentor.py             # 分词器核心类
 │   ├── tokenizer.py             # 分词算法实现
+│   ├── trie.py                  # Trie 树实现
 │   └── dictionary.py            # 词典管理类
-├── lp_segment/                   # 兼容子模块
-│   └── tokenizer.py             # tokenizer 兼容层
 ├── tests/                        # 测试目录
 │   ├── __init__.py
 │   └── test_segment.py          # 单元测试
