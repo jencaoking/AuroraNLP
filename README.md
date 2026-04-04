@@ -173,7 +173,7 @@ pip install nlp_segment
 
 ```bash
 # 克隆项目
-git clone <repository-url>
+git clone https://github.com/jencaoking/alphaNLP.git
 cd nlp_segment
 
 # 安装依赖

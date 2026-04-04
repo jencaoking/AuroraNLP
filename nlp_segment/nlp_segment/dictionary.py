@@ -29,7 +29,7 @@ class Dictionary:
                 if len(parts) >= 2:
                     word, pos_tag = parts[0], parts[1]
                     self._trie.insert(word, pos_tag)
-                else:
+                elif len(parts) == 1:
                     self._trie.insert(parts[0])
         self._words_cache = None
 
