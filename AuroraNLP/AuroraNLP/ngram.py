@@ -259,6 +259,191 @@ class NGramModel:
 class BigramModel(NGramModel):
     def __init__(self):
         super().__init__(n=2)
+        self._bigram_freq: Dict[Tuple[str, str], int] = defaultdict(int)
+        self._unigram_freq: Dict[str, int] = defaultdict(int)
+        self._total_bigrams = 0
+    
+    def train(self, corpus: List[List[str]], smoothing: str = 'laplace', alpha: float = 1.0):
+        super().train(corpus, smoothing, alpha)
+        
+        self._bigram_freq.clear()
+        self._unigram_freq.clear()
+        self._total_bigrams = 0
+        
+        for sentence in corpus:
+            if not sentence:
+                continue
+            
+            for i, word in enumerate(sentence):
+                self._unigram_freq[word] += 1
+                
+                if i > 0:
+                    bigram = (sentence[i - 1], word)
+                    self._bigram_freq[bigram] += 1
+                    self._total_bigrams += 1
+    
+    def get_bigram_count(self, word1: str, word2: str) -> int:
+        return self._bigram_freq.get((word1, word2), 0)
+    
+    def get_unigram_count(self, word: str) -> int:
+        return self._unigram_freq.get(word, 0)
+    
+    def get_bigram_frequency(self, word1: str, word2: str) -> float:
+        if self._total_bigrams == 0:
+            return 0.0
+        return self._bigram_freq.get((word1, word2), 0) / self._total_bigrams
+    
+    def conditional_probability(self, word1: str, word2: str) -> float:
+        count_w1 = self.get_unigram_count(word1)
+        if count_w1 == 0:
+            return 0.0
+        
+        bigram_count = self.get_bigram_count(word1, word2)
+        return bigram_count / count_w1
+    
+    def joint_probability(self, word1: str, word2: str) -> float:
+        if self._total_bigrams == 0:
+            return 0.0
+        return self.get_bigram_count(word1, word2) / self._total_bigrams
+    
+    def pmi(self, word1: str, word2: str) -> float:
+        p_xy = self.joint_probability(word1, word2)
+        if p_xy == 0:
+            return float('-inf')
+        
+        total_unigrams = sum(self._unigram_freq.values())
+        total_bigrams_context = self._total_bigrams
+        
+        p_x = self.get_unigram_count(word1) / total_unigrams
+        p_y = self.get_unigram_count(word2) / total_unigrams
+        
+        if p_x == 0 or p_y == 0:
+            return float('-inf')
+        
+        return math.log(p_xy / (p_x * p_y))
+    
+    def pmi_normalized(self, word1: str, word2: str) -> float:
+        p_xy = self.joint_probability(word1, word2)
+        if p_xy == 0:
+            return -1.0
+        
+        if p_xy >= 1.0:
+            return 1.0
+        
+        total_unigrams = sum(self._unigram_freq.values())
+        p_x = self.get_unigram_count(word1) / total_unigrams
+        p_y = self.get_unigram_count(word2) / total_unigrams
+        
+        if p_x == 0 or p_y == 0:
+            return -1.0
+        
+        pmi = math.log(p_xy / (p_x * p_y))
+        denominator = -math.log(p_xy)
+        
+        if denominator == 0:
+            return 1.0 if pmi > 0 else -1.0
+        
+        npmi = pmi / denominator
+        return max(-1.0, min(1.0, npmi))
+    
+    def extract_collocations(
+        self,
+        min_freq: int = 2,
+        min_pmi: float = 0.0,
+        top_k: int = 20
+    ) -> List[Tuple[str, str, int, float]]:
+        if not self._trained:
+            raise RuntimeError("Model has not been trained. Call train() first.")
+        
+        collocations = []
+        
+        for (word1, word2), count in self._bigram_freq.items():
+            if count < min_freq:
+                continue
+            
+            pmi_score = self.pmi(word1, word2)
+            
+            if pmi_score >= min_pmi:
+                collocations.append((word1, word2, count, pmi_score))
+        
+        collocations.sort(key=lambda x: x[3], reverse=True)
+        
+        return collocations[:top_k]
+    
+    def get_frequent_bigrams(
+        self,
+        min_freq: int = 2,
+        top_k: int = 20
+    ) -> List[Tuple[str, str, int]]:
+        bigrams = [
+            (w1, w2, count)
+            for (w1, w2), count in self._bigram_freq.items()
+            if count >= min_freq
+        ]
+        
+        bigrams.sort(key=lambda x: x[2], reverse=True)
+        
+        return bigrams[:top_k]
+    
+    def get_word_collocations(
+        self,
+        word: str,
+        position: str = 'after',
+        min_freq: int = 1,
+        top_k: int = 10
+    ) -> List[Tuple[str, int, float]]:
+        if position not in ('before', 'after'):
+            raise ValueError("position must be 'before' or 'after'")
+        
+        collocations = []
+        
+        if position == 'after':
+            for (w1, w2), count in self._bigram_freq.items():
+                if w1 == word and count >= min_freq:
+                    pmi_score = self.pmi(w1, w2)
+                    collocations.append((w2, count, pmi_score))
+        else:
+            for (w1, w2), count in self._bigram_freq.items():
+                if w2 == word and count >= min_freq:
+                    pmi_score = self.pmi(w1, w2)
+                    collocations.append((w1, count, pmi_score))
+        
+        collocations.sort(key=lambda x: x[2], reverse=True)
+        
+        return collocations[:top_k]
+    
+    def save_model(self, filepath: str):
+        super().save_model(filepath)
+        
+        model_data = {
+            'bigram_freq': dict(self._bigram_freq),
+            'unigram_freq': dict(self._unigram_freq),
+            'total_bigrams': self._total_bigrams
+        }
+        
+        bigram_filepath = filepath.replace('.pkl', '_bigram.pkl')
+        with open(bigram_filepath, 'wb') as f:
+            pickle.dump(model_data, f)
+    
+    def load_model(self, filepath: str):
+        super().load_model(filepath)
+        
+        bigram_filepath = filepath.replace('.pkl', '_bigram.pkl')
+        if os.path.exists(bigram_filepath):
+            with open(bigram_filepath, 'rb') as f:
+                model_data = pickle.load(f)
+            
+            self._bigram_freq = defaultdict(int, model_data['bigram_freq'])
+            self._unigram_freq = defaultdict(int, model_data['unigram_freq'])
+            self._total_bigrams = model_data['total_bigrams']
+    
+    def get_model_info(self) -> Dict[str, any]:
+        info = super().get_model_info()
+        if self._trained:
+            info['total_bigrams'] = self._total_bigrams
+            info['unique_bigrams'] = len(self._bigram_freq)
+            info['vocabulary_size'] = len(self._unigram_freq)
+        return info
 
 
 class TrigramModel(NGramModel):
