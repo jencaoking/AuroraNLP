@@ -230,15 +230,18 @@ class Similarity:
         method: str = 'cosine',
         stopwords: Optional[Set[str]] = None
     ) -> List[Tuple[str, float]]:
-        results = []
-
+        valid_methods = ['cosine', 'jaccard', 'dice', 'overlap']
+        if method not in valid_methods:
+            raise ValueError(f"Unknown method: {method}. Use one of {valid_methods}.")
+        
         method_func = {
             'cosine': self.cosine_similarity,
             'jaccard': self.jaccard_similarity,
             'dice': self.dice_similarity,
             'overlap': self.overlap_similarity
-        }.get(method, self.cosine_similarity)
+        }[method]
 
+        results = []
         for doc in documents:
             score = method_func(query, doc, segmentor, stopwords)
             results.append((doc, score))

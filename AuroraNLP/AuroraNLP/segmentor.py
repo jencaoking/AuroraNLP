@@ -67,7 +67,7 @@ class Segmentor:
         if mode is None:
             mode = self.mode
 
-        if mode == 'hmm' or self.use_hmm:
+        if mode == 'hmm':
             if not self.hmm_segmentor.is_trained():
                 raise RuntimeError("HMM model has not been trained. Call train_hmm() or load_hmm_model() first.")
             return self.hmm_segmentor.segment(text)
@@ -78,7 +78,7 @@ class Segmentor:
         elif mode == 'bidirectional':
             return bidirectional_max_match(text, self.dictionary)
         else:
-            raise ValueError(f"Unknown mode: {mode}")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', or 'hmm'.")
 
     def segment_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[str]:
         words = self.segment(text, mode)
@@ -88,14 +88,16 @@ class Segmentor:
         if mode is None:
             mode = self.mode
 
-        if mode == 'forward':
+        if mode == 'hmm':
+            raise ValueError("HMM mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
+        elif mode == 'forward':
             return forward_max_match_with_pos(text, self.dictionary)
         elif mode == 'backward':
             return backward_max_match_with_pos(text, self.dictionary)
         elif mode == 'bidirectional':
             return bidirectional_max_match_with_pos(text, self.dictionary)
         else:
-            raise ValueError(f"Unknown mode: {mode}")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', or 'bidirectional'.")
 
     def segment_with_pos_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[Tuple[str, str]]:
         words_with_pos = self.segment_with_pos(text, mode)

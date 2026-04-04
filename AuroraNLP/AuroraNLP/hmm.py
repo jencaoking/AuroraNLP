@@ -200,6 +200,9 @@ class HMMSegmentor:
         return result
     
     def save_model(self, filepath: str):
+        if not self._trained:
+            raise RuntimeError("Model has not been trained. Call train() first before saving.")
+        
         model_data = {
             'init_prob': self.init_prob,
             'trans_prob': self.trans_prob,
