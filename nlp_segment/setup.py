@@ -4,6 +4,10 @@ setup(
     name="nlp_segment",
     version="0.1.0",
     packages=find_packages(),
+    package_data={
+        'nlp_segment': ['data/*.txt'],
+    },
+    include_package_data=True,
     python_requires=">=3.8",
     install_requires=[],
     extras_require={
