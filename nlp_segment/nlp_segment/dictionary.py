@@ -1,4 +1,5 @@
 import os
+import warnings
 from typing import Set, Optional, List, Tuple
 
 from .trie import Trie
@@ -29,6 +30,12 @@ class Dictionary:
                 if len(parts) >= 2:
                     word, pos_tag = parts[0], parts[1]
                     self._trie.insert(word, pos_tag)
+                    if len(parts) > 2:
+                        warnings.warn(
+                            f"词典行格式多余字段将被忽略: '{line}'",
+                            UserWarning,
+                            stacklevel=2
+                        )
                 elif len(parts) == 1:
                     self._trie.insert(parts[0])
         self._words_cache = None
