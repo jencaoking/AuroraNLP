@@ -1,10 +1,10 @@
-# NLP 分词工具包 (nlp_segment)
+# AuroraNLP
 
 ![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/License-Apache%202.0-green)
 ![Status](https://img.shields.io/badge/Status-Alpha-orange)
 
-一个轻量级的中文文本分词工具包，基于词典的最大匹配算法实现，支持多种分词模式。
+一个轻量级的中文自然语言处理工具包，基于词典的最大匹配算法实现，支持多种分词模式。
 
 ---
 
@@ -27,7 +27,7 @@
 
 ### 项目简介
 
-`nlp_segment` 是一个轻量级的中文自然语言处理分词工具包，采用基于词典的最大匹配算法（Maximum Matching）进行中文文本分词。工具包设计简洁、依赖少，易于集成到各类 NLP 应用场景中。
+`AuroraNLP` 是一个轻量级的中文自然语言处理工具包，采用基于词典的最大匹配算法（Maximum Matching）进行中文文本分词。工具包设计简洁、依赖少，易于集成到各类 NLP 应用场景中。
 
 ### 核心目标
 
@@ -112,8 +112,8 @@
 ### 架构设计
 
 ```
-nlp_segment/
-├── nlp_segment/          # 主包
+AuroraNLP/
+├── AuroraNLP/            # 主包
 │   ├── __init__.py       # 包导出
 │   ├── segmentor.py      # 分词器核心类
 │   ├── tokenizer.py      # 分词算法实现
@@ -166,15 +166,15 @@ nlp_segment/
 #### 方式一：通过 pip 安装（待发布）
 
 ```bash
-pip install nlp_segment
+pip install AuroraNLP
 ```
 
 #### 方式二：源码安装
 
 ```bash
 # 克隆项目
-git clone https://github.com/jencaoking/alphaNLP.git
-cd nlp_segment
+git clone https://github.com/jencaoking/AuroraNLP.git
+cd AuroraNLP
 
 # 安装依赖
 pip install -e .
@@ -196,7 +196,7 @@ pytest tests/
 ### 验证安装
 
 ```bash
-python -c "from nlp_segment import Segmentor; print('安装成功')"
+python -c "from AuroraNLP import Segmentor; print('安装成功')"
 ```
 
 ---
@@ -208,8 +208,8 @@ python -c "from nlp_segment import Segmentor; print('安装成功')"
 #### 1. 快速开始
 
 ```python
-from nlp_segment import Segmentor
-from nlp_segment.dictionary import Dictionary
+from AuroraNLP import Segmentor
+from AuroraNLP.dictionary import Dictionary
 
 # 创建分词器（使用默认空词典）
 segmentor = Segmentor()
@@ -224,8 +224,8 @@ print(result)
 #### 2. 使用自定义词典
 
 ```python
-from nlp_segment import Segmentor
-from nlp_segment.dictionary import Dictionary
+from AuroraNLP import Segmentor
+from AuroraNLP.dictionary import Dictionary
 
 # 创建词典并添加词汇
 dictionary = Dictionary()
@@ -272,8 +272,8 @@ print(result)
 ### 分词模式切换
 
 ```python
-from nlp_segment import Segmentor
-from nlp_segment.dictionary import Dictionary
+from AuroraNLP import Segmentor
+from AuroraNLP.dictionary import Dictionary
 
 # 创建词典
 d = Dictionary()
@@ -304,12 +304,12 @@ print(f"双向匹配: {result_bmmmm}")
 ### 基础算法直接调用
 
 ```python
-from nlp_segment.tokenizer import (
+from AuroraNLP.tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match
 )
-from nlp_segment.dictionary import Dictionary
+from AuroraNLP.dictionary import Dictionary
 
 # 创建词典
 d = Dictionary()
@@ -336,8 +336,8 @@ print(f"双向: {result3}")
 NLP 分词工具完整使用示例
 """
 
-from nlp_segment import Segmentor
-from nlp_segment.dictionary import Dictionary
+from alphaNLP import Segmentor
+from alphaNLP.dictionary import Dictionary
 
 def main():
     # 初始化词典
@@ -617,8 +617,8 @@ bidirectional_max_match(text, dictionary, max_len=15)
 ## 目录结构
 
 ```
-nlp_segment/
-├── nlp_segment/                 # 主包目录
+AuroraNLP/
+├── AuroraNLP/                 # 主包目录
 │   ├── __init__.py              # 包导出，公开 Segmentor 类
 │   ├── segmentor.py             # 分词器核心类
 │   ├── tokenizer.py             # 分词算法实现
@@ -627,7 +627,7 @@ nlp_segment/
 ├── tests/                        # 测试目录
 │   ├── __init__.py
 │   └── test_segment.py          # 单元测试
-├── nlp_segment.egg-info/         # 包安装信息
+├── AuroraNLP.egg-info/         # 包安装信息
 ├── .pytest_cache/               # pytest 缓存
 ├── requirements.txt             # 依赖清单
 ├── setup.py                     # 包配置
@@ -643,7 +643,7 @@ nlp_segment/
 ```bash
 # 1. 克隆项目
 git clone <repository-url>
-cd nlp_segment
+cd AuroraNLP
 
 # 2. 创建虚拟环境（推荐）
 python -m venv venv
@@ -763,6 +763,6 @@ limitations under the License.
 
 <div align="center">
 
-**NLP 分词工具包** - 轻量、简单、易用
+**AuroraNLP** - 轻量、简单、易用
 
 </div>

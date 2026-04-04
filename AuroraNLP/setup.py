@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="nlp_segment",
+    name="AuroraNLP",
     version="0.1.0",
     packages=find_packages(exclude=['tests', 'tests.*']),
     package_data={
-        'nlp_segment': ['data/*.txt'],
+        'AuroraNLP': ['data/*.txt'],
     },
     include_package_data=True,
     python_requires=">=3.8",
@@ -14,7 +14,7 @@ setup(
         "dev": ["pytest>=7.0.0"],
     },
     author="NLP Team",
-    description="NLP分词工具包",
+    description="AuroraNLP - 中文自然语言处理工具包",
     keywords="nlp segmentation chinese",
     classifiers=[
         "Development Status :: 3 - Alpha",

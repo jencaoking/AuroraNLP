@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
-Name: nlp_segment
+Name: AuroraNLP
 Version: 0.1.0
-Summary: NLP分词工具包
+Summary: AuroraNLP - 中文自然语言处理工具包
 Author: NLP Team
 Keywords: nlp segmentation chinese
 Classifier: Development Status :: 3 - Alpha
@@ -12,13 +12,11 @@ Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Requires-Python: >=3.8
-License-File: LICENSE
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0.0; extra == "dev"
 Dynamic: author
 Dynamic: classifier
 Dynamic: keywords
-Dynamic: license-file
 Dynamic: provides-extra
 Dynamic: requires-python
 Dynamic: summary

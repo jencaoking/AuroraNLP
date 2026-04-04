@@ -1,10 +1,10 @@
 import pytest
 import tempfile
 import os
-from nlp_segment.segmentor import Segmentor, POS_TAG_NAMES, NER_TAG_MAP
-from nlp_segment.dictionary import Dictionary
-from nlp_segment.trie import Trie
-from nlp_segment.tokenizer import (
+from AuroraNLP.segmentor import Segmentor, POS_TAG_NAMES, NER_TAG_MAP
+from AuroraNLP.dictionary import Dictionary
+from AuroraNLP.trie import Trie
+from AuroraNLP.tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match,
