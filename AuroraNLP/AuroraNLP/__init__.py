@@ -6,6 +6,7 @@ from .similarity import Similarity
 from .trie import Trie
 from .benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
 from .batch_processor import BatchProcessor
+from .hmm import HMMSegmentor, train_from_file
 
 __all__ = [
     "Segmentor",
@@ -17,5 +18,7 @@ __all__ = [
     "PerformanceBenchmark",
     "BenchmarkResult",
     "measure_time",
-    "BatchProcessor"
+    "BatchProcessor",
+    "HMMSegmentor",
+    "train_from_file"
 ]

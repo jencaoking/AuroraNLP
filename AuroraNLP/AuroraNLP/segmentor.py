@@ -11,6 +11,7 @@ from .dictionary import Dictionary
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
+from .hmm import HMMSegmentor
 
 
 POS_TAG_NAMES = {
@@ -46,7 +47,8 @@ class Segmentor:
         self,
         dictionary: Optional[Dictionary] = None,
         load_default_dict: bool = True,
-        load_default_stopwords: bool = True
+        load_default_stopwords: bool = True,
+        use_hmm: bool = False
     ):
         if dictionary is not None:
             self.dictionary = dictionary
@@ -57,12 +59,19 @@ class Segmentor:
         self.keyword_extractor = KeywordExtractor()
         self.similarity = Similarity()
         self.mode: str = 'bidirectional'
+        
+        self.use_hmm = use_hmm
+        self.hmm_segmentor = HMMSegmentor()
 
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
         if mode is None:
             mode = self.mode
 
-        if mode == 'forward':
+        if mode == 'hmm' or self.use_hmm:
+            if not self.hmm_segmentor.is_trained():
+                raise RuntimeError("HMM model has not been trained. Call train_hmm() or load_hmm_model() first.")
+            return self.hmm_segmentor.segment(text)
+        elif mode == 'forward':
             return forward_max_match(text, self.dictionary)
         elif mode == 'backward':
             return backward_max_match(text, self.dictionary)
@@ -222,3 +231,30 @@ class Segmentor:
 
     def get_pos_tags(self) -> dict:
         return POS_TAG_NAMES.copy()
+    
+    def train_hmm(self, corpus: List[List[str]], smooth: float = 1.0) -> None:
+        self.hmm_segmentor.train(corpus, smooth)
+    
+    def train_hmm_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
+        from .hmm import train_from_file
+        train_from_file(self.hmm_segmentor, filepath, encoding)
+    
+    def load_hmm_model(self, filepath: str) -> None:
+        self.hmm_segmentor.load_model(filepath)
+    
+    def save_hmm_model(self, filepath: str) -> None:
+        self.hmm_segmentor.save_model(filepath)
+    
+    def segment_with_hmm_states(self, text: str) -> List[Tuple[str, str]]:
+        if not self.hmm_segmentor.is_trained():
+            raise RuntimeError("HMM model has not been trained. Call train_hmm() or load_hmm_model() first.")
+        return self.hmm_segmentor.segment_with_states(text)
+    
+    def get_hmm_model_info(self) -> dict:
+        return self.hmm_segmentor.get_model_info()
+    
+    def is_hmm_trained(self) -> bool:
+        return self.hmm_segmentor.is_trained()
+    
+    def set_use_hmm(self, use_hmm: bool) -> None:
+        self.use_hmm = use_hmm
