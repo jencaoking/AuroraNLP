@@ -17,6 +17,7 @@ def main():
     
     corpus_path = os.path.join(
         os.path.dirname(__file__),
+        '..',
         'AuroraNLP',
         'data',
         'train_corpus.txt'

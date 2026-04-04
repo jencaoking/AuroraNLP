@@ -139,7 +139,7 @@ print(info)
 
 ## 示例代码
 
-完整示例请参考 `demo_hmm.py` 文件。
+完整示例请参考 `examples/demo_hmm.py` 文件。
 
 ## 测试
 

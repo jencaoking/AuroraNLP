@@ -19,6 +19,7 @@
 - [详细使用指南](#详细使用指南)
 - [API 接口文档](#api-接口文档)
 - [目录结构](#目录结构)
+- [文档资源](#文档资源)
 - [贡献指南](#贡献指南)
 - [许可证](#许可证)
 - [联系方式与问题反馈](#联系方式与问题反馈)
@@ -626,15 +627,31 @@ AuroraNLP/
 │   ├── tokenizer.py             # 分词算法实现
 │   ├── trie.py                  # Trie 树实现
 │   └── dictionary.py            # 词典管理类
-├── tests/                        # 测试目录
+├── docs/                        # 文档目录
+│   ├── HMM.md                   # HMM 分词文档
+│   └── ROADMAP.md               # 项目路线图
+├── examples/                    # 示例代码
+│   └── demo_hmm.py              # HMM 分词演示
+├── tests/                       # 测试目录
 │   ├── __init__.py
 │   └── test_segment.py          # 单元测试
-├── AuroraNLP.egg-info/         # 包安装信息
-├── .pytest_cache/               # pytest 缓存
 ├── requirements.txt             # 依赖清单
 ├── setup.py                     # 包配置
 └── README.md                    # 项目文档
 ```
+
+---
+
+## 文档资源
+
+### 核心文档
+
+- **[HMM 分词文档](AuroraNLP/docs/HMM.md)** - 隐马尔可夫模型中文分词详细说明
+- **[项目路线图](AuroraNLP/docs/ROADMAP.md)** - alphaNLP 专业级演进路线图（100步）
+
+### 示例代码
+
+- **[HMM 分词演示](AuroraNLP/examples/demo_hmm.py)** - 完整的 HMM 分词使用示例
 
 ---
 
