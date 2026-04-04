@@ -30,6 +30,7 @@ class HMMSegmentor:
         self.total_states = 0
         
         self._trained = False
+        self._smooth = 1.0
     
     def _get_state_sequence(self, word: str) -> List[str]:
         length = len(word)
@@ -265,10 +266,12 @@ class HMMSegmentor:
         self.trans_prob = model_data['trans_prob']
         self.emit_prob = model_data['emit_prob']
         self.init_count = defaultdict(int, model_data['init_count'])
-        self.trans_count = defaultdict(lambda: defaultdict(int), 
-                                       {k: defaultdict(int, v) for k, v in model_data['trans_count'].items()})
-        self.emit_count = defaultdict(lambda: defaultdict(int),
-                                      {k: defaultdict(int, v) for k, v in model_data['emit_count'].items()})
+        self.trans_count = defaultdict(lambda: defaultdict(int))
+        for k, v in model_data['trans_count'].items():
+            self.trans_count[k] = defaultdict(int, v)
+        self.emit_count = defaultdict(lambda: defaultdict(int))
+        for k, v in model_data['emit_count'].items():
+            self.emit_count[k] = defaultdict(int, v)
         self.state_count = defaultdict(int, model_data['state_count'])
         self.total_states = model_data['total_states']
         self._smooth = model_data['smooth']

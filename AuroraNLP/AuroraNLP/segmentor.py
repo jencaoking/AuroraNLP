@@ -191,8 +191,8 @@ class Segmentor:
         return self.similarity.batch_similarity(query, documents, self, method, stopwords)
 
     def set_mode(self, mode: str) -> None:
-        if mode not in ('forward', 'backward', 'bidirectional'):
-            raise ValueError(f"Unknown mode: {mode}")
+        if mode not in ('forward', 'backward', 'bidirectional', 'hmm'):
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', or 'hmm'.")
         self.mode = mode
 
     def load_dictionary(self, path: str) -> None:

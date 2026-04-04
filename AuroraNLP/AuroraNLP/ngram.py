@@ -228,10 +228,12 @@ class NGramModel:
             model_data = pickle.load(f)
         
         self.n = model_data['n']
-        self.ngram_counts = defaultdict(lambda: defaultdict(int), 
-                                        {k: defaultdict(int, v) for k, v in model_data['ngram_counts'].items()})
-        self.context_counts = defaultdict(lambda: defaultdict(int),
-                                          {k: defaultdict(int, v) for k, v in model_data['context_counts'].items()})
+        self.ngram_counts = defaultdict(lambda: defaultdict(int))
+        for k, v in model_data['ngram_counts'].items():
+            self.ngram_counts[k] = defaultdict(int, v)
+        self.context_counts = defaultdict(lambda: defaultdict(int))
+        for k, v in model_data['context_counts'].items():
+            self.context_counts[k] = defaultdict(int, v)
         self.vocabulary = defaultdict(int, model_data['vocabulary'])
         self.total_tokens = model_data['total_tokens']
         self._smoothing = model_data['smoothing']
@@ -312,7 +314,8 @@ class BigramModel(NGramModel):
             return float('-inf')
         
         total_unigrams = sum(self._unigram_freq.values())
-        total_bigrams_context = self._total_bigrams
+        if total_unigrams == 0:
+            return float('-inf')
         
         p_x = self.get_unigram_count(word1) / total_unigrams
         p_y = self.get_unigram_count(word2) / total_unigrams
@@ -331,6 +334,9 @@ class BigramModel(NGramModel):
             return 1.0
         
         total_unigrams = sum(self._unigram_freq.values())
+        if total_unigrams == 0:
+            return -1.0
+        
         p_x = self.get_unigram_count(word1) / total_unigrams
         p_y = self.get_unigram_count(word2) / total_unigrams
         
