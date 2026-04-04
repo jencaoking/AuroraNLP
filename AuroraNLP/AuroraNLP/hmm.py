@@ -3,6 +3,10 @@ import pickle
 import math
 from collections import defaultdict
 import os
+import hashlib
+import hmac
+
+HMM_MODEL_SIGNATURE = b'AuroraNLP_HMM_MODEL_v1'
 
 
 class HMMSegmentor:
@@ -199,7 +203,7 @@ class HMMSegmentor:
         
         return result
     
-    def save_model(self, filepath: str):
+    def save_model(self, filepath: str, key: Optional[str] = None):
         if not self._trained:
             raise RuntimeError("Model has not been trained. Call train() first before saving.")
         
@@ -216,16 +220,46 @@ class HMMSegmentor:
             'trained': self._trained
         }
         
+        serialized = pickle.dumps(model_data)
+        
         dir_path = os.path.dirname(filepath)
         if dir_path:
             os.makedirs(dir_path, exist_ok=True)
         
         with open(filepath, 'wb') as f:
-            pickle.dump(model_data, f)
+            f.write(HMM_MODEL_SIGNATURE)
+            f.write(len(serialized).to_bytes(8, 'big'))
+            f.write(serialized)
+            
+            if key:
+                signature = hmac.new(
+                    key.encode('utf-8'),
+                    HMM_MODEL_SIGNATURE + serialized,
+                    hashlib.sha256
+                ).digest()
+                f.write(signature)
     
-    def load_model(self, filepath: str):
+    def load_model(self, filepath: str, key: Optional[str] = None, verify: bool = True):
         with open(filepath, 'rb') as f:
-            model_data = pickle.load(f)
+            signature = f.read(len(HMM_MODEL_SIGNATURE))
+            if signature != HMM_MODEL_SIGNATURE:
+                raise ValueError("Invalid model file format or corrupted file")
+            
+            size_bytes = f.read(8)
+            size = int.from_bytes(size_bytes, 'big')
+            serialized = f.read(size)
+            
+            if verify and key:
+                stored_signature = f.read(32)
+                expected_signature = hmac.new(
+                    key.encode('utf-8'),
+                    HMM_MODEL_SIGNATURE + serialized,
+                    hashlib.sha256
+                ).digest()
+                if not hmac.compare_digest(stored_signature, expected_signature):
+                    raise ValueError("Model signature verification failed. File may be tampered.")
+        
+        model_data = pickle.loads(serialized)
         
         self.init_prob = model_data['init_prob']
         self.trans_prob = model_data['trans_prob']

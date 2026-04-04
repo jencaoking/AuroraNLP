@@ -7,6 +7,7 @@ from .trie import Trie
 from .benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
 from .batch_processor import BatchProcessor
 from .hmm import HMMSegmentor, train_from_file
+from .ngram import NGramModel, BigramModel, TrigramModel
 
 __all__ = [
     "Segmentor",
@@ -20,5 +21,8 @@ __all__ = [
     "measure_time",
     "BatchProcessor",
     "HMMSegmentor",
-    "train_from_file"
+    "train_from_file",
+    "NGramModel",
+    "BigramModel",
+    "TrigramModel"
 ]

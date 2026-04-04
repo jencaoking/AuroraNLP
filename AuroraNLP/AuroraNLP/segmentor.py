@@ -241,11 +241,11 @@ class Segmentor:
         from .hmm import train_from_file
         train_from_file(self.hmm_segmentor, filepath, encoding)
     
-    def load_hmm_model(self, filepath: str) -> None:
-        self.hmm_segmentor.load_model(filepath)
+    def load_hmm_model(self, filepath: str, key: Optional[str] = None, verify: bool = True) -> None:
+        self.hmm_segmentor.load_model(filepath, key, verify)
     
-    def save_hmm_model(self, filepath: str) -> None:
-        self.hmm_segmentor.save_model(filepath)
+    def save_hmm_model(self, filepath: str, key: Optional[str] = None) -> None:
+        self.hmm_segmentor.save_model(filepath, key)
     
     def segment_with_hmm_states(self, text: str) -> List[Tuple[str, str]]:
         if not self.hmm_segmentor.is_trained():

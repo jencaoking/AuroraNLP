@@ -21,15 +21,36 @@ class Dictionary:
     def load_dictionary(self, path: str) -> None:
         if not os.path.exists(path):
             raise FileNotFoundError(f"词典文件不存在: {path}")
+        
+        loaded_count = 0
+        error_count = 0
+        
         with open(path, 'r', encoding='utf-8') as f:
-            for line in f:
+            for line_num, line in enumerate(f, 1):
                 line = line.strip()
                 if not line:
                     continue
+                
                 parts = line.split()
                 if len(parts) >= 2:
                     word, pos_tag = parts[0], parts[1]
+                    if not word:
+                        warnings.warn(
+                            f"第 {line_num} 行: 空词汇将被跳过",
+                            UserWarning,
+                            stacklevel=2
+                        )
+                        error_count += 1
+                        continue
+                    if not pos_tag or not pos_tag.replace('/', '').isalpha():
+                        warnings.warn(
+                            f"第 {line_num} 行: 无效的词性标签 '{pos_tag}'，将使用默认值",
+                            UserWarning,
+                            stacklevel=2
+                        )
+                        pos_tag = 'x'
                     self._trie.insert(word, pos_tag)
+                    loaded_count += 1
                     if len(parts) > 2:
                         warnings.warn(
                             f"词典行格式多余字段将被忽略: '{line}'",
@@ -37,8 +58,33 @@ class Dictionary:
                             stacklevel=2
                         )
                 elif len(parts) == 1:
-                    self._trie.insert(parts[0])
+                    word = parts[0]
+                    if word:
+                        self._trie.insert(word)
+                        loaded_count += 1
+                    else:
+                        warnings.warn(
+                            f"第 {line_num} 行: 空词汇将被跳过",
+                            UserWarning,
+                            stacklevel=2
+                        )
+                        error_count += 1
+        
         self._words_cache = None
+        
+        if loaded_count == 0:
+            warnings.warn(
+                f"词典文件 '{path}' 未加载任何有效词汇",
+                UserWarning,
+                stacklevel=2
+            )
+        
+        if error_count > 0:
+            warnings.warn(
+                f"词典加载完成，共加载 {loaded_count} 个词汇，跳过 {error_count} 个无效条目",
+                UserWarning,
+                stacklevel=2
+            )
 
     def save_dictionary(self, path: str) -> None:
         with open(path, 'w', encoding='utf-8') as f:

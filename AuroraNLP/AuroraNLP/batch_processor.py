@@ -95,15 +95,33 @@ class BatchProcessor:
         self,
         text: str,
         chunk_size: int = 10000,
-        mode: Optional[str] = None
+        mode: Optional[str] = None,
+        overlap: int = 50
     ) -> List[str]:
         if len(text) <= chunk_size:
             return self.segmentor.segment(text, mode)
 
         results = []
-        for i in range(0, len(text), chunk_size):
-            chunk = text[i:i + chunk_size]
-            results.extend(self.segmentor.segment(chunk, mode))
+        i = 0
+        
+        while i < len(text):
+            chunk_end = min(i + chunk_size, len(text))
+            
+            if chunk_end < len(text):
+                break_point = chunk_end
+                for j in range(chunk_end, max(i + chunk_size - overlap, i), -1):
+                    if j < len(text) and text[j] in '，。！？；：、\n\t ':
+                        break_point = j + 1
+                        break
+                
+                chunk = text[i:break_point]
+                i = break_point
+            else:
+                chunk = text[i:]
+                i = len(text)
+            
+            if chunk:
+                results.extend(self.segmentor.segment(chunk, mode))
 
         return results
 
