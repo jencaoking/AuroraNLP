@@ -1,5 +1,11 @@
-def forward_max_match(text, dictionary, max_len=15):
-    result = []
+from typing import List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..nlp_segment.dictionary import Dictionary
+
+
+def forward_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -> List[str]:
+    result: List[str] = []
     i = 0
     while i < len(text):
         matched = False
@@ -16,25 +22,26 @@ def forward_max_match(text, dictionary, max_len=15):
     return result
 
 
-def backward_max_match(text, dictionary, max_len=15):
-    result = []
+def backward_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -> List[str]:
+    result: List[str] = []
     i = len(text)
     while i > 0:
         matched = False
         for j in range(min(max_len, i), 0, -1):
             word = text[i - j:i]
             if dictionary.search_in_dict(word):
-                result.insert(0, word)
+                result.append(word)
                 i -= j
                 matched = True
                 break
         if not matched:
-            result.insert(0, text[i - 1])
+            result.append(text[i - 1])
             i -= 1
+    result.reverse()
     return result
 
 
-def choose_best_result(forward_result, backward_result):
+def choose_best_result(forward_result: List[str], backward_result: List[str]) -> List[str]:
     forward_single = sum(1 for word in forward_result if len(word) == 1)
     backward_single = sum(1 for word in backward_result if len(word) == 1)
 
@@ -49,7 +56,7 @@ def choose_best_result(forward_result, backward_result):
             return backward_result
 
 
-def bidirectional_max_match(text, dictionary, max_len=15):
+def bidirectional_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -> List[str]:
     forward_result = forward_max_match(text, dictionary, max_len)
     backward_result = backward_max_match(text, dictionary, max_len)
 

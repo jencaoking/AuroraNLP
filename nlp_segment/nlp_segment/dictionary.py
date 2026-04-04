@@ -24,7 +24,7 @@ class Dictionary:
                     self.words.add(word)
 
     def get_words(self) -> Set[str]:
-        return self.words
+        return self.words.copy()
 
     def add_word(self, word: str) -> None:
         self.words.add(word)
