@@ -1,11 +1,16 @@
 import pytest
-from nlp_segment.segmentor import Segmentor
+import tempfile
+import os
+from nlp_segment.segmentor import Segmentor, POS_TAG_NAMES, NER_TAG_MAP
 from nlp_segment.dictionary import Dictionary
 from nlp_segment.trie import Trie
 from nlp_segment.tokenizer import (
     forward_max_match,
     backward_max_match,
-    bidirectional_max_match
+    bidirectional_max_match,
+    forward_max_match_with_pos,
+    backward_max_match_with_pos,
+    bidirectional_max_match_with_pos
 )
 
 
@@ -65,6 +70,27 @@ class TestTrie:
         trie.insert("测试")
         trie.insert("测试")
         assert len(trie) == 1
+
+    def test_insert_with_pos(self):
+        trie = Trie()
+        trie.insert("今天", "t")
+        found, pos = trie.search_with_pos("今天")
+        assert found == True
+        assert pos == "t"
+
+    def test_search_with_pos_not_found(self):
+        trie = Trie()
+        found, pos = trie.search_with_pos("不存在")
+        assert found == False
+        assert pos is None
+
+    def test_get_max_match_with_pos(self):
+        trie = Trie()
+        trie.insert("今天", "t")
+        trie.insert("今天天气", "n")
+        length, pos = trie.get_max_match_with_pos("今天天气很好", 0)
+        assert length == 4
+        assert pos == "n"
 
 
 class TestDictionary:
@@ -135,6 +161,40 @@ class TestDictionary:
         assert d.get_max_match_length(text, 0) == 4
         assert d.get_max_match_length(text, 2) == 2
 
+    def test_add_word_with_pos(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天", "t")
+        pos = d.get_pos_tag("今天")
+        assert pos == "t"
+
+    def test_search_with_pos(self):
+        d = Dictionary(load_default=False)
+        d.add_word("天气", "n")
+        found, pos = d.search_with_pos("天气")
+        assert found == True
+        assert pos == "n"
+
+    def test_save_and_load_dictionary(self):
+        d = Dictionary(load_default=False)
+        d.add_word("测试词1", "n")
+        d.add_word("测试词2", "v")
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as f:
+            temp_path = f.name
+
+        try:
+            d.save_dictionary(temp_path)
+
+            d2 = Dictionary(load_default=False)
+            d2.load_dictionary(temp_path)
+
+            assert "测试词1" in d2
+            assert "测试词2" in d2
+            assert d2.get_pos_tag("测试词1") == "n"
+            assert d2.get_pos_tag("测试词2") == "v"
+        finally:
+            os.unlink(temp_path)
+
 
 class TestForwardMaxMatch:
     def test_simple_segmentation(self):
@@ -177,6 +237,35 @@ class TestBidirectionalMaxMatch:
         assert isinstance(result, list)
 
 
+class TestPosTagging:
+    def test_forward_max_match_with_pos(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天", "t")
+        d.add_word("天气", "n")
+        d.add_word("很好", "a")
+        result = forward_max_match_with_pos("今天天气很好", d)
+        assert len(result) == 3
+        assert result[0] == ("今天", "t")
+        assert result[1] == ("天气", "n")
+        assert result[2] == ("很好", "a")
+
+    def test_backward_max_match_with_pos(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天", "t")
+        d.add_word("天气", "n")
+        result = backward_max_match_with_pos("今天天气", d)
+        assert ("今天", "t") in result
+        assert ("天气", "n") in result
+
+    def test_bidirectional_max_match_with_pos(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天", "t")
+        d.add_word("天气", "n")
+        result = bidirectional_max_match_with_pos("今天天气", d)
+        assert isinstance(result, list)
+        assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
+
+
 class TestSegmentor:
     def test_segment_default_mode(self):
         d = Dictionary(load_default=False)
@@ -207,7 +296,7 @@ class TestSegmentor:
 
     def test_load_dictionary(self, tmp_path):
         d = tmp_path / "dict.txt"
-        d.write_text("今天\n天气\n很好\n", encoding='utf-8')
+        d.write_text("今天 t\n天气 n\n很好 a\n", encoding='utf-8')
         seg = Segmentor(load_default_dict=False)
         seg.load_dictionary(str(d))
         assert seg.dictionary.search_in_dict("今天") == True
@@ -245,3 +334,84 @@ class TestSegmentor:
         seg = Segmentor()
         with pytest.raises(ValueError):
             seg.set_mode('invalid')
+
+    def test_segment_with_pos(self):
+        seg = Segmentor()
+        result = seg.segment_with_pos("今天天气很好")
+        assert isinstance(result, list)
+        assert all(isinstance(item, tuple) and len(item) == 2 for item in result)
+
+    def test_segment_with_pos_has_correct_tags(self):
+        seg = Segmentor()
+        result = seg.segment_with_pos("今天天气很好")
+        words = [w for w, _ in result]
+        assert "今天" in words
+        assert "天气" in words
+
+    def test_recognize_entities(self):
+        seg = Segmentor()
+        entities = seg.recognize_entities("我在北京工作")
+        entity_words = [w for w, _ in entities]
+        assert "北京" in entity_words
+
+    def test_segment_with_entities(self):
+        seg = Segmentor()
+        result = seg.segment_with_entities("我在北京工作")
+        assert isinstance(result, list)
+        assert all(isinstance(item, tuple) and len(item) == 3 for item in result)
+
+    def test_save_dictionary(self):
+        seg = Segmentor(load_default_dict=False)
+        seg.add_word("测试词", "n")
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False, encoding='utf-8') as f:
+            temp_path = f.name
+
+        try:
+            seg.save_dictionary(temp_path)
+
+            seg2 = Segmentor(load_default_dict=False)
+            seg2.load_dictionary(temp_path)
+            assert "测试词" in seg2.dictionary
+        finally:
+            os.unlink(temp_path)
+
+    def test_add_word_with_pos(self):
+        seg = Segmentor(load_default_dict=False)
+        seg.add_word("新词", "n")
+        pos = seg.dictionary.get_pos_tag("新词")
+        assert pos == "n"
+
+    def test_get_pos_tag_name(self):
+        seg = Segmentor()
+        assert seg.get_pos_tag_name("n") == "名词"
+        assert seg.get_pos_tag_name("v") == "动词"
+        assert seg.get_pos_tag_name("unknown") == "未知"
+
+    def test_get_pos_tags(self):
+        seg = Segmentor()
+        tags = seg.get_pos_tags()
+        assert isinstance(tags, dict)
+        assert "n" in tags
+        assert "v" in tags
+
+
+class TestNER:
+    def test_recognize_location(self):
+        seg = Segmentor()
+        entities = seg.recognize_entities("我在北京和上海工作")
+        entity_words = [w for w, t in entities]
+        assert "北京" in entity_words
+        assert "上海" in entity_words
+
+    def test_recognize_organization(self):
+        seg = Segmentor()
+        entities = seg.recognize_entities("他在清华大学学习")
+        entity_words = [w for w, t in entities]
+        assert "清华大学" in entity_words
+
+    def test_entity_types(self):
+        seg = Segmentor()
+        entities = seg.recognize_entities("我在北京工作")
+        for word, entity_type in entities:
+            assert entity_type in ["PERSON", "LOCATION", "ORGANIZATION"]
