@@ -1,11 +1,70 @@
 import pytest
 from nlp_segment.segmentor import Segmentor
 from nlp_segment.dictionary import Dictionary
+from nlp_segment.trie import Trie
 from nlp_segment.tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match
 )
+
+
+class TestTrie:
+    def test_insert_and_search(self):
+        trie = Trie()
+        trie.insert("今天")
+        assert trie.search("今天") == True
+        assert trie.search("明") == False
+        assert trie.search("今天天气") == False
+
+    def test_starts_with(self):
+        trie = Trie()
+        trie.insert("今天")
+        trie.insert("明天")
+        assert trie.starts_with("今") == True
+        assert trie.starts_with("明天") == True
+        assert trie.starts_with("昨天") == False
+
+    def test_get_max_match_length(self):
+        trie = Trie()
+        trie.insert("今天")
+        trie.insert("今天天气")
+        trie.insert("天气")
+
+        text = "今天天气很好"
+        assert trie.get_max_match_length(text, 0) == 4
+        assert trie.get_max_match_length(text, 2) == 2
+
+    def test_remove(self):
+        trie = Trie()
+        trie.insert("测试")
+        assert trie.search("测试") == True
+        result = trie.remove("测试")
+        assert result == True
+        assert trie.search("测试") == False
+
+    def test_remove_nonexistent(self):
+        trie = Trie()
+        result = trie.remove("不存在")
+        assert result == False
+
+    def test_len(self):
+        trie = Trie()
+        trie.insert("词1")
+        trie.insert("词2")
+        assert len(trie) == 2
+
+    def test_contains(self):
+        trie = Trie()
+        trie.insert("测试")
+        assert "测试" in trie
+        assert "不存在" not in trie
+
+    def test_duplicate_insert(self):
+        trie = Trie()
+        trie.insert("测试")
+        trie.insert("测试")
+        assert len(trie) == 1
 
 
 class TestDictionary:
@@ -58,6 +117,24 @@ class TestDictionary:
         with pytest.raises(FileNotFoundError):
             d.load_dictionary("nonexistent_dict.txt")
 
+    def test_has_prefix(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天")
+        d.add_word("明天")
+        assert d.has_prefix("今") == True
+        assert d.has_prefix("明天") == True
+        assert d.has_prefix("昨天") == False
+
+    def test_get_max_match_length(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天")
+        d.add_word("今天天气")
+        d.add_word("天气")
+
+        text = "今天天气很好"
+        assert d.get_max_match_length(text, 0) == 4
+        assert d.get_max_match_length(text, 2) == 2
+
 
 class TestForwardMaxMatch:
     def test_simple_segmentation(self):
@@ -72,6 +149,13 @@ class TestForwardMaxMatch:
         d = Dictionary(load_default=False)
         result = forward_max_match("你好世界", d)
         assert result == ["你", "好", "世", "界"]
+
+    def test_long_word_priority(self):
+        d = Dictionary(load_default=False)
+        d.add_word("今天")
+        d.add_word("今天天气")
+        result = forward_max_match("今天天气很好", d)
+        assert result[0] == "今天天气"
 
 
 class TestBackwardMaxMatch:

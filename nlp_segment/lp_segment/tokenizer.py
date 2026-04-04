@@ -7,24 +7,25 @@ if TYPE_CHECKING:
 def forward_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -> List[str]:
     result: List[str] = []
     i = 0
-    while i < len(text):
-        matched = False
-        for j in range(min(max_len, len(text) - i), 0, -1):
-            word = text[i:i + j]
-            if dictionary.search_in_dict(word):
-                result.append(word)
-                i += j
-                matched = True
-                break
-        if not matched:
+    text_len = len(text)
+
+    while i < text_len:
+        match_len = dictionary.get_max_match_length(text, i, max_len)
+
+        if match_len > 0:
+            result.append(text[i:i + match_len])
+            i += match_len
+        else:
             result.append(text[i])
             i += 1
+
     return result
 
 
 def backward_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -> List[str]:
     result: List[str] = []
     i = len(text)
+
     while i > 0:
         matched = False
         for j in range(min(max_len, i), 0, -1):
@@ -37,6 +38,7 @@ def backward_max_match(text: str, dictionary: 'Dictionary', max_len: int = 15) -
         if not matched:
             result.append(text[i - 1])
             i -= 1
+
     result.reverse()
     return result
 
