@@ -182,6 +182,11 @@ class DependencyTree:
         if len(roots) != 1:
             return False
         
+        arcs = self.get_arcs()
+        dependents = [arc.dependent for arc in arcs]
+        if len(dependents) != len(set(dependents)):
+            return False
+        
         visited = set()
         queue = [roots[0].id]
         
