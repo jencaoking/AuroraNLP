@@ -1,13 +1,19 @@
-from typing import List, Tuple, Optional, Set, Dict
+from typing import List, Tuple, Optional, Set, Dict, Any
 from .tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match,
     forward_max_match_with_pos,
     backward_max_match_with_pos,
-    bidirectional_max_match_with_pos
+    bidirectional_max_match_with_pos,
+    forward_max_match_weighted,
+    backward_max_match_weighted,
+    bidirectional_max_match_weighted,
+    forward_max_match_weighted_with_pos,
+    backward_max_match_weighted_with_pos,
+    bidirectional_max_match_weighted_with_pos
 )
-from .dictionary import Dictionary
+from .dictionary import Dictionary, UserDictionary, DictionaryManager
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
@@ -54,33 +60,183 @@ class Segmentor:
         use_hmm: bool = False,
         use_crf: bool = False,
         use_perceptron: bool = False,
-        use_lattice: bool = False
+        use_lattice: bool = False,
+        use_weighted: bool = False
     ):
+        self._dict_manager = DictionaryManager()
+
         if dictionary is not None:
             self.dictionary = dictionary
+            self._dict_manager.register_dictionary(dictionary)
         else:
             self.dictionary = Dictionary(load_default=load_default_dict)
+            self._dict_manager.register_dictionary(self.dictionary)
+
+        self._user_dictionaries: Dict[str, UserDictionary] = {}
 
         self.stopwords = StopWords(load_default=load_default_stopwords)
         self.keyword_extractor = KeywordExtractor()
         self.similarity = Similarity()
         self.mode: str = 'bidirectional'
-        
+        self.use_weighted = use_weighted
+
         self.use_hmm = use_hmm
         self.hmm_segmentor = HMMSegmentor()
-        
+
         self.use_crf = use_crf
         self.crf_segmentor = CRFSegmentor()
-        
+
         self.use_perceptron = use_perceptron
         self.perceptron_segmentor = PerceptronSegmentor()
-        
+
         self.use_lattice = use_lattice
         self.lattice_segmentor = LatticeSegmentor(self.dictionary)
+
+    @property
+    def dict_manager(self) -> DictionaryManager:
+        return self._dict_manager
+
+    def _get_active_dictionary(self):
+        if self._user_dictionaries:
+            return self._dict_manager
+        return self.dictionary
+
+    def create_user_dictionary(
+        self,
+        name: str,
+        priority: int = 100,
+        default_weight: float = 10.0
+    ) -> UserDictionary:
+        user_dict = UserDictionary(name=name, priority=priority)
+        user_dict.default_weight = default_weight
+        self._user_dictionaries[name] = user_dict
+        self._dict_manager.register_user_dictionary(user_dict)
+        return user_dict
+
+    def get_user_dictionary(self, name: str) -> Optional[UserDictionary]:
+        return self._user_dictionaries.get(name)
+
+    def remove_user_dictionary(self, name: str) -> bool:
+        if name in self._user_dictionaries:
+            del self._user_dictionaries[name]
+            self._dict_manager.unregister_dictionary(name)
+            return True
+        return False
+
+    def load_user_dictionary(
+        self,
+        path: str,
+        name: Optional[str] = None,
+        priority: int = 100,
+        default_weight: float = 10.0
+    ) -> UserDictionary:
+        if name is None:
+            name = f"user_{len(self._user_dictionaries)}"
+
+        user_dict = self.create_user_dictionary(name, priority, default_weight)
+        user_dict.load_dictionary(path, priority, default_weight)
+        return user_dict
+
+    def add_user_word(
+        self,
+        word: str,
+        pos_tag: Optional[str] = None,
+        weight: Optional[float] = None,
+        priority: Optional[int] = None,
+        dict_name: Optional[str] = None
+    ) -> None:
+        if dict_name:
+            user_dict = self._user_dictionaries.get(dict_name)
+            if user_dict:
+                user_dict.add_word(word, pos_tag, weight, priority)
+                self._dict_manager.invalidate_cache()
+                return
+
+        if self._user_dictionaries:
+            default_dict = list(self._user_dictionaries.values())[0]
+            default_dict.add_word(word, pos_tag, weight, priority)
+            self._dict_manager.invalidate_cache()
+        else:
+            user_dict = self.create_user_dictionary("default_user")
+            user_dict.add_word(word, pos_tag, weight, priority)
+            self._dict_manager.invalidate_cache()
+
+    def set_word_weight(
+        self,
+        word: str,
+        weight: float,
+        dict_name: Optional[str] = None
+    ) -> bool:
+        if dict_name:
+            user_dict = self._user_dictionaries.get(dict_name)
+            if user_dict:
+                return user_dict.set_weight(word, weight)
+
+        for user_dict in self._user_dictionaries.values():
+            if user_dict.set_weight(word, weight):
+                self._dict_manager.invalidate_cache()
+                return True
+
+        return self.dictionary.set_weight(word, weight)
+
+    def set_word_priority(
+        self,
+        word: str,
+        priority: int,
+        dict_name: Optional[str] = None
+    ) -> bool:
+        if dict_name:
+            user_dict = self._user_dictionaries.get(dict_name)
+            if user_dict:
+                return user_dict.set_priority(word, priority)
+
+        for user_dict in self._user_dictionaries.values():
+            if user_dict.set_priority(word, priority):
+                self._dict_manager.invalidate_cache()
+                return True
+
+        return self.dictionary.set_priority(word, priority)
+
+    def get_word_info(self, word: str) -> Dict[str, Any]:
+        result = {'word': word, 'found': False}
+
+        for name, user_dict in self._user_dictionaries.items():
+            found, pos_tag, weight, priority = user_dict.search_with_info(word)
+            if found:
+                result.update({
+                    'found': True,
+                    'pos_tag': pos_tag,
+                    'weight': weight,
+                    'priority': priority,
+                    'dictionary': name,
+                    'dictionary_type': 'user'
+                })
+                return result
+
+        found, pos_tag, weight, priority = self.dictionary.search_with_info(word)
+        if found:
+            result.update({
+                'found': True,
+                'pos_tag': pos_tag,
+                'weight': weight,
+                'priority': priority,
+                'dictionary': self.dictionary.name,
+                'dictionary_type': 'system'
+            })
+
+        return result
+
+    def get_all_dictionaries_info(self) -> List[Dict[str, Any]]:
+        return self._dict_manager.get_all_dictionaries_info()
+
+    def set_use_weighted(self, use_weighted: bool) -> None:
+        self.use_weighted = use_weighted
 
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
         if mode is None:
             mode = self.mode
+
+        active_dict = self._get_active_dictionary()
 
         if mode == 'hmm':
             if not self.hmm_segmentor.is_trained():
@@ -97,11 +253,17 @@ class Segmentor:
         elif mode == 'lattice':
             return self.lattice_segmentor.segment(text)
         elif mode == 'forward':
-            return forward_max_match(text, self.dictionary)
+            if self.use_weighted:
+                return forward_max_match_weighted(text, active_dict)
+            return forward_max_match(text, active_dict)
         elif mode == 'backward':
-            return backward_max_match(text, self.dictionary)
+            if self.use_weighted:
+                return backward_max_match_weighted(text, active_dict)
+            return backward_max_match(text, active_dict)
         elif mode == 'bidirectional':
-            return bidirectional_max_match(text, self.dictionary)
+            if self.use_weighted:
+                return bidirectional_max_match_weighted(text, active_dict)
+            return bidirectional_max_match(text, active_dict)
         else:
             raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', or 'lattice'.")
 
@@ -113,6 +275,8 @@ class Segmentor:
         if mode is None:
             mode = self.mode
 
+        active_dict = self._get_active_dictionary()
+
         if mode == 'hmm':
             raise ValueError("HMM mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'crf':
@@ -120,15 +284,21 @@ class Segmentor:
         elif mode == 'perceptron':
             raise ValueError("Perceptron mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'forward':
-            return forward_max_match_with_pos(text, self.dictionary)
+            if self.use_weighted:
+                return forward_max_match_weighted_with_pos(text, active_dict)
+            return forward_max_match_with_pos(text, active_dict)
         elif mode == 'backward':
-            return backward_max_match_with_pos(text, self.dictionary)
+            if self.use_weighted:
+                return backward_max_match_weighted_with_pos(text, active_dict)
+            return backward_max_match_with_pos(text, active_dict)
         elif mode == 'bidirectional':
-            return bidirectional_max_match_with_pos(text, self.dictionary)
+            if self.use_weighted:
+                return bidirectional_max_match_weighted_with_pos(text, active_dict)
+            return bidirectional_max_match_with_pos(text, active_dict)
         else:
             raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', or 'bidirectional'.")
 
-    def segment_with_pos_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[Tuple[str, str]]:
+    def segment_without_stopwords_with_pos(self, text: str, mode: Optional[str] = None) -> List[Tuple[str, str]]:
         words_with_pos = self.segment_with_pos(text, mode)
         return self.stopwords.filter_with_pos(words_with_pos)
 
@@ -230,8 +400,14 @@ class Segmentor:
     def save_dictionary(self, path: str) -> None:
         self.dictionary.save_dictionary(path)
 
-    def add_word(self, word: str, pos_tag: Optional[str] = None) -> None:
-        self.dictionary.add_word(word, pos_tag)
+    def add_word(
+        self,
+        word: str,
+        pos_tag: Optional[str] = None,
+        weight: float = 1.0,
+        priority: Optional[int] = None
+    ) -> None:
+        self.dictionary.add_word(word, pos_tag, weight, priority)
 
     def remove_word(self, word: str) -> bool:
         return self.dictionary.remove_word(word)
@@ -262,37 +438,37 @@ class Segmentor:
 
     def get_pos_tags(self) -> dict:
         return POS_TAG_NAMES.copy()
-    
+
     def train_hmm(self, corpus: List[List[str]], smooth: float = 1.0) -> None:
         self.hmm_segmentor.train(corpus, smooth)
-    
+
     def train_hmm_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
         from .hmm import train_from_file
         train_from_file(self.hmm_segmentor, filepath, encoding)
-    
+
     def load_hmm_model(self, filepath: str, key: Optional[str] = None, verify: bool = True) -> None:
         self.hmm_segmentor.load_model(filepath, key, verify)
-    
+
     def save_hmm_model(self, filepath: str, key: Optional[str] = None) -> None:
         self.hmm_segmentor.save_model(filepath, key)
-    
+
     def segment_with_hmm_states(self, text: str) -> List[Tuple[str, str]]:
         if not self.hmm_segmentor.is_trained():
             raise RuntimeError("HMM model has not been trained. Call train_hmm() or load_hmm_model() first.")
         return self.hmm_segmentor.segment_with_states(text)
-    
+
     def get_hmm_model_info(self) -> dict:
         return self.hmm_segmentor.get_model_info()
-    
+
     def is_hmm_trained(self) -> bool:
         return self.hmm_segmentor.is_trained()
-    
+
     def set_use_hmm(self, use_hmm: bool) -> None:
         self.use_hmm = use_hmm
-    
+
     def train_crf(
-        self, 
-        corpus: List[List[str]], 
+        self,
+        corpus: List[List[str]],
         learning_rate: float = 0.1,
         l2_reg: float = 0.01,
         max_iter: int = 100,
@@ -300,49 +476,49 @@ class Segmentor:
         verbose: bool = True
     ) -> None:
         self.crf_segmentor.train(
-            corpus, 
+            corpus,
             learning_rate=learning_rate,
             l2_reg=l2_reg,
             max_iter=max_iter,
             epsilon=epsilon,
             verbose=verbose
         )
-    
+
     def train_crf_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
         corpus = []
-        
+
         with open(filepath, 'r', encoding=encoding) as f:
             for line in f:
                 line = line.strip()
                 if not line:
                     continue
-                
+
                 words = line.split()
                 if words:
                     corpus.append(words)
-        
+
         self.crf_segmentor.train(corpus)
-    
+
     def load_crf_model(self, filepath: str) -> None:
         self.crf_segmentor.load_model(filepath)
-    
+
     def save_crf_model(self, filepath: str) -> None:
         self.crf_segmentor.save_model(filepath)
-    
+
     def segment_with_crf_states(self, text: str) -> List[Tuple[str, str]]:
         if not self.crf_segmentor.is_trained():
             raise RuntimeError("CRF model has not been trained. Call train_crf() or load_crf_model() first.")
         return self.crf_segmentor.segment_with_states(text)
-    
+
     def get_crf_model_info(self) -> dict:
         return self.crf_segmentor.get_model_info()
-    
+
     def is_crf_trained(self) -> bool:
         return self.crf_segmentor.is_trained()
-    
+
     def set_use_crf(self, use_crf: bool) -> None:
         self.use_crf = use_crf
-    
+
     def train_perceptron(
         self,
         corpus: List[List[str]],
@@ -358,10 +534,10 @@ class Segmentor:
             averaged=averaged,
             verbose=verbose
         )
-    
+
     def train_perceptron_online(self, tokens: List[str], update_weights: bool = True) -> Tuple[bool, float]:
         return self.perceptron_segmentor.train_online(tokens, update_weights)
-    
+
     def partial_fit_perceptron(
         self,
         corpus: List[List[str]],
@@ -369,59 +545,59 @@ class Segmentor:
         verbose: bool = False
     ) -> None:
         self.perceptron_segmentor.partial_fit(corpus, learning_rate, verbose)
-    
+
     def train_perceptron_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
         from .perceptron import train_from_file as perceptron_train_from_file
         perceptron_train_from_file(self.perceptron_segmentor, filepath, encoding)
-    
+
     def load_perceptron_model(self, filepath: str) -> None:
         self.perceptron_segmentor.load_model(filepath)
-    
+
     def save_perceptron_model(self, filepath: str) -> None:
         self.perceptron_segmentor.save_model(filepath)
-    
+
     def segment_with_perceptron_states(self, text: str) -> List[Tuple[str, str]]:
         if not self.perceptron_segmentor.is_trained():
             raise RuntimeError("Perceptron model has not been trained. Call train_perceptron() or load_perceptron_model() first.")
         return self.perceptron_segmentor.segment_with_states(text)
-    
+
     def get_perceptron_model_info(self) -> dict:
         return self.perceptron_segmentor.get_model_info()
-    
+
     def is_perceptron_trained(self) -> bool:
         return self.perceptron_segmentor.is_trained()
-    
+
     def set_use_perceptron(self, use_perceptron: bool) -> None:
         self.use_perceptron = use_perceptron
-    
+
     def set_lattice_scoring_method(self, method: str) -> None:
         self.lattice_segmentor.set_scoring_method(method)
-    
+
     def set_lattice_ngram_model(self, ngram_model) -> None:
         self.lattice_segmentor.set_ngram_model(ngram_model)
-    
+
     def set_lattice_word_frequency(self, freq_dict: Dict[str, int]) -> None:
         self.lattice_segmentor.set_word_frequency(freq_dict)
-    
+
     def segment_with_lattice(self, text: str) -> Tuple[List[str], Lattice]:
         return self.lattice_segmentor.segment_with_lattice(text)
-    
+
     def segment_with_lattice_pos(self, text: str) -> List[Tuple[str, Optional[str]]]:
         return self.lattice_segmentor.segment_with_pos(text)
-    
+
     def get_all_lattice_segmentations(self, text: str, max_results: int = 10) -> List[List[str]]:
         return self.lattice_segmentor.get_all_segmentations(text, max_results)
-    
+
     def detect_lattice_ambiguity(self, text: str) -> List[Dict]:
         return self.lattice_segmentor.detect_ambiguity(text)
-    
+
     def build_lattice(self, text: str) -> Lattice:
         return self.lattice_segmentor.build_lattice(text)
-    
+
     def find_k_best_paths(self, text: str, k: int = 5) -> List[List[str]]:
         lattice = self.build_lattice(text)
         paths = self.lattice_segmentor.find_k_best_paths(lattice, k)
         return [lattice.get_path_words(path) for path in paths]
-    
+
     def set_use_lattice(self, use_lattice: bool) -> None:
         self.use_lattice = use_lattice

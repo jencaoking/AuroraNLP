@@ -1,5 +1,5 @@
 from .segmentor import Segmentor
-from .dictionary import Dictionary
+from .dictionary import Dictionary, UserDictionary, DictionaryManager
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
@@ -15,6 +15,8 @@ from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeS
 __all__ = [
     "Segmentor",
     "Dictionary",
+    "UserDictionary",
+    "DictionaryManager",
     "StopWords",
     "KeywordExtractor",
     "Similarity",
