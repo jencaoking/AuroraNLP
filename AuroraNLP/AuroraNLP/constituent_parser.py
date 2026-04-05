@@ -644,6 +644,8 @@ class CKYParser:
             
             if not isinstance(split, int):
                 return None
+            if not isinstance(left_sym, str) or not isinstance(right_sym, str):
+                return None
             
             left_child = self._build_tree(chart, start, split, left_sym, words)
             right_child = self._build_tree(chart, split, end, right_sym, words)
@@ -743,6 +745,8 @@ class CKYParser:
             split, left_sym, right_sym = backpointer
             
             if not isinstance(split, int):
+                return None
+            if not isinstance(left_sym, str) or not isinstance(right_sym, str):
                 return None
             
             left_child = self._build_tree_k_best(chart, start, split, left_sym, words, 0)
