@@ -449,7 +449,7 @@ class TerminologyDatabase:
                         term = self._terms.get(tid)
                     else:
                         ids = self._name_index.get(name, set())
-                        term = self._terms.get(next(iter(ids), ''))
+                        term = self._terms.get(next(iter(ids))) if ids else None
                     
                     if term:
                         results.append((term, pos, end))

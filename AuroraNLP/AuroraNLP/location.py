@@ -385,7 +385,7 @@ class LocationDatabase:
                         location = self._locations.get(code)
                     else:
                         codes = self._name_index.get(name, set())
-                        location = self._locations.get(next(iter(codes), ''))
+                        location = self._locations.get(next(iter(codes))) if codes else None
                     
                     if location:
                         results.append((location, pos, end))
