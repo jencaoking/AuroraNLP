@@ -103,18 +103,8 @@ class DependencyNode:
     def to_conllu(self) -> str:
         feats_str = '|'.join(f"{k}={v}" for k, v in self.feats.items()) if self.feats else '_'
         deps_str = '|'.join(f"{h}:{r}" for h, r in self.deps) if self.deps else '_'
-        return "\t".join([
-            str(self.id),
-            self.form,
-            self.lemma or '_',
-            self.cpos or self.pos or '_',
-            self.pos or '_',
-            feats_str,
-            str(self.head) if self.head >= 0 else '_',
-            self.deprel or '_',
-            deps_str,
-            self.misc or '_'
-        ])
+        head_str = str(self.head) if self.head >= 0 else '_'
+        return "\t".join([str(self.id), self.form, self.lemma or '_', self.cpos or self.pos or '_', self.pos or '_', feats_str, head_str, self.deprel or '_', deps_str, self.misc or '_'])
 
 
 class DependencyTree:
@@ -190,6 +180,11 @@ class DependencyTree:
         
         roots = [n for n in self.nodes if n.head == 0]
         if len(roots) != 1:
+            return False
+        
+        arcs = self.get_arcs()
+        dependents = [arc.dependent for arc in arcs]
+        if len(dependents) != len(set(dependents)):
             return False
         
         visited = set()
