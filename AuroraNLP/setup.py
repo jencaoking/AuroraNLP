@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="AuroraNLP",
-    version="0.1.0",
+    version="0.2.0b1",
+    codename="coca",
     packages=find_packages(exclude=['tests', 'tests.*']),
     package_data={
         'AuroraNLP': ['data/*.txt'],
@@ -17,7 +18,7 @@ setup(
     description="AuroraNLP - 中文自然语言处理工具包",
     keywords="nlp segmentation chinese",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
