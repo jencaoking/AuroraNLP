@@ -89,3 +89,6 @@ pip-delete-this-directory.txt
 # Local development
 *.local
 *.log
+
+# Model files (generated)
+*.pkl
