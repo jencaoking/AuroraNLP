@@ -218,7 +218,15 @@ class DependencyTree:
             if len(parts) < 8:
                 continue
             
-            node_id = int(parts[0])
+            id_str = parts[0]
+            if '-' in id_str or '.' in id_str:
+                continue
+            
+            try:
+                node_id = int(id_str)
+            except ValueError:
+                continue
+            
             form = parts[1]
             lemma = parts[2] if parts[2] != '_' else ''
             cpos = parts[3] if parts[3] != '_' else ''
@@ -361,7 +369,7 @@ class ParserState:
                 cpos=node.cpos,
                 feats=node.feats.copy(),
                 head=0,
-                deprel='',
+                deprel='dep',
                 deps=[],
                 misc=node.misc
             )
@@ -372,6 +380,15 @@ class ParserState:
             if dep_node:
                 dep_node.head = arc.head + 1
                 dep_node.deprel = arc.relation
+        
+        if len(self.stack) > 1:
+            root_candidate = self.stack[-1]
+            for stack_item in self.stack[:-1]:
+                if stack_item not in self._heads:
+                    dep_node = tree.get_node(stack_item + 1)
+                    if dep_node:
+                        dep_node.head = root_candidate + 1
+                        dep_node.deprel = 'dep'
         
         return tree
 
@@ -650,6 +667,14 @@ class DependencyParser:
         if not corpus:
             raise ValueError("Training corpus cannot be empty")
         
+        projective_trees = [t for t in corpus if t.is_projective()]
+        if not projective_trees:
+            raise ValueError("No projective trees found in corpus. Arc-eager parser requires projective trees.")
+        
+        if len(projective_trees) < len(corpus) and verbose:
+            skipped = len(corpus) - len(projective_trees)
+            print(f"Warning: Skipped {skipped} non-projective tree(s)")
+        
         self._max_iter = max_iter
         self._learning_rate = learning_rate
         self.weights.clear()
@@ -661,10 +686,7 @@ class DependencyParser:
             correct = 0
             total = 0
             
-            for tree in corpus:
-                if not tree.is_projective():
-                    continue
-                
+            for tree in projective_trees:
                 nodes = [DependencyNode(
                     id=i,
                     form=n.form,
