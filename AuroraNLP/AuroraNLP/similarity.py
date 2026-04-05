@@ -212,7 +212,9 @@ class Similarity:
     def edit_similarity(
         self,
         text1: str,
-        text2: str
+        text2: str,
+        segmentor=None,
+        stopwords: Optional[Set[str]] = None
     ) -> float:
         distance = self.edit_distance(text1, text2)
         max_len = max(len(text1), len(text2))
@@ -234,23 +236,18 @@ class Similarity:
         if method not in valid_methods:
             raise ValueError(f"Unknown method: {method}. Use one of {valid_methods}.")
         
-        if method == 'edit':
-            results = []
-            for doc in documents:
-                score = self.edit_similarity(query, doc)
-                results.append((doc, score))
-        else:
-            method_func = {
-                'cosine': self.cosine_similarity,
-                'jaccard': self.jaccard_similarity,
-                'dice': self.dice_similarity,
-                'overlap': self.overlap_similarity
-            }[method]
+        method_func = {
+            'cosine': self.cosine_similarity,
+            'jaccard': self.jaccard_similarity,
+            'dice': self.dice_similarity,
+            'overlap': self.overlap_similarity,
+            'edit': self.edit_similarity
+        }[method]
 
-            results = []
-            for doc in documents:
-                score = method_func(query, doc, segmentor, stopwords)
-                results.append((doc, score))
+        results = []
+        for doc in documents:
+            score = method_func(query, doc, segmentor, stopwords)
+            results.append((doc, score))
 
         results.sort(key=lambda x: x[1], reverse=True)
         return results
