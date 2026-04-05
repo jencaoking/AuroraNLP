@@ -86,6 +86,8 @@ from .hybrid import (
     DeepLearningInterface,
     HybridSegmentor,
 )
+from .scel_parser import ScelParser, ScelWord, ScelMetadata, ScelBatchParser
+from .sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
 
 __all__ = [
     "Segmentor",
@@ -187,4 +189,11 @@ __all__ = [
     "StrategySelector",
     "DeepLearningInterface",
     "HybridSegmentor",
+    "ScelParser",
+    "ScelWord",
+    "ScelMetadata",
+    "ScelBatchParser",
+    "ScelConverter",
+    "SogouDictionary",
+    "SogouDictionaryManager",
 ]
