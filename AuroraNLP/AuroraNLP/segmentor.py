@@ -377,9 +377,6 @@ class Segmentor:
         if method not in method_func:
             raise ValueError(f"Unknown method: {method}. Use 'cosine', 'jaccard', 'dice', 'overlap', or 'edit'.")
 
-        if method == 'edit':
-            return self.similarity.edit_similarity(text1, text2)
-
         return method_func[method](text1, text2, self, stopwords)
 
     def build_similarity_corpus(self, documents: List[str]) -> None:

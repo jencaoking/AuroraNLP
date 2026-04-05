@@ -216,6 +216,21 @@ class Similarity:
         segmentor=None,
         stopwords: Optional[Set[str]] = None
     ) -> float:
+        """
+        计算两个文本之间的编辑距离相似度。
+        
+        编辑距离算法基于字符级别，不需要分词和停用词处理。
+        segmentor 和 stopwords 参数仅为保持接口一致性而保留，实际不使用。
+        
+        Args:
+            text1: 第一个文本
+            text2: 第二个文本
+            segmentor: 分词器（编辑距离方法不使用此参数）
+            stopwords: 停用词集合（编辑距离方法不使用此参数）
+        
+        Returns:
+            相似度分数，范围 [0, 1]
+        """
         distance = self.edit_distance(text1, text2)
         max_len = max(len(text1), len(text2))
 
