@@ -114,22 +114,28 @@ class NewWordDetector:
 
         word_freq = self._word_freq.get(word, 0)
         if word_freq == 0:
-            return 0.0
+            return float('-inf')
 
-        p_word = word_freq / self._total_candidates if self._total_candidates > 0 else 0
+        if self._total_candidates == 0:
+            return float('-inf')
+
+        p_word = word_freq / self._total_candidates
         if p_word == 0:
-            return 0.0
+            return float('-inf')
+
+        if self._total_chars == 0:
+            return float('inf')
 
         p_chars = 1.0
         for char in word:
             char_freq = self._char_freq.get(char, 0)
-            p_char = char_freq / self._total_chars if self._total_chars > 0 else 0
-            if p_char == 0:
-                return float('-inf')
+            if char_freq == 0:
+                return float('inf')
+            p_char = char_freq / self._total_chars
             p_chars *= p_char
 
         if p_chars == 0:
-            return float('-inf')
+            return float('inf')
 
         pmi = math.log(p_word / p_chars)
 
