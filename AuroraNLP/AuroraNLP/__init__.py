@@ -43,6 +43,20 @@ from .entity_linker import (
     create_sample_knowledge_base,
     create_sample_normalizer,
 )
+from .dependency_parser import (
+    Transition,
+    DEPENDENCY_RELATIONS,
+    DEFAULT_RELATIONS,
+    DependencyArc,
+    DependencyNode,
+    DependencyTree,
+    ParserState,
+    ArcEagerOracle,
+    DependencyFeatureExtractor,
+    DependencyParser,
+    create_sample_dependency_corpus,
+    train_dependency_parser_from_file,
+)
 
 __all__ = [
     "Segmentor",
@@ -107,4 +121,16 @@ __all__ = [
     "EntityLinker",
     "create_sample_knowledge_base",
     "create_sample_normalizer",
+    "Transition",
+    "DEPENDENCY_RELATIONS",
+    "DEFAULT_RELATIONS",
+    "DependencyArc",
+    "DependencyNode",
+    "DependencyTree",
+    "ParserState",
+    "ArcEagerOracle",
+    "DependencyFeatureExtractor",
+    "DependencyParser",
+    "create_sample_dependency_corpus",
+    "train_dependency_parser_from_file",
 ]
