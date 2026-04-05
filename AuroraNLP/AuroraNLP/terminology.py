@@ -170,6 +170,7 @@ class TerminologyDatabase:
             raise FileNotFoundError(f"术语数据文件不存在: {path}")
         
         current_section = None
+        domain_values = [domain.value for domain in TermDomain]
         
         with open(path, 'r', encoding='utf-8') as f:
             for line in f:
@@ -177,7 +178,7 @@ class TerminologyDatabase:
                 if not line or line.startswith('#'):
                     if line.startswith('# @'):
                         section = line[3:].strip()
-                        if section in [domain.value for domain in TermDomain]:
+                        if section in domain_values:
                             current_section = section
                     continue
                 
