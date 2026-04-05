@@ -366,15 +366,18 @@ class AmbiguityDetector:
     
     def detect_from_lattice(self, lattice: 'Lattice') -> AmbiguityResult:
         regions = []
+        processed = set()
         
         for pos in range(lattice.length):
+            if pos in processed:
+                continue
+                
             outgoing = lattice.get_outgoing_edges(pos)
             
             if len(outgoing) <= 1:
                 continue
             
             cross_edges = []
-            combination_edges = []
             
             for i, edge1 in enumerate(outgoing):
                 for edge2 in outgoing[i + 1:]:
@@ -399,12 +402,13 @@ class AmbiguityDetector:
                     confidence=self._calculate_confidence(segmentations)
                 )
                 regions.append(region)
+                for i in range(pos, max_end):
+                    processed.add(i)
             else:
-                combination_edges = outgoing
-                max_end = max(e.end for e in combination_edges)
+                max_end = max(e.end for e in outgoing)
                 region_text = lattice.text[pos:max_end]
                 
-                segmentations = [[e.word] for e in combination_edges]
+                segmentations = [[e.word] for e in outgoing]
                 
                 region = AmbiguityRegion(
                     start=pos,
@@ -412,10 +416,13 @@ class AmbiguityDetector:
                     text=region_text,
                     ambiguity_type=AmbiguityType.COMBINATION,
                     segmentations=segmentations,
-                    edges=[(e.start, e.end, e.word) for e in combination_edges],
+                    edges=[(e.start, e.end, e.word) for e in outgoing],
                     confidence=self._calculate_confidence(segmentations)
                 )
                 regions.append(region)
+        
+        overlap_regions = self._detect_overlap_from_lattice(lattice, processed)
+        regions.extend(overlap_regions)
         
         regions = self._merge_overlapping_regions(regions)
         
@@ -431,6 +438,70 @@ class AmbiguityDetector:
             overlap_count=overlap_count,
             regions=regions
         )
+    
+    def _detect_overlap_from_lattice(self, lattice: 'Lattice', processed: Set[int]) -> List[AmbiguityRegion]:
+        regions = []
+        
+        for pos in range(lattice.length):
+            if pos in processed:
+                continue
+            
+            outgoing = lattice.get_outgoing_edges(pos)
+            
+            for edge in outgoing:
+                for next_pos in range(pos + 1, edge.end):
+                    if next_pos in processed:
+                        continue
+                    
+                    next_outgoing = lattice.get_outgoing_edges(next_pos)
+                    
+                    for next_edge in next_outgoing:
+                        if next_edge.end > edge.end:
+                            region_text = lattice.text[pos:next_edge.end]
+                            
+                            seg1 = self._build_lattice_segmentation(lattice, pos, edge.end)
+                            seg2 = self._build_lattice_segmentation(lattice, next_pos, next_edge.end)
+                            
+                            if seg1 and seg2:
+                                segmentations = [seg1, seg2]
+                                edges_list = [
+                                    (edge.start, edge.end, edge.word),
+                                    (next_edge.start, next_edge.end, next_edge.word)
+                                ]
+                                
+                                region = AmbiguityRegion(
+                                    start=pos,
+                                    end=next_edge.end,
+                                    text=region_text,
+                                    ambiguity_type=AmbiguityType.OVERLAP,
+                                    segmentations=segmentations,
+                                    edges=edges_list,
+                                    confidence=self._calculate_confidence(segmentations)
+                                )
+                                regions.append(region)
+        
+        return regions
+    
+    def _build_lattice_segmentation(self, lattice: 'Lattice', start: int, end: int) -> List[str]:
+        segmentation = []
+        pos = start
+        
+        while pos < end:
+            outgoing = lattice.get_outgoing_edges(pos)
+            
+            if outgoing:
+                valid_edges = [e for e in outgoing if e.end <= end]
+                if valid_edges:
+                    best_edge = max(valid_edges, key=lambda e: e.end)
+                    segmentation.append(best_edge.word)
+                    pos = best_edge.end
+                    continue
+            
+            if pos < len(lattice.text):
+                segmentation.append(lattice.text[pos])
+            pos += 1
+        
+        return segmentation
     
     def _get_lattice_segmentations(self, lattice: 'Lattice', start: int, end: int) -> List[List[str]]:
         segmentations = []
