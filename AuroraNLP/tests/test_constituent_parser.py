@@ -39,6 +39,17 @@ class TestGrammarRule(unittest.TestCase):
         self.assertFalse(binary.is_unary())
         self.assertTrue(binary.is_binary())
     
+    def test_rule_is_terminal(self):
+        terminal_chinese = GrammarRule(lhs='NR', rhs=('中国',))
+        terminal_english = GrammarRule(lhs='NN', rhs=('apple',))
+        nonterminal_pos = GrammarRule(lhs='NP', rhs=('NN',))
+        nonterminal_phrase = GrammarRule(lhs='S', rhs=('NP', 'VP'))
+        
+        self.assertTrue(terminal_chinese.is_terminal())
+        self.assertTrue(terminal_english.is_terminal())
+        self.assertFalse(nonterminal_pos.is_terminal())
+        self.assertFalse(nonterminal_phrase.is_terminal())
+    
     def test_rule_from_string(self):
         rule = GrammarRule.from_string('S -> NP VP', probability=0.3)
         self.assertEqual(rule.lhs, 'S')

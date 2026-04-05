@@ -94,7 +94,12 @@ class GrammarRule:
         return len(self.rhs) == 2
     
     def is_terminal(self) -> bool:
-        return len(self.rhs) == 1 and self.rhs[0].islower()
+        if len(self.rhs) != 1:
+            return False
+        symbol = self.rhs[0]
+        if symbol.isupper() and symbol.isalpha():
+            return False
+        return True
     
     def to_string(self) -> str:
         return f"{self.lhs} -> {' '.join(self.rhs)}"
@@ -362,9 +367,6 @@ class ConstituentTree:
                 child, pos = ConstituentTree._parse_tokens(tokens, pos)
                 if child:
                     children.append(child)
-                    if not children or child.start < start:
-                        start = child.start
-                    end = max(end, child.end)
             else:
                 word = tokens[pos]
                 pos += 1
