@@ -13,6 +13,7 @@ from .perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFea
 from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
 from .ambiguity import AmbiguityType, AmbiguityRegion, AmbiguityResult, AmbiguityDetector
 from .new_word_detector import NewWordDetector, MutualInformation, EntropyCalculator
+from .pos_tagger import POS_TAGS, DEFAULT_TAGS, HMMPOSTagger, CRFPOSTagger, train_pos_from_file
 
 __all__ = [
     "Segmentor",
@@ -50,5 +51,10 @@ __all__ = [
     "AmbiguityDetector",
     "NewWordDetector",
     "MutualInformation",
-    "EntropyCalculator"
+    "EntropyCalculator",
+    "POS_TAGS",
+    "DEFAULT_TAGS",
+    "HMMPOSTagger",
+    "CRFPOSTagger",
+    "train_pos_from_file"
 ]
