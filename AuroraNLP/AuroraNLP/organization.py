@@ -664,7 +664,7 @@ class OrganizationDatabase:
                         org = self._organizations.get(code)
                     else:
                         codes = self._name_index.get(name, set())
-                        org = self._organizations.get(next(iter(codes), ''))
+                        org = self._organizations.get(next(iter(codes))) if codes else None
                     
                     if org:
                         results.append((org, pos, end))

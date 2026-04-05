@@ -1,0 +1,97 @@
+# 专业术语库数据文件
+# 格式说明:
+# 术语ID\t名称\t领域\t子领域\t英文\t别名\t解释\t来源
+#
+
+# @medical
+MED001	高血压	medical	心血管疾病	hypertension	血压高、原发性高血压	以体循环动脉血压持续升高为主要特征的慢性疾病	医学词典
+MED002	糖尿病	medical	内分泌疾病	diabetes	mellitus	血糖高、消渴症	以高血糖为特征的代谢性疾病	医学词典
+MED003	冠心病	medical	心血管疾病	coronary heart disease	冠状动脉粥样硬化性心脏病、缺血性心脏病	冠状动脉血管发生动脉粥样硬化病变引起血管腔狭窄或阻塞	医学词典
+MED004	心肌梗死	medical	心血管疾病	myocardial infarction	心梗、心肌梗塞	冠状动脉急性、持续性缺血缺氧所引起的心肌坏死	医学词典
+MED005	脑卒中	medical	脑血管疾病	stroke	中风、脑血管意外	急性脑血管病引起的脑部血液循环障碍	医学词典
+MED006	肺炎	medical	呼吸系统疾病	pneumonia	肺部感染	终末气道、肺泡和肺间质的炎症	医学词典
+MED007	胃炎	medical	消化系统疾病	gastritis	胃黏膜炎	胃黏膜的炎性病变	医学词典
+MED008	肝炎	medical	消化系统疾病	hepatitis	肝脏炎症	由多种致病因素引起的肝脏炎症	医学词典
+MED009	肾炎	medical	泌尿系统疾病	nephritis	肾脏炎症	肾脏的炎症性疾病	医学词典
+MED010	贫血	medical	血液系统疾病	anemia	血虚	外周血红细胞容量减少	医学词典
+MED011	白血病	medical	血液系统疾病	leukemia	血癌	造血干细胞恶性克隆性疾病	医学词典
+MED012	肿瘤	medical	肿瘤学	tumor	新生物、肿块	机体在各种致瘤因子作用下局部组织细胞增生所形成的新生物	医学词典
+MED013	抗生素	medical	药物学	antibiotics	抗菌素	由微生物或高等动植物产生的具有抗病原体活性的物质	医学词典
+MED014	疫苗	medical	免疫学	vaccine	预防针	用各类病原微生物制作的用于预防接种的生物制品	医学词典
+MED015	核磁共振	medical	影像学	MRI	磁共振成像	利用核磁共振原理进行医学影像检查的技术	医学词典
+MED016	CT扫描	medical	影像学	CT scan	计算机断层扫描	利用X射线对人体进行断层扫描的检查技术	医学词典
+MED017	心电图	medical	诊断学	ECG	EKG	记录心脏电活动的检查方法	医学词典
+MED018	超声检查	medical	影像学	ultrasound	B超	利用超声波进行医学检查的技术	医学词典
+MED019	病理学	medical	基础医学	pathology	病理解剖学	研究疾病发生发展规律的学科	医学词典
+MED020	药理学	medical	基础医学 pharmacology	药物学	研究药物与机体相互作用规律的学科	医学词典
+
+# @legal
+LEG001	合同法	legal	民商法	contract law	契约法	调整合同关系的法律规范总称	法律词典
+LEG002	刑法	legal	刑法	criminal law	刑事法	规定犯罪和刑罚的法律	法律词典
+LEG003	民法	legal	民商法	civil law	民事法	调整平等主体之间人身关系和财产关系的法律	法律词典
+LEG004	行政法	legal	行政法	administrative law	行政法规	调整行政关系的法律规范总称	法律词典
+LEG005	知识产权	legal	民商法	intellectual property	IP、智慧财产权	人们就其智力劳动成果所依法享有的专有权利	法律词典
+LEG006	著作权	legal	知识产权法	copyright	版权	文学、艺术和科学作品的作者对其作品享有的权利	法律词典
+LEG007	专利权	legal	知识产权法	patent right	专利	国家依法在一定时期内授予发明创造者独占使用其发明的权利	法律词典
+LEG008	商标权	legal	知识产权法	trademark right	商标专用权	商标注册人对其注册商标享有的专用权	法律词典
+LEG009	侵权责任	legal	侵权法	tort liability	侵权赔偿责任	行为人因侵权行为依法应承担的民事责任	法律词典
+LEG010	违约责任	legal	合同法	breach of contract	违反合同责任	合同当事人不履行合同义务应承担的民事责任	法律词典
+LEG011	诉讼时效	legal	诉讼法	statute of limitations	起诉期限	权利人请求法院保护其民事权利的法定期间	法律词典
+LEG012	举证责任	legal	诉讼法	burden of proof	证明责任	当事人对自己提出的主张有收集或提供证据的义务	法律词典
+LEG013	无罪推定	legal	刑法	presumption of innocence	无罪假定	被告人在未被依法确定有罪之前应被视为无罪	法律词典
+LEG014	正当防卫	legal	刑法	justifiable defense	自卫	为了保护合法权益而对不法侵害者实施的正当防卫行为	法律词典
+LEG015	民事诉讼	legal	诉讼法	civil litigation	民事官司	法院在当事人和其他诉讼参与人参加下审理民事案件的活动	法律词典
+LEG016	刑事诉讼	legal	诉讼法	criminal procedure	刑事官司	国家司法机关在当事人及其他诉讼参与人参加下追究刑事责任的活动	法律词典
+LEG017	行政诉讼	legal	诉讼法	administrative litigation	民告官	公民、法人对行政行为不服向法院提起的诉讼	法律词典
+LEG018	仲裁	legal	仲裁法	arbitration	公断	由双方当事人协议将争议提交仲裁机构裁决的争议解决方式	法律词典
+LEG019	调解	legal	纠纷解决	mediation	调停	第三方协助当事人协商解决纠纷的活动	法律词典
+LEG020	公证	legal	公证法	notarization	公证证明	公证机构依法对民事法律行为、有法律意义的事实和文书的真实性、合法性予以证明的活动	法律词典
+
+# @finance
+FIN001	股票	finance	证券	stock	股份、股权	股份公司发行的所有权凭证	金融词典
+FIN002	债券	finance	证券	bond	债券证券	政府、企业等发行的债务凭证	金融词典
+FIN003	基金	finance	投资基金	fund	投资基金	一种利益共享、风险共担的集合投资方式	金融词典
+FIN004	期货	finance	衍生品	futures	期货合约	买卖双方约定在未来特定时间以特定价格交易某种标的物的合约	金融词典
+FIN005	期权	finance	衍生品	option	期权合约	赋予持有人在未来特定时间以特定价格买卖标的资产权利的合约	金融词典
+FIN006	汇率	finance	外汇	exchange rate	外汇汇率	一种货币兑换另一种货币的比率	金融词典
+FIN007	利率	finance	货币市场	interest rate	利息率	利息与本金的比率	金融词典
+FIN008	通货膨胀	finance	宏观经济	inflation	通胀	货币供给大于货币实际需求导致货币贬值	金融词典
+FIN009	通货紧缩	finance	宏观经济	deflation	通缩	货币供给小于货币实际需求导致物价下降	金融词典
+FIN010	货币政策	finance	宏观经济	monetary policy	央行政策	中央银行调节货币供应量的政策	金融词典
+FIN011	财政政策	finance	宏观经济	fiscal policy	财政措施	政府通过税收和支出调节经济的政策	金融词典
+FIN012	资产负债表	finance	会计	balance sheet	财务状况表	反映企业在特定日期财务状况的报表	金融词典
+FIN013	利润表	finance	会计	income statement	损益表	反映企业在一定期间经营成果的报表	金融词典
+FIN014	现金流量表	finance	会计	cash flow statement	现金流量表	反映企业一定期间现金流入流出的报表	金融词典
+FIN015	市盈率	finance	估值	P/E ratio	本益比	股票价格与每股收益的比率	金融词典
+FIN016	市净率	finance	估值	P/B ratio	股价净值比	股票价格与每股净资产的比率	金融词典
+FIN017	资产收益率	finance	估值	ROA	资产回报率	净利润与总资产的比率	金融词典
+FIN018	净资产收益率	finance	估值	ROE	股东权益回报率	净利润与股东权益的比率	金融词典
+FIN019	涨停板	finance	交易机制	limit up	涨停	证券交易价格涨幅达到当日上限	金融词典
+FIN020	跌停板	finance	交易机制	limit down	跌停	证券交易价格跌幅达到当日下限	金融词典
+
+# @it
+IT001	算法	it	计算机科学	algorithm	计算方法	解决特定问题的一系列明确步骤	IT词典
+IT002	数据结构	it	计算机科学	data structure	数据组织	计算机存储、组织数据的方式	IT词典
+IT003	数据库	it	数据库	database	DB	按照数据结构组织、存储和管理数据的仓库	IT词典
+IT004	操作系统	it	系统软件	operating system	OS	管理计算机硬件与软件资源的系统软件	IT词典
+IT005	编译器	it	编程语言	compiler	编译程序	将源代码翻译成目标代码的程序	IT词典
+IT006	解释器	it	编程语言	interpreter	解释程序	逐行解释执行源代码的程序	IT词典
+IT007	前端	it	Web开发	frontend	客户端	用户可见的界面部分	IT词典
+IT008	后端	it	Web开发	backend	服务端	服务器端的逻辑处理部分	IT词典
+IT009	API	it	软件架构	application programming interface	应用程序接口	软件系统之间交互的接口	IT词典
+IT010	框架	it	软件开发	framework	开发框架	提供基础功能的软件半成品	IT词典
+IT011	云计算	it	计算模式	cloud computing	云服务	通过网络提供可扩展的计算资源	IT词典
+IT012	大数据	it	数据处理	big data	海量数据	无法用传统方法处理的海量、复杂数据	IT词典
+IT013	人工智能	it	AI	artificial intelligence	AI	模拟人类智能的技术	IT词典
+IT014	机器学习	it	AI	machine learning	ML	让计算机从数据中学习的技术	IT词典
+IT015	深度学习	it	AI	deep learning	DL	基于神经网络的机器学习方法	IT词典
+IT016	神经网络	it	AI	neural network	NN	模拟人脑神经元结构的计算模型	IT词典
+IT017	区块链	it	分布式技术	blockchain	链式结构	一种去中心化的分布式账本技术	IT词典
+IT018	容器	it	虚拟化	container	容器技术	轻量级的虚拟化技术	IT词典
+IT019	微服务	it	软件架构	microservices	微服务架构	将应用拆分为小型独立服务的架构风格	IT词典
+IT020	敏捷开发	it	软件开发	agile development	敏捷方法论	一种迭代、增量的软件开发方法	IT词典
+IT021	版本控制	it	软件开发	version control	源代码管理	管理文件变更历史的系统	IT词典
+IT022	持续集成	it	软件开发	continuous integration	CI	频繁集成代码并自动测试的开发实践	IT词典
+IT023	持续部署	it	软件开发	continuous deployment	CD	自动将代码部署到生产环境的实践	IT词典
+IT024	网络安全	it	信息安全	network security	信息安全	保护计算机网络免受攻击的技术	IT词典
+IT025	加密	it	信息安全	encryption	密码学	将明文转换为密文的过程	IT词典

@@ -142,6 +142,13 @@ from .organization import (
     OrganizationDatabase,
     OrganizationManager,
 )
+from .terminology import (
+    TermDomain,
+    DOMAIN_SCEL_MAPPING,
+    Term,
+    TerminologyDatabase,
+    TerminologyManager,
+)
 
 __all__ = [
     "Segmentor",
@@ -294,4 +301,9 @@ __all__ = [
     "Government",
     "OrganizationDatabase",
     "OrganizationManager",
+    "TermDomain",
+    "DOMAIN_SCEL_MAPPING",
+    "Term",
+    "TerminologyDatabase",
+    "TerminologyManager",
 ]
