@@ -176,7 +176,9 @@ class VoteFusion:
         if len(results) == 1:
             return results[0].words
         
-        text_length = sum(len(w) for w in results[0].words)
+        text = ''.join(results[0].words)
+        text_length = len(text)
+        
         position_votes: Dict[int, Counter] = defaultdict(Counter)
         
         for result in results:
@@ -186,48 +188,40 @@ class VoteFusion:
                 position_votes[pos][boundary] += 1
                 pos = boundary
         
-        final_words = []
+        boundaries = VoteFusion._collect_boundaries(position_votes, text_length)
+        
+        return VoteFusion._reconstruct_words(boundaries, text)
+    
+    @staticmethod
+    def _collect_boundaries(position_votes: Dict[int, Counter], text_length: int) -> List[int]:
+        boundaries = []
         pos = 0
         
         while pos < text_length:
             if pos in position_votes:
                 best_boundary = position_votes[pos].most_common(1)[0][0]
-                final_words.append(results[0].words[0][:best_boundary - pos] if best_boundary > pos else "")
+                boundaries.append(best_boundary)
                 pos = best_boundary
             else:
+                boundaries.append(pos + 1)
                 pos += 1
         
-        return VoteFusion._reconstruct_words(final_words, results)
+        return boundaries
     
     @staticmethod
-    def _reconstruct_words(boundaries: List[int], results: List[SegmenterResult]) -> List[str]:
-        if not results:
+    def _reconstruct_words(boundaries: List[int], text: str) -> List[str]:
+        if not boundaries or not text:
             return []
         
-        text = ''.join(results[0].words)
+        words = []
+        start = 0
         
-        vote_matrix: Dict[int, Counter] = defaultdict(Counter)
+        for boundary in boundaries:
+            if boundary > start:
+                words.append(text[start:boundary])
+            start = boundary
         
-        for result in results:
-            pos = 0
-            for word in result.words:
-                boundary = pos + len(word)
-                vote_matrix[pos][boundary] += 1
-                pos = boundary
-        
-        final_words = []
-        pos = 0
-        
-        while pos < len(text):
-            if pos in vote_matrix:
-                best_boundary = vote_matrix[pos].most_common(1)[0][0]
-                final_words.append(text[pos:best_boundary])
-                pos = best_boundary
-            else:
-                final_words.append(text[pos])
-                pos += 1
-        
-        return final_words
+        return words
 
 
 class WeightedFusion:
