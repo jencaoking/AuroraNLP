@@ -34,6 +34,15 @@ from .ner import (
     NestedNERRecognizer,
     create_nested_ner_corpus,
 )
+from .entity_linker import (
+    KnowledgeEntity,
+    LinkedEntity,
+    KnowledgeBase,
+    EntityNormalizer,
+    EntityLinker,
+    create_sample_knowledge_base,
+    create_sample_normalizer,
+)
 
 __all__ = [
     "Segmentor",
@@ -91,4 +100,11 @@ __all__ = [
     "NESTING_RULES",
     "NestedNERRecognizer",
     "create_nested_ner_corpus",
+    "KnowledgeEntity",
+    "LinkedEntity",
+    "KnowledgeBase",
+    "EntityNormalizer",
+    "EntityLinker",
+    "create_sample_knowledge_base",
+    "create_sample_normalizer",
 ]

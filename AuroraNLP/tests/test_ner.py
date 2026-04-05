@@ -30,7 +30,7 @@ class TestEntity(unittest.TestCase):
         entity = Entity("北京", "LOC", 5, 7, confidence=0.95)
         result = entity.to_dict()
         self.assertEqual(result['text'], "北京")
-        self.assertEqual(result['type'], "LOC")
+        self.assertEqual(result['entity_type'], "LOC")
         self.assertEqual(result['type_name'], "地名")
         self.assertEqual(result['start'], 5)
         self.assertEqual(result['end'], 7)
@@ -284,7 +284,7 @@ class TestNestedEntity(unittest.TestCase):
         result = parent.to_dict()
         
         self.assertEqual(result['text'], "北京协和医院")
-        self.assertEqual(result['type'], "ORG")
+        self.assertEqual(result['entity_type'], "ORG")
         self.assertEqual(result['level'], 0)
         self.assertTrue(result['is_nested'])
         self.assertIn('children', result)

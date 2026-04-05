@@ -49,7 +49,7 @@ class Entity:
     def to_dict(self) -> Dict[str, Any]:
         return {
             'text': self.text,
-            'type': self.entity_type,
+            'entity_type': self.entity_type,
             'type_name': NER_ENTITY_TYPES.get(self.entity_type, '未知'),
             'start': self.start,
             'end': self.end,
