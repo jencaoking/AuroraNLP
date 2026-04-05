@@ -2,9 +2,11 @@
 
 <div align="center">
 
+[![Version](https://img.shields.io/badge/version-0.2.0--beta-blue.svg)](https://github.com/yourusername/AuroraNLP/releases)
+[![Codename](https://img.shields.io/badge/codename-coca-purple.svg)]()
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-Alpha-orange.svg)]()
+[![Status](https://img.shields.io/badge/status-Beta-yellow.svg)]()
 
 **AuroraNLP - 轻量级中文自然语言处理工具包**
 
@@ -349,28 +351,53 @@ AuroraNLP/
 
 ---
 
+## 版本信息
+
+### 当前版本 (v0.2.0-beta "coca")
+
+**版本号**: 0.2.0-beta  
+**内部代号**: coca  
+**发布日期**: 2026-04-05  
+**开发状态**: Beta
+
+#### 新增特性
+
+- ✅ 完整的词性标注系统（HMM + CRF）
+- ✅ 命名实体识别（NER）基础功能
+- ✅ 改进的 Lattice 分词算法
+- ✅ 增强的歧义检测能力
+- ✅ 新词发现算法（PMI + 信息熵）
+- ✅ 批量处理接口
+- ✅ 性能基准测试工具
+
+#### 已实现功能
+
+- ✅ 基础分词算法（正向/逆向/双向最大匹配）
+- ✅ HMM 隐马尔可夫模型
+- ✅ CRF 条件随机场
+- ✅ 感知器分词器
+- ✅ Lattice 词格解码
+- ✅ N-gram 语言模型
+- ✅ 关键词提取（TF-IDF, TextRank, 词频）
+- ✅ 文本相似度计算（5 种算法）
+- ✅ 用户词典管理
+- ✅ 停用词过滤
+
+---
+
 ## 路线图
 
 详见 [ROADMAP.md](docs/ROADMAP.md)
 
-### 当前版本 (v0.1.0)
+### 计划功能（v0.3.0 及以后）
 
-- [x] 基础分词算法（最大匹配）
-- [x] HMM 隐马尔可夫模型
-- [x] CRF 条件随机场
-- [x] 感知器分词器
-- [x] Lattice 词格解码
-- [x] N-gram 语言模型
-- [x] 关键词提取
-- [x] 文本相似度
-
-### 计划功能
-
-- [ ] 词性标注模型
-- [ ] 命名实体识别
-- [ ] 新词发现
-- [ ] 深度学习模型集成
+- [ ] 深度学习模型集成（BERT, BiLSTM-CRF）
+- [ ] 完整的 NER 系统
+- [ ] 依存句法分析
+- [ ] 成分句法分析
 - [ ] 性能优化（Cython）
+- [ ] RESTful API 服务
+- [ ] Docker 容器化支持
 
 ---
 

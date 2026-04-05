@@ -330,7 +330,7 @@ class CRFNERModel:
         for i in range(-2, 3):
             self.feature_template.add_unigram_feature(f"char_{i}", i)
         
-        for i in range(-1, 1):
+        for i in range(-1, 2):
             self.feature_template.add_bigram_feature(f"bigram_{i}", i)
         
         for i in range(-2, 3):
