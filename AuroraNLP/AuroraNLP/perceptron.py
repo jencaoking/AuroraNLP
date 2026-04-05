@@ -91,7 +91,6 @@ class PerceptronFeatureTemplate:
             end = min(len(chars), pos + window + 1)
             context_len = end - start
             return f"CTXLEN:{context_len}|{curr_tag}"
-            return None
         
         self.feature_functions.append(feature_func)
         self.feature_names.append(f"length_context_{window}")
@@ -135,7 +134,7 @@ class StructuredPerceptron:
         for i in range(-2, 3):
             self.feature_template.add_unigram_feature(f"c{i}", i)
         
-        for i in range(-1, 1):
+        for i in range(-1, 2):
             self.feature_template.add_bigram_feature(f"cc{i}", i)
         
         for i in range(-1, 2):
