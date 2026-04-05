@@ -578,14 +578,14 @@ class CRFNERModel:
     def _extract_entities(self, chars: List[str], tags: List[str]) -> List[Entity]:
         entities = []
         i = 0
-        
+
         while i < len(tags):
             tag = tags[i]
-            
+
             if tag == 'O':
                 i += 1
                 continue
-            
+
             if tag.startswith('S-'):
                 entity_type = tag[2:]
                 entities.append(Entity(
@@ -599,7 +599,7 @@ class CRFNERModel:
                 entity_type = tag[2:]
                 start = i
                 i += 1
-                
+
                 while i < len(tags):
                     curr_tag = tags[i]
                     if curr_tag == f'I-{entity_type}':
@@ -609,17 +609,19 @@ class CRFNERModel:
                         break
                     else:
                         break
-                
-                entity_text = ''.join(chars[start:i])
-                entities.append(Entity(
-                    text=entity_text,
-                    entity_type=entity_type,
-                    start=start,
-                    end=i
-                ))
+
+                end = min(i, len(chars))
+                if start < end:
+                    entity_text = ''.join(chars[start:end])
+                    entities.append(Entity(
+                        text=entity_text,
+                        entity_type=entity_type,
+                        start=start,
+                        end=end
+                    ))
             else:
                 i += 1
-        
+
         return entities
     
     def save_model(self, filepath: str):

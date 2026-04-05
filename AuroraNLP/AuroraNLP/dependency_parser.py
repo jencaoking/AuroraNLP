@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 import pickle
 import os
+import warnings
 
 
 class Transition(Enum):
@@ -673,7 +674,7 @@ class DependencyParser:
         
         if len(projective_trees) < len(corpus) and verbose:
             skipped = len(corpus) - len(projective_trees)
-            print(f"Warning: Skipped {skipped} non-projective tree(s)")
+            warnings.warn(f"Skipped {skipped} non-projective tree(s)", UserWarning)
         
         self._max_iter = max_iter
         self._learning_rate = learning_rate

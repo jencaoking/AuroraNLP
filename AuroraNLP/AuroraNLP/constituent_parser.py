@@ -827,7 +827,7 @@ class ConstituentParser:
     
     def parse_sentence(self, text: str, segmentor=None) -> Optional[ConstituentTree]:
         if segmentor:
-            words = segmentor.cut(text)
+            words = segmentor.segment(text)
         else:
             words = list(text)
         

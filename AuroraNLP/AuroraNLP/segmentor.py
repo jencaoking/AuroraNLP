@@ -140,7 +140,7 @@ class Segmentor:
             name = f"user_{len(self._user_dictionaries)}"
 
         user_dict = self.create_user_dictionary(name, priority, default_weight)
-        user_dict.load_dictionary(path, priority, default_weight)
+        user_dict.load_dictionary(path, priority=priority, default_weight=default_weight)
         return user_dict
 
     def add_user_word(

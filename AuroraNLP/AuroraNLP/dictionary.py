@@ -325,7 +325,7 @@ class UserDictionary:
         self._words_cache = None
 
         if loaded_count > 0:
-            print(f"用户词典 '{self._name}' 加载完成，共加载 {loaded_count} 个词汇")
+            warnings.warn(f"用户词典 '{self._name}' 加载完成，共加载 {loaded_count} 个词汇", UserWarning)
 
     def save_dictionary(self, path: str) -> None:
         with open(path, 'w', encoding='utf-8') as f:

@@ -271,7 +271,6 @@ class CRFPOSTagger:
     def __init__(self, tags: Optional[List[str]] = None):
         self.tags = tags or DEFAULT_TAGS.copy()
         self.weights: Dict[str, float] = defaultdict(float)
-        self._feature_cache: Dict[str, List[str]] = {}
         self._trained = False
         self._learning_rate = 0.1
         self._l2_reg = 0.01
