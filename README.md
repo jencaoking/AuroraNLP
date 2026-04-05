@@ -1,787 +1,449 @@
 # AuroraNLP
 
-![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)
-![License](https://img.shields.io/badge/License-Apache%202.0-green)
-![Status](https://img.shields.io/badge/Status-Alpha-orange)
+<div align="center">
 
-一个轻量级的中文自然语言处理工具包，基于词典的最大匹配算法实现，支持多种分词模式。
+[![Version](https://img.shields.io/badge/version-0.2.0--beta-blue.svg)](https://github.com/yourusername/AuroraNLP/releases)
+[![Codename](https://img.shields.io/badge/codename-coca-purple.svg)]()
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-Beta-yellow.svg)]()
 
-**作者**: jencao
+**AuroraNLP - 轻量级中文自然语言处理工具包**
+
+[快速开始](#快速开始) • [功能特性](#功能特性) • [文档](#文档) • [示例](#示例)
+
+</div>
+
+---
+
+## 简介
+
+AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种分词算法、关键词提取、文本相似度计算等功能。项目采用纯 Python 实现，无重度依赖，易于安装和使用。
+
+### 核心特性
+
+- 🔤 **多种分词算法** - 支持正向/逆向/双向最大匹配、HMM、CRF、感知器、Lattice 等多种分词方法
+- 📚 **词典管理** - 支持系统词典和用户词典，支持优先级和权重配置
+- 🔍 **关键词提取** - 支持 TF-IDF、TextRank、词频统计等多种关键词提取方法
+- 📊 **文本相似度** - 支持余弦相似度、Jaccard、Dice、编辑距离等多种相似度计算
+- 🏷️ **词性标注** - 基于词典的词性标注
+- ⚡ **高性能** - 使用 Trie 树优化词典查询，支持批量处理
 
 ---
 
 ## 目录
 
-- [项目概述与目标](#项目概述与目标)
-- [核心功能与特性](#核心功能与特性)
-- [技术栈与架构说明](#技术栈与架构说明)
-- [环境配置与依赖安装](#环境配置与依赖安装)
-- [详细使用指南](#详细使用指南)
-- [API 接口文档](#api-接口文档)
-- [目录结构](#目录结构)
-- [文档资源](#文档资源)
+- [快速开始](#快速开始)
+- [安装](#安装)
+- [功能特性](#功能特性)
+- [示例](#示例)
+- [API 文档](#api-文档)
+- [项目结构](#项目结构)
+- [路线图](#路线图)
 - [贡献指南](#贡献指南)
 - [许可证](#许可证)
-- [联系方式与问题反馈](#联系方式与问题反馈)
 
 ---
 
-## 项目概述与目标
+## 快速开始
 
-### 项目简介
+### 环境要求
 
-`AuroraNLP` 是一个轻量级的中文自然语言处理工具包，采用基于词典的最大匹配算法（Maximum Matching）进行中文文本分词。工具包设计简洁、依赖少，易于集成到各类 NLP 应用场景中。
+- Python 3.8+
+- 无其他强制依赖
 
-### 核心目标
+### 安装
 
-- 提供高效、准确的中文分词能力
-- 支持多种分词策略以适应不同场景需求
-- 保持轻量级架构，便于二次开发和定制
-- 为更复杂的 NLP 任务（如命名实体识别、关键词提取等）提供基础支持
+```bash
+# 克隆仓库
+git clone https://github.com/yourusername/AuroraNLP.git
+cd AuroraNLP
 
-### 应用场景
+# 安装
+pip install -e .
 
-- 文本预处理与清洗
-- 搜索引擎索引构建
-- 文本分类前处理
-- 教育领域的汉语分词教学
-- 快速原型开发
+# 或安装开发依赖
+pip install -e ".[dev]"
+```
+
+### 基础使用
+
+```python
+from AuroraNLP import Segmentor
+
+# 创建分词器
+seg = Segmentor()
+
+# 基础分词
+text = "我爱自然语言处理"
+words = seg.segment(text)
+print(words)  # ['我', '爱', '自然语言处理']
+
+# 带词性标注的分词
+words_with_pos = seg.segment_with_pos(text)
+print(words_with_pos)  # [('我', 'r'), ('爱', 'v'), ('自然语言处理', 'n')]
+
+# 去除停用词
+words_no_stop = seg.segment_without_stopwords(text)
+print(words_no_stop)
+
+# 关键词提取
+keywords = seg.extract_keywords(text, top_k=5, method='tfidf')
+print(keywords)
+
+# 文本相似度计算
+text1 = "我爱编程"
+text2 = "我喜欢写代码"
+similarity = seg.compute_similarity(text1, text2, method='cosine')
+print(f"相似度: {similarity:.4f}")
+```
 
 ---
 
-## 核心功能与特性
+## 功能特性
 
-### 主要功能
+### 分词算法
 
-| 功能 | 说明 |
+AuroraNLP 支持多种分词算法，可根据场景选择：
+
+| 算法 | 模式 | 特点 |
+|------|------|------|
+| 正向最大匹配 | `forward` | 基于词典，速度快 |
+| 逆向最大匹配 | `backward` | 基于词典，准确率略高 |
+| 双向最大匹配 | `bidirectional` | 默认模式，结合正逆向优点 |
+| HMM | `hmm` | 统计模型，支持未登录词识别 |
+| CRF | `crf` | 序列标注，准确率高 |
+| 感知器 | `perceptron` | 在线学习，支持增量更新 |
+| Lattice | `lattice` | 词格解码，支持歧义消解 |
+
+```python
+# 使用不同分词模式
+seg = Segmentor()
+
+# 词典分词（默认双向最大匹配）
+words = seg.segment(text, mode='bidirectional')
+
+# HMM 分词（需要先训练）
+seg.train_hmm(corpus)
+words = seg.segment(text, mode='hmm')
+
+# CRF 分词（需要先训练）
+seg.train_crf(corpus)
+words = seg.segment(text, mode='crf')
+```
+
+### 词典管理
+
+```python
+# 添加自定义词汇
+seg.add_word("自然语言处理", pos_tag='n', weight=10.0)
+
+# 添加停用词
+seg.add_stopword("的")
+
+# 加载用户词典
+seg.load_user_dictionary("custom_dict.txt")
+
+# 创建多个用户词典
+user_dict = seg.create_user_dictionary("my_dict", priority=100)
+user_dict.add_word("深度学习", pos_tag='n', weight=15.0)
+```
+
+### 关键词提取
+
+```python
+# TF-IDF 方法
+keywords = seg.extract_keywords(text, top_k=10, method='tfidf')
+
+# TextRank 方法
+keywords = seg.extract_keywords(text, top_k=10, method='textrank')
+
+# 词频统计
+keywords = seg.extract_keywords(text, top_k=10, method='freq')
+```
+
+### 文本相似度
+
+```python
+# 余弦相似度
+sim = seg.compute_similarity(text1, text2, method='cosine')
+
+# Jaccard 相似度
+sim = seg.compute_similarity(text1, text2, method='jaccard')
+
+# 编辑距离
+sim = seg.compute_similarity(text1, text2, method='edit')
+
+# 批量相似度计算
+documents = ["文本1", "文本2", "文本3"]
+results = seg.batch_similarity(query, documents, method='cosine')
+```
+
+### 命名实体识别
+
+```python
+# 基于词性标注的简单实体识别
+entities = seg.recognize_entities("张三在北京工作")
+print(entities)  # [('张三', 'PERSON'), ('北京', 'LOCATION')]
+
+# 分词并标注实体类型
+result = seg.segment_with_entities("张三在北京工作")
+print(result)  # [('张三', 'nr', 'PERSON'), ('在', 'p', 'O'), ...]
+```
+
+---
+
+## 示例
+
+### HMM 分词示例
+
+```python
+from AuroraNLP import Segmentor
+
+seg = Segmentor()
+
+# 训练语料（词列表的列表）
+corpus = [
+    ['我', '爱', '自然语言处理'],
+    ['今天', '天气', '很好'],
+    ['北京', '是', '中国', '的', '首都']
+]
+
+# 训练 HMM 模型
+seg.train_hmm(corpus)
+
+# 分词
+text = "我爱自然语言处理"
+words = seg.segment(text, mode='hmm')
+print(words)
+
+# 保存模型
+seg.save_hmm_model('hmm_model.pkl')
+
+# 加载模型
+seg.load_hmm_model('hmm_model.pkl')
+```
+
+### CRF 分词示例
+
+```python
+from AuroraNLP import Segmentor
+
+seg = Segmentor()
+
+# 训练语料
+corpus = [
+    ['我', '爱', '中国'],
+    ['他', '是', '学生'],
+    ['北京', '是', '首都']
+]
+
+# 训练 CRF 模型
+seg.train_crf(corpus, max_iter=100, verbose=True)
+
+# 分词
+text = "我爱北京"
+words = seg.segment(text, mode='crf')
+print(words)
+
+# 保存模型
+seg.save_crf_model('crf_model.pkl')
+```
+
+### Lattice 分词示例
+
+```python
+from AuroraNLP import Segmentor
+
+seg = Segmentor()
+
+# 使用 Lattice 分词
+words = seg.segment("研究生命的起源", mode='lattice')
+print(words)
+
+# 获取所有可能的分词结果
+all_results = seg.get_all_lattice_segmentations("南京市长江大桥", max_results=10)
+for result in all_results:
+    print(result)
+
+# 检测歧义
+ambiguities = seg.detect_lattice_ambiguity("研究生命")
+print(ambiguities)
+```
+
+---
+
+## API 文档
+
+### Segmentor 类
+
+主要分词器类，整合所有分词功能。
+
+#### 初始化参数
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `dictionary` | Dictionary | None | 自定义词典 |
+| `load_default_dict` | bool | True | 是否加载默认词典 |
+| `load_default_stopwords` | bool | True | 是否加载默认停用词 |
+| `use_hmm` | bool | False | 是否启用 HMM |
+| `use_crf` | bool | False | 是否启用 CRF |
+| `use_perceptron` | bool | False | 是否启用感知器 |
+| `use_lattice` | bool | False | 是否启用 Lattice |
+
+#### 主要方法
+
+| 方法 | 说明 |
 |------|------|
-| 正向最大匹配 (FMM) | 从文本开头向后扫描，优先匹配最长词 |
-| 逆向最大匹配 (BMM) | 从文本末尾向前扫描，优先匹配最长词 |
-| 双向最大匹配 (BMMM) | 综合正逆向结果，选择最优分词方案 |
-| 词典管理 | 支持加载自定义词典、动态添加词汇 |
-
-### 核心特性
-
-- **轻量级设计**：无重型依赖，仅需 Python 3.8+
-- **多种分词模式**：支持正向、逆向、双向三种分词策略
-- **可扩展词典**：支持从文件加载自定义词典
-- **灵活配置**：可自定义最大词长、分词模式
-- **易于集成**：简洁的 API 设计，便于嵌入其他项目
-
-### 算法说明
-
-#### 最大匹配算法原理
-
-最大匹配算法是一种基于词典的贪婪分词方法，核心思想是：
-
-1. 从待分词文本的起始位置开始
-2. 尝试匹配尽可能长的词（最大长度限制内）
-3. 匹配成功则将该词作为一个分词结果
-4. 匹配失败则将单字作为未登录词处理
-5. 重复步骤 1-4 直到文本结束
-
-#### 正向最大匹配 (Forward Max Match)
-
-```
-文本: "今天天气很好"
-词典: ["今天", "天气", "很好", "今天天气"]
-
-步骤:
-1. 尝试匹配 "今天天气" → 成功 → 输出 "今天天气"
-2. 尝试匹配 "很好" → 成功 → 输出 "很好"
-结果: ["今天天气", "很好"]
-```
-
-#### 双向最大匹配
-
-当正逆向分词结果不一致时，通过以下策略选择最优结果：
-
-1. 比较单字未登录词数量，选择单字较少的结果
-2. 若单字数量相同，选择词数较少的结果
+| `segment(text, mode)` | 分词 |
+| `segment_with_pos(text, mode)` | 分词并返回词性 |
+| `segment_without_stopwords(text, mode)` | 分词并过滤停用词 |
+| `extract_keywords(text, top_k, method)` | 关键词提取 |
+| `compute_similarity(text1, text2, method)` | 文本相似度计算 |
+| `add_word(word, pos_tag, weight)` | 添加词汇 |
+| `add_stopword(word)` | 添加停用词 |
+| `train_hmm(corpus)` | 训练 HMM 模型 |
+| `train_crf(corpus)` | 训练 CRF 模型 |
 
 ---
 
-## 技术栈与架构说明
-
-### 技术选型
-
-| 类别 | 技术/工具 |
-|------|----------|
-| 编程语言 | Python 3.8+ |
-| 分词算法 | 最大匹配算法 (Maximum Matching) |
-| 测试框架 | pytest 7.0.0+ |
-| 包管理 | setuptools |
-
-### 架构设计
+## 项目结构
 
 ```
 AuroraNLP/
-├── AuroraNLP/            # 主包
-│   ├── __init__.py       # 包导出
-│   ├── segmentor.py      # 分词器核心类
-│   ├── tokenizer.py      # 分词算法实现
-│   ├── trie.py           # Trie 树实现
-│   └── dictionary.py     # 词典管理类
-├── tests/                # 测试用例
-│   └── test_segment.py   # 单元测试
-├── requirements.txt      # 依赖清单
-└── setup.py              # 包配置
+├── AuroraNLP/              # 核心源代码
+│   ├── __init__.py         # 包初始化
+│   ├── segmentor.py        # 主分词器
+│   ├── tokenizer.py        # 分词算法接口
+│   ├── dictionary.py       # 词典管理
+│   ├── trie.py             # Trie 树实现
+│   ├── hmm.py              # HMM 模型
+│   ├── crf.py              # CRF 模型
+│   ├── perceptron.py       # 感知器模型
+│   ├── lattice.py          # Lattice 分词
+│   ├── ngram.py            # N-gram 语言模型
+│   ├── keyword_extractor.py # 关键词提取
+│   ├── similarity.py       # 文本相似度
+│   ├── stopwords.py        # 停用词处理
+│   ├── batch_processor.py  # 批量处理
+│   ├── benchmark.py        # 性能测试
+│   └── data/               # 数据文件
+│       ├── dictionary.txt  # 默认词典
+│       ├── stopwords.txt   # 默认停用词
+│       └── train_corpus.txt # 训练语料
+├── tests/                  # 测试文件
+│   ├── test_crf.py
+│   ├── test_hmm.py
+│   ├── test_lattice.py
+│   └── ...
+├── examples/               # 示例代码
+│   ├── demo_crf.py
+│   ├── demo_hmm.py
+│   └── demo_shortest_path.py
+├── docs/                   # 文档
+│   ├── CRF.md
+│   ├── HMM.md
+│   └── ROADMAP.md
+├── setup.py                # 安装配置
+├── requirements.txt        # 依赖列表
+└── README.md               # 说明文档
 ```
-
-### 核心组件
-
-#### Dictionary 类
-
-词典管理组件，负责存储和管理词汇集合。
-
-- `load_dictionary(path)`: 从文件加载词典
-- `add_word(word)`: 添加新词
-- `search_in_dict(word)`: 查询词是否存在
-- `get_words()`: 获取所有词汇
-
-#### Segmentor 类
-
-分词器核心类，提供统一的分词接口。
-
-- `segment(text, mode=None)`: 执行分词
-- `set_mode(mode)`: 设置分词模式
-- `load_dictionary(path)`: 加载词典文件
-
-#### Tokenizer 模块
-
-分词算法实现模块，包含三种分词算法：
-
-- `forward_max_match(text, dictionary, max_len=15)`
-- `backward_max_match(text, dictionary, max_len=15)`
-- `bidirectional_max_match(text, dictionary, max_len=15)`
 
 ---
 
-## 环境配置与依赖安装
+## 版本信息
 
-### 系统要求
+### 当前版本 (v0.2.0-beta "coca")
 
-- Python 3.8 或更高版本
-- 操作系统：Windows / macOS / Linux
+**版本号**: 0.2.0-beta  
+**内部代号**: coca  
+**发布日期**: 2026-04-05  
+**开发状态**: Beta
 
-### 安装步骤
+#### 新增特性
 
-#### 方式一：通过 pip 安装（待发布）
+- ✅ 完整的词性标注系统（HMM + CRF）
+- ✅ 命名实体识别（NER）基础功能
+- ✅ 改进的 Lattice 分词算法
+- ✅ 增强的歧义检测能力
+- ✅ 新词发现算法（PMI + 信息熵）
+- ✅ 批量处理接口
+- ✅ 性能基准测试工具
+
+#### 已实现功能
+
+- ✅ 基础分词算法（正向/逆向/双向最大匹配）
+- ✅ HMM 隐马尔可夫模型
+- ✅ CRF 条件随机场
+- ✅ 感知器分词器
+- ✅ Lattice 词格解码
+- ✅ N-gram 语言模型
+- ✅ 关键词提取（TF-IDF, TextRank, 词频）
+- ✅ 文本相似度计算（5 种算法）
+- ✅ 用户词典管理
+- ✅ 停用词过滤
+
+---
+
+## 路线图
+
+详见 [ROADMAP.md](docs/ROADMAP.md)
+
+### 计划功能（v0.3.0 及以后）
+
+- [ ] 深度学习模型集成（BERT, BiLSTM-CRF）
+- [ ] 完整的 NER 系统
+- [ ] 依存句法分析
+- [ ] 成分句法分析
+- [ ] 性能优化（Cython）
+- [ ] RESTful API 服务
+- [ ] Docker 容器化支持
+
+---
+
+## 贡献指南
+
+欢迎贡献代码、报告问题或提出建议！
+
+### 开发环境
 
 ```bash
-pip install AuroraNLP
-```
-
-#### 方式二：源码安装
-
-```bash
-# 克隆项目
-git clone https://github.com/jencaoking/AuroraNLP.git
+# 克隆仓库
+git clone https://github.com/yourusername/AuroraNLP.git
 cd AuroraNLP
 
-# 安装依赖
-pip install -e .
-
-# 或仅安装核心依赖
-pip install -e . --no-deps
-```
-
-#### 方式三：开发模式安装
-
-```bash
-# 安装包含开发依赖的完整版本
+# 安装开发依赖
 pip install -e ".[dev]"
 
 # 运行测试
 pytest tests/
 ```
 
-### 验证安装
-
-```bash
-python -c "from AuroraNLP import Segmentor; print('安装成功')"
-```
-
----
-
-## 详细使用指南
-
-### 基础使用
-
-#### 1. 快速开始
-
-```python
-from AuroraNLP import Segmentor
-from AuroraNLP.dictionary import Dictionary
-
-# 创建分词器（使用默认空词典）
-segmentor = Segmentor()
-
-# 执行分词
-text = "今天天气很好"
-result = segmentor.segment(text)
-print(result)
-# 输出: ['今天', '天气', '很', '好']
-```
-
-#### 2. 使用自定义词典
-
-```python
-from AuroraNLP import Segmentor
-from AuroraNLP.dictionary import Dictionary
-
-# 创建词典并添加词汇
-dictionary = Dictionary()
-dictionary.add_word("今天")
-dictionary.add_word("天气")
-dictionary.add_word("很好")
-
-# 创建带词典的分词器
-segmentor = Segmentor(dictionary)
-
-# 执行分词
-text = "今天天气很好"
-result = segmentor.segment(text)
-print(result)
-# 输出: ['今天', '天气', '很好']
-```
-
-#### 3. 从文件加载词典
-
-```python
-from nlp_segment import Segmentor
-
-# 创建分词器
-segmentor = Segmentor()
-
-# 从文件加载词典（词典文件每行一个词，UTF-8编码）
-segmentor.load_dictionary("path/to/dictionary.txt")
-
-# 执行分词
-result = segmentor.segment("我爱中国")
-print(result)
-```
-
-**词典文件格式示例** (`dictionary.txt`):
-
-```
-今天
-天气
-很好
-中国
-我爱
-```
-
-### 分词模式切换
-
-```python
-from AuroraNLP import Segmentor
-from AuroraNLP.dictionary import Dictionary
-
-# 创建词典
-d = Dictionary()
-d.add_word("研究")
-d.add_word("研究生命")
-d.add_word("生命")
-d.add_word("起源")
-
-# 创建分词器
-seg = Segmentor(d)
-
-# 使用不同模式
-text = "研究生命起源"
-
-# 正向最大匹配
-result_fmm = seg.segment(text, mode='forward')
-print(f"正向匹配: {result_fmm}")
-
-# 逆向最大匹配
-result_bmm = seg.segment(text, mode='backward')
-print(f"逆向匹配: {result_bmm}")
-
-# 双向最大匹配（默认）
-result_bmmmm = seg.segment(text, mode='bidirectional')
-print(f"双向匹配: {result_bmmmm}")
-```
-
-### 基础算法直接调用
-
-```python
-from AuroraNLP.tokenizer import (
-    forward_max_match,
-    backward_max_match,
-    bidirectional_max_match
-)
-from AuroraNLP.dictionary import Dictionary
-
-# 创建词典
-d = Dictionary()
-d.add_word("今天")
-d.add_word("天气")
-d.add_word("很好")
-
-text = "今天天气很好"
-
-# 直接调用算法函数
-result1 = forward_max_match(text, d)
-result2 = backward_max_match(text, d)
-result3 = bidirectional_max_match(text, d)
-
-print(f"正向: {result1}")
-print(f"逆向: {result2}")
-print(f"双向: {result3}")
-```
-
-### 完整使用示例
-
-```python
-"""
-NLP 分词工具完整使用示例
-"""
-
-from alphaNLP import Segmentor
-from alphaNLP.dictionary import Dictionary
-
-def main():
-    # 初始化词典
-    dictionary = Dictionary()
-
-    # 方式一：逐个添加词汇
-    words_to_add = [
-        "自然语言处理",
-        "分词",
-        "中文",
-        "工具包",
-        "最大匹配",
-        "正向匹配",
-        "逆向匹配"
-    ]
-    for word in words_to_add:
-        dictionary.add_word(word)
-
-    # 方式二：从文件加载（可选）
-    # dictionary.load_dictionary("custom_dictionary.txt")
-
-    # 创建分词器
-    segmentor = Segmentor(dictionary)
-
-    # 测试文本
-    test_texts = [
-        "自然语言处理是人工智能的重要分支",
-        "中文分词是NLP的基础任务",
-        "最大匹配算法是一种经典的分词方法"
-    ]
-
-    # 执行分词
-    print("=" * 50)
-    print("分词结果展示")
-    print("=" * 50)
-
-    for text in test_texts:
-        result = segmentor.segment(text)
-        print(f"\n原文: {text}")
-        print(f"分词: {' | '.join(result)}")
-
-    # 模式切换示例
-    print("\n" + "=" * 50)
-    print("分词模式对比")
-    print("=" * 50)
-
-    text = "自然语言处理很重要"
-    print(f"\n原文: {text}")
-    print(f"正向匹配: {segmentor.segment(text, mode='forward')}")
-    print(f"逆向匹配: {segmentor.segment(text, mode='backward')}")
-    print(f"双向匹配: {segmentor.segment(text, mode='bidirectional')}")
-
-if __name__ == "__main__":
-    main()
-```
-
----
-
-## API 接口文档
-
-### Segmentor 类
-
-分词器核心类，提供统一的分词接口。
-
-#### 构造函数
-
-```python
-Segmentor(dictionary=None)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| dictionary | Dictionary | 否 | None | 词典实例，若不提供则创建空词典 |
-
-**示例：**
-
-```python
-# 使用空词典
-seg1 = Segmentor()
-
-# 使用自定义词典
-d = Dictionary()
-d.add_word("词1")
-d.add_word("词2")
-seg2 = Segmentor(d)
-```
-
-#### segment() 方法
-
-执行文本分词。
-
-```python
-segment(text, mode=None)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| text | str | 是 | - | 待分词的中文文本 |
-| mode | str | 否 | None | 分词模式：'forward'、'backward'、'bidirectional' |
-
-**返回值：** `List[str]` - 分词结果列表
-
-**分词模式说明：**
-
-| 模式 | 说明 |
-|------|------|
-| forward | 正向最大匹配 |
-| backward | 逆向最大匹配 |
-| bidirectional | 双向最大匹配（默认） |
-
-**示例：**
-
-```python
-seg = Segmentor()
-result = seg.segment("今天天气很好")
-# ['今天', '天气', '很', '好']
-
-result = seg.segment("今天天气很好", mode='forward')
-# ['今天', '天气', '很', '好']
-```
-
-#### set_mode() 方法
-
-设置默认分词模式。
-
-```python
-set_mode(mode)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| mode | str | 是 | 分词模式 |
-
-**示例：**
-
-```python
-seg = Segmentor()
-seg.set_mode('forward')  # 设置默认模式为正向匹配
-result = seg.segment("今天天气很好")  # 使用正向匹配
-```
-
-#### load_dictionary() 方法
-
-从文件加载词典。
-
-```python
-load_dictionary(path)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| path | str | 是 | 词典文件路径 |
-
-**文件格式：** 每行一个词语，UTF-8 编码
-
-**示例：**
-
-```python
-seg = Segmentor()
-seg.load_dictionary("dictionary.txt")
-```
-
----
-
-### Dictionary 类
-
-词典管理类，负责存储和管理词汇集合。
-
-#### 构造函数
-
-```python
-Dictionary()
-```
-
-**示例：**
-
-```python
-d = Dictionary()
-```
-
-#### load_dictionary() 方法
-
-从文件加载词典。
-
-```python
-load_dictionary(path)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| path | str | 是 | 词典文件路径 |
-
-#### add_word() 方法
-
-添加新词到词典。
-
-```python
-add_word(word)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| word | str | 是 | 要添加的词语 |
-
-#### search_in_dict() 方法
-
-查询词是否存在于词典中。
-
-```python
-search_in_dict(word)
-```
-
-**返回值：** `bool` - 词存在返回 True，否则返回 False
-
-#### get_words() 方法
-
-返回词典中所有词汇。
-
-```python
-get_words()
-```
-
-**返回值：** `set` - 词汇集合
-
----
-
-### tokenizer 模块函数
-
-#### forward_max_match()
-
-正向最大匹配算法。
-
-```python
-forward_max_match(text, dictionary, max_len=15)
-```
-
-**参数说明：**
-
-| 参数 | 类型 | 必填 | 默认值 | 说明 |
-|------|------|------|--------|------|
-| text | str | 是 | - | 待分词文本 |
-| dictionary | Dictionary | 是 | - | 词典实例 |
-| max_len | int | 否 | 15 | 最大词长 |
-
-**返回值：** `List[str]` - 分词结果
-
-#### backward_max_match()
-
-逆向最大匹配算法。
-
-```python
-backward_max_match(text, dictionary, max_len=15)
-```
-
-#### bidirectional_max_match()
-
-双向最大匹配算法。
-
-```python
-bidirectional_max_match(text, dictionary, max_len=15)
-```
-
----
-
-## 目录结构
-
-```
-AuroraNLP/
-├── AuroraNLP/                 # 主包目录
-│   ├── __init__.py              # 包导出，公开 Segmentor 类
-│   ├── segmentor.py             # 分词器核心类
-│   ├── tokenizer.py             # 分词算法实现
-│   ├── trie.py                  # Trie 树实现
-│   └── dictionary.py            # 词典管理类
-├── docs/                        # 文档目录
-│   ├── HMM.md                   # HMM 分词文档
-│   └── ROADMAP.md               # 项目路线图
-├── examples/                    # 示例代码
-│   └── demo_hmm.py              # HMM 分词演示
-├── tests/                       # 测试目录
-│   ├── __init__.py
-│   └── test_segment.py          # 单元测试
-├── requirements.txt             # 依赖清单
-├── setup.py                     # 包配置
-└── README.md                    # 项目文档
-```
-
----
-
-## 文档资源
-
-### 核心文档
-
-- **[HMM 分词文档](AuroraNLP/docs/HMM.md)** - 隐马尔可夫模型中文分词详细说明
-- **[项目路线图](AuroraNLP/docs/ROADMAP.md)** - alphaNLP 专业级演进路线图（100步）
-
-### 示例代码
-
-- **[HMM 分词演示](AuroraNLP/examples/demo_hmm.py)** - 完整的 HMM 分词使用示例
-
----
-
-## 贡献指南
-
-### 开发环境搭建
-
-```bash
-# 1. 克隆项目
-git clone <repository-url>
-cd AuroraNLP
-
-# 2. 创建虚拟环境（推荐）
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# 或
-venv\Scripts\activate  # Windows
-
-# 3. 安装开发依赖
-pip install -e ".[dev]"
-
-# 4. 运行测试
-pytest tests/ -v
-```
-
-### 代码规范
-
-- 遵循 PEP 8 代码风格
-- 使用有意义的变量和函数命名
-- 为公共 API 添加 docstring 文档
-- 新功能需包含对应的单元测试
-
-### 分支管理
-
-- `main`: 主分支，稳定版本
-- `develop`: 开发分支
-- `feature/*`: 功能分支
-- `fix/*`: 修复分支
-
 ### 提交规范
 
-```
-<类型>(<模块>): <描述>
-
-可选的详细说明
-
-[可选的脚注]
-```
-
-**类型标识：**
-
-| 标识 | 说明 |
-|------|------|
-| feat | 新功能 |
-| fix | 修复 Bug |
-| docs | 文档更新 |
-| style | 代码格式调整 |
-| refactor | 重构 |
-| test | 测试相关 |
-| chore | 构建/工具相关 |
-
-**提交示例：**
-
-```
-feat(segmentor): 添加双向匹配算法
-
-- 实现双向最大匹配算法
-- 添加结果选择策略
-- 更新文档说明
-```
-
-### Pull Request 流程
-
-1. Fork 项目并创建功能分支
-2. 在分支中完成开发并添加测试
-3. 确保所有测试通过
-4. 提交 PR 并描述变更内容
-5. 等待代码审查
-6. 合并后删除分支
+- `feat`: 新功能
+- `fix`: 修复 bug
+- `docs`: 文档更新
+- `test`: 测试相关
+- `refactor`: 代码重构
 
 ---
 
 ## 许可证
 
-本项目采用 Apache License 2.0 许可证开源。详见 [LICENSE](LICENSE) 文件。
-
-```
-Copyright 2024 NLP Team
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+本项目采用 [Apache 2.0](LICENSE) 许可证。
 
 ---
 
-## 联系方式与问题反馈
+## 联系方式
 
-### 问题反馈
-
-如果您在使用过程中遇到问题或有功能建议，欢迎通过以下方式反馈：
-
-- **提交 Issue**: 在项目仓库提交 Bug 报告或功能请求
-- **邮件联系**: 发送邮件至项目维护团队
-
-### 参与贡献
-
-我们欢迎所有形式的贡献，包括但不限于：
-
-- 提交代码改进
-- 完善文档
-- 报告和修复 Bug
-- 分享使用经验
-
-### 致谢
-
-感谢所有为项目做出贡献的开发者。
+- 项目主页: [GitHub](https://github.com/yourusername/AuroraNLP)
+- 问题反馈: [Issues](https://github.com/yourusername/AuroraNLP/issues)
 
 ---
 
 <div align="center">
 
-**AuroraNLP** - 轻量、简单、易用
+**如果这个项目对你有帮助，请给一个 ⭐️ Star！**
 
 </div>
