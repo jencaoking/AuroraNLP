@@ -12,6 +12,7 @@ from .crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
 from .perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFeatureTemplate
 from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
 from .ambiguity import AmbiguityType, AmbiguityRegion, AmbiguityResult, AmbiguityDetector
+from .new_word_detector import NewWordDetector, MutualInformation, EntropyCalculator
 
 __all__ = [
     "Segmentor",
@@ -46,5 +47,8 @@ __all__ = [
     "AmbiguityType",
     "AmbiguityRegion",
     "AmbiguityResult",
-    "AmbiguityDetector"
+    "AmbiguityDetector",
+    "NewWordDetector",
+    "MutualInformation",
+    "EntropyCalculator"
 ]

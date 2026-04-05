@@ -22,6 +22,7 @@ from .crf import CRFSegmentor
 from .perceptron import PerceptronSegmentor
 from .lattice import LatticeSegmentor, Lattice
 from .ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
+from .new_word_detector import NewWordDetector
 
 
 POS_TAG_NAMES = {
@@ -94,6 +95,8 @@ class Segmentor:
         self.lattice_segmentor = LatticeSegmentor(self.dictionary)
 
         self.ambiguity_detector = AmbiguityDetector(self.dictionary)
+
+        self.new_word_detector = NewWordDetector()
 
     @property
     def dict_manager(self) -> DictionaryManager:
@@ -647,3 +650,94 @@ class Segmentor:
             return self.lattice_segmentor.segment(text)
         else:
             return self.segment(text, mode='lattice')
+
+    def train_new_word_detector(
+        self,
+        corpus: List[str],
+        min_freq: int = 5,
+        min_pmi: float = 1.0,
+        min_entropy: float = 0.5
+    ) -> None:
+        self.new_word_detector.min_freq = min_freq
+        self.new_word_detector.min_pmi = min_pmi
+        self.new_word_detector.min_entropy = min_entropy
+        self.new_word_detector.train(corpus)
+
+    def train_new_word_detector_from_file(
+        self,
+        filepath: str,
+        encoding: str = 'utf-8',
+        min_freq: int = 5,
+        min_pmi: float = 1.0,
+        min_entropy: float = 0.5
+    ) -> None:
+        self.new_word_detector.min_freq = min_freq
+        self.new_word_detector.min_pmi = min_pmi
+        self.new_word_detector.min_entropy = min_entropy
+        self.new_word_detector.train_from_file(filepath, encoding)
+
+    def detect_new_words(
+        self,
+        top_k: int = 100,
+        min_freq: Optional[int] = None,
+        min_pmi: Optional[float] = None,
+        min_entropy: Optional[float] = None
+    ) -> List[Tuple[str, Dict[str, float]]]:
+        return self.new_word_detector.detect(top_k, min_freq, min_pmi, min_entropy)
+
+    def detect_new_words_from_text(
+        self,
+        text: str,
+        top_k: int = 20,
+        min_freq: Optional[int] = None,
+        min_pmi: Optional[float] = None,
+        min_entropy: Optional[float] = None
+    ) -> List[Tuple[str, Dict[str, float]]]:
+        return self.new_word_detector.detect_from_text(text, top_k, min_freq, min_pmi, min_entropy)
+
+    def get_new_word_score(self, word: str) -> Dict[str, float]:
+        return self.new_word_detector.get_word_score(word)
+
+    def get_new_word_pmi(self, word: str) -> float:
+        return self.new_word_detector.get_pmi(word)
+
+    def get_new_word_entropy(self, word: str) -> Tuple[float, float]:
+        left_entropy = self.new_word_detector.get_left_entropy(word)
+        right_entropy = self.new_word_detector.get_right_entropy(word)
+        return (left_entropy, right_entropy)
+
+    def auto_extend_dictionary_with_new_words(
+        self,
+        top_k: int = 50,
+        min_freq: Optional[int] = None,
+        min_pmi: Optional[float] = None,
+        min_entropy: Optional[float] = None,
+        pos_tag: Optional[str] = None,
+        weight: float = 1.0
+    ) -> List[Tuple[str, Dict[str, float]]]:
+        return self.new_word_detector.auto_extend_dictionary(
+            self.dictionary,
+            top_k=top_k,
+            min_freq=min_freq,
+            min_pmi=min_pmi,
+            min_entropy=min_entropy,
+            pos_tag=pos_tag,
+            weight=weight
+        )
+
+    def is_new_word_detector_trained(self) -> bool:
+        return self.new_word_detector.is_trained()
+
+    def get_new_word_detector_statistics(self) -> Dict:
+        return self.new_word_detector.get_statistics()
+
+    def set_new_word_detector_thresholds(
+        self,
+        min_freq: Optional[int] = None,
+        min_pmi: Optional[float] = None,
+        min_entropy: Optional[float] = None
+    ) -> None:
+        self.new_word_detector.set_thresholds(min_freq, min_pmi, min_entropy)
+
+    def set_new_word_length_range(self, min_len: int, max_len: int) -> None:
+        self.new_word_detector.set_word_length_range(min_len, max_len)
