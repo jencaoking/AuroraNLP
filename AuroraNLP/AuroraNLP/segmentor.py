@@ -23,6 +23,13 @@ from .perceptron import PerceptronSegmentor
 from .lattice import LatticeSegmentor, Lattice
 from .ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
 from .new_word_detector import NewWordDetector
+from .hybrid import (
+    HybridSegmentor,
+    HybridConfig,
+    HybridStrategy,
+    SegmenterResult,
+    SegmenterType
+)
 
 
 POS_TAG_NAMES = {
@@ -63,7 +70,9 @@ class Segmentor:
         use_crf: bool = False,
         use_perceptron: bool = False,
         use_lattice: bool = False,
-        use_weighted: bool = False
+        use_weighted: bool = False,
+        use_hybrid: bool = False,
+        hybrid_config: Optional[HybridConfig] = None
     ):
         self._dict_manager = DictionaryManager()
 
@@ -97,6 +106,13 @@ class Segmentor:
         self.ambiguity_detector = AmbiguityDetector(self.dictionary)
 
         self.new_word_detector = NewWordDetector()
+        
+        self.use_hybrid = use_hybrid
+        self._hybrid_config = hybrid_config
+        self._hybrid_segmentor: Optional[HybridSegmentor] = None
+        
+        if use_hybrid:
+            self._init_hybrid_segmentor()
 
     @property
     def dict_manager(self) -> DictionaryManager:
@@ -241,6 +257,9 @@ class Segmentor:
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
         if mode is None:
             mode = self.mode
+        
+        if mode == 'hybrid':
+            return self.segment_hybrid(text)
 
         active_dict = self._get_active_dictionary()
 
@@ -271,7 +290,7 @@ class Segmentor:
                 return bidirectional_max_match_weighted(text, active_dict)
             return bidirectional_max_match(text, active_dict)
         else:
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', or 'lattice'.")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice', or 'hybrid'.")
 
     def segment_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[str]:
         words = self.segment(text, mode)
@@ -393,8 +412,8 @@ class Segmentor:
         return self.similarity.batch_similarity(query, documents, self, method, stopwords)
 
     def set_mode(self, mode: str) -> None:
-        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice'):
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', or 'lattice'.")
+        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice', 'hybrid'):
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice', or 'hybrid'.")
         self.mode = mode
 
     def load_dictionary(self, path: str) -> None:
@@ -738,3 +757,96 @@ class Segmentor:
 
     def set_new_word_length_range(self, min_len: int, max_len: int) -> None:
         self.new_word_detector.set_word_length_range(min_len, max_len)
+    
+    def _init_hybrid_segmentor(self) -> None:
+        config = self._hybrid_config or HybridConfig()
+        self._hybrid_segmentor = HybridSegmentor(
+            dictionary=self.dictionary,
+            config=config
+        )
+        
+        if self.hmm_segmentor.is_trained():
+            self._hybrid_segmentor.set_hmm_segmentor(self.hmm_segmentor)
+        if self.crf_segmentor.is_trained():
+            self._hybrid_segmentor.set_crf_segmentor(self.crf_segmentor)
+        if self.perceptron_segmentor.is_trained():
+            self._hybrid_segmentor.set_perceptron_segmentor(self.perceptron_segmentor)
+        self._hybrid_segmentor.set_lattice_segmentor(self.lattice_segmentor)
+    
+    def enable_hybrid(self, config: Optional[HybridConfig] = None) -> None:
+        self.use_hybrid = True
+        self._hybrid_config = config
+        self._init_hybrid_segmentor()
+    
+    def disable_hybrid(self) -> None:
+        self.use_hybrid = False
+    
+    def set_hybrid_strategy(self, strategy: HybridStrategy) -> None:
+        if self._hybrid_segmentor is None:
+            self._init_hybrid_segmentor()
+        
+        if self._hybrid_config is None:
+            self._hybrid_config = HybridConfig()
+        
+        self._hybrid_config.strategy = strategy
+        self._hybrid_segmentor.set_config(self._hybrid_config)
+    
+    def set_hybrid_weights(self, weights: Dict[str, float]) -> None:
+        if self._hybrid_segmentor is None:
+            self._init_hybrid_segmentor()
+        
+        if self._hybrid_config is None:
+            self._hybrid_config = HybridConfig()
+        
+        self._hybrid_config.weights = weights
+        self._hybrid_segmentor.set_config(self._hybrid_config)
+    
+    def set_hybrid_cascade_order(self, order: List[str]) -> None:
+        if self._hybrid_segmentor is None:
+            self._init_hybrid_segmentor()
+        
+        if self._hybrid_config is None:
+            self._hybrid_config = HybridConfig(strategy=HybridStrategy.CASCADE)
+        
+        self._hybrid_config.cascade_order = order
+        self._hybrid_segmentor.set_config(self._hybrid_config)
+    
+    def segment_hybrid(self, text: str) -> List[str]:
+        if not self.use_hybrid or self._hybrid_segmentor is None:
+            self.enable_hybrid()
+        
+        return self._hybrid_segmentor.segment(text)
+    
+    def segment_hybrid_with_details(self, text: str) -> Tuple[List[str], Dict[str, Any]]:
+        if not self.use_hybrid or self._hybrid_segmentor is None:
+            self.enable_hybrid()
+        
+        return self._hybrid_segmentor.segment_with_details(text)
+    
+    def get_hybrid_available_segmenters(self) -> List[str]:
+        if self._hybrid_segmentor is None:
+            return []
+        return self._hybrid_segmentor.get_available_segmenters()
+    
+    def get_hybrid_config(self) -> Optional[HybridConfig]:
+        return self._hybrid_config
+    
+    def load_hybrid_dl_model(self, model_path: str, model_type: str = 'bert') -> bool:
+        if self._hybrid_segmentor is None:
+            self._init_hybrid_segmentor()
+        
+        return self._hybrid_segmentor.load_dl_model(model_path, model_type)
+    
+    def sync_hybrid_segmentors(self) -> None:
+        if self._hybrid_segmentor is None:
+            return
+        
+        if self.hmm_segmentor.is_trained():
+            self._hybrid_segmentor.set_hmm_segmentor(self.hmm_segmentor)
+        if self.crf_segmentor.is_trained():
+            self._hybrid_segmentor.set_crf_segmentor(self.crf_segmentor)
+        if self.perceptron_segmentor.is_trained():
+            self._hybrid_segmentor.set_perceptron_segmentor(self.perceptron_segmentor)
+    
+    def is_hybrid_enabled(self) -> bool:
+        return self.use_hybrid and self._hybrid_segmentor is not None

@@ -71,6 +71,21 @@ from .constituent_parser import (
     create_sample_constituent_trees,
     train_constituent_parser_from_file,
 )
+from .hybrid import (
+    HybridStrategy,
+    SegmenterType,
+    SegmenterResult,
+    HybridConfig,
+    ConfidenceEstimator,
+    VoteFusion,
+    WeightedFusion,
+    CascadeFusion,
+    AdaptiveFusion,
+    TextClassifier,
+    StrategySelector,
+    DeepLearningInterface,
+    HybridSegmentor,
+)
 
 __all__ = [
     "Segmentor",
@@ -159,4 +174,17 @@ __all__ = [
     "ConstituentParser",
     "create_sample_constituent_trees",
     "train_constituent_parser_from_file",
+    "HybridStrategy",
+    "SegmenterType",
+    "SegmenterResult",
+    "HybridConfig",
+    "ConfidenceEstimator",
+    "VoteFusion",
+    "WeightedFusion",
+    "CascadeFusion",
+    "AdaptiveFusion",
+    "TextClassifier",
+    "StrategySelector",
+    "DeepLearningInterface",
+    "HybridSegmentor",
 ]
