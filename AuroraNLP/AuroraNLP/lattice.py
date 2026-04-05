@@ -255,7 +255,8 @@ class PathScorer:
     @staticmethod
     def score_by_ngram(path: List[LatticeEdge], ngram_model: 'NGramModel') -> float:
         words = [edge.word for edge in path]
-        return ngram_model.sentence_probability(words)
+        prob = ngram_model.sentence_probability(words)
+        return prob if prob > float('-inf') else -1e10
 
 
 class LatticeSegmentor:
