@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional, Set
+from typing import List, Tuple, Optional, Set, Dict
 from .tokenizer import (
     forward_max_match,
     backward_max_match,
@@ -14,6 +14,7 @@ from .similarity import Similarity
 from .hmm import HMMSegmentor
 from .crf import CRFSegmentor
 from .perceptron import PerceptronSegmentor
+from .lattice import LatticeSegmentor, Lattice
 
 
 POS_TAG_NAMES = {
@@ -52,7 +53,8 @@ class Segmentor:
         load_default_stopwords: bool = True,
         use_hmm: bool = False,
         use_crf: bool = False,
-        use_perceptron: bool = False
+        use_perceptron: bool = False,
+        use_lattice: bool = False
     ):
         if dictionary is not None:
             self.dictionary = dictionary
@@ -72,6 +74,9 @@ class Segmentor:
         
         self.use_perceptron = use_perceptron
         self.perceptron_segmentor = PerceptronSegmentor()
+        
+        self.use_lattice = use_lattice
+        self.lattice_segmentor = LatticeSegmentor(self.dictionary)
 
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
         if mode is None:
@@ -89,6 +94,8 @@ class Segmentor:
             if not self.perceptron_segmentor.is_trained():
                 raise RuntimeError("Perceptron model has not been trained. Call train_perceptron() or load_perceptron_model() first.")
             return self.perceptron_segmentor.segment(text)
+        elif mode == 'lattice':
+            return self.lattice_segmentor.segment(text)
         elif mode == 'forward':
             return forward_max_match(text, self.dictionary)
         elif mode == 'backward':
@@ -96,7 +103,7 @@ class Segmentor:
         elif mode == 'bidirectional':
             return bidirectional_max_match(text, self.dictionary)
         else:
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', or 'perceptron'.")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', or 'lattice'.")
 
     def segment_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[str]:
         words = self.segment(text, mode)
@@ -213,8 +220,8 @@ class Segmentor:
         return self.similarity.batch_similarity(query, documents, self, method, stopwords)
 
     def set_mode(self, mode: str) -> None:
-        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron'):
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', or 'perceptron'.")
+        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice'):
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', or 'lattice'.")
         self.mode = mode
 
     def load_dictionary(self, path: str) -> None:
@@ -386,3 +393,35 @@ class Segmentor:
     
     def set_use_perceptron(self, use_perceptron: bool) -> None:
         self.use_perceptron = use_perceptron
+    
+    def set_lattice_scoring_method(self, method: str) -> None:
+        self.lattice_segmentor.set_scoring_method(method)
+    
+    def set_lattice_ngram_model(self, ngram_model) -> None:
+        self.lattice_segmentor.set_ngram_model(ngram_model)
+    
+    def set_lattice_word_frequency(self, freq_dict: Dict[str, int]) -> None:
+        self.lattice_segmentor.set_word_frequency(freq_dict)
+    
+    def segment_with_lattice(self, text: str) -> Tuple[List[str], Lattice]:
+        return self.lattice_segmentor.segment_with_lattice(text)
+    
+    def segment_with_lattice_pos(self, text: str) -> List[Tuple[str, Optional[str]]]:
+        return self.lattice_segmentor.segment_with_pos(text)
+    
+    def get_all_lattice_segmentations(self, text: str, max_results: int = 10) -> List[List[str]]:
+        return self.lattice_segmentor.get_all_segmentations(text, max_results)
+    
+    def detect_lattice_ambiguity(self, text: str) -> List[Dict]:
+        return self.lattice_segmentor.detect_ambiguity(text)
+    
+    def build_lattice(self, text: str) -> Lattice:
+        return self.lattice_segmentor.build_lattice(text)
+    
+    def find_k_best_paths(self, text: str, k: int = 5) -> List[List[str]]:
+        lattice = self.build_lattice(text)
+        paths = self.lattice_segmentor.find_k_best_paths(lattice, k)
+        return [lattice.get_path_words(path) for path in paths]
+    
+    def set_use_lattice(self, use_lattice: bool) -> None:
+        self.use_lattice = use_lattice

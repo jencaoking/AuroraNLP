@@ -10,6 +10,7 @@ from .hmm import HMMSegmentor, train_from_file
 from .ngram import NGramModel, BigramModel, TrigramModel
 from .crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
 from .perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFeatureTemplate
+from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
 
 __all__ = [
     "Segmentor",
@@ -32,5 +33,11 @@ __all__ = [
     "CRFFeatureTemplate",
     "StructuredPerceptron",
     "PerceptronSegmentor",
-    "PerceptronFeatureTemplate"
+    "PerceptronFeatureTemplate",
+    "Lattice",
+    "LatticeEdge",
+    "LatticeNode",
+    "LatticeBuilder",
+    "LatticeSegmentor",
+    "PathScorer"
 ]
