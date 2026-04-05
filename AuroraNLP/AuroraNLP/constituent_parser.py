@@ -622,10 +622,15 @@ class CKYParser:
         return None
     
     def _validate_backpointer(self, backpointer: Tuple) -> bool:
-        if not backpointer or len(backpointer) != 3:
+        if not backpointer:
             return False
-        split, left_sym, right_sym = backpointer
-        return isinstance(split, int) and isinstance(left_sym, str) and isinstance(right_sym, str)
+        try:
+            if len(backpointer) != 3:
+                return False
+            split, left_sym, right_sym = backpointer
+            return isinstance(split, int) and isinstance(left_sym, str) and isinstance(right_sym, str)
+        except (TypeError, ValueError):
+            return False
     
     def _build_tree(
         self,
