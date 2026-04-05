@@ -13,6 +13,7 @@ from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
 from .hmm import HMMSegmentor
 from .crf import CRFSegmentor
+from .perceptron import PerceptronSegmentor
 
 
 POS_TAG_NAMES = {
@@ -50,7 +51,8 @@ class Segmentor:
         load_default_dict: bool = True,
         load_default_stopwords: bool = True,
         use_hmm: bool = False,
-        use_crf: bool = False
+        use_crf: bool = False,
+        use_perceptron: bool = False
     ):
         if dictionary is not None:
             self.dictionary = dictionary
@@ -67,6 +69,9 @@ class Segmentor:
         
         self.use_crf = use_crf
         self.crf_segmentor = CRFSegmentor()
+        
+        self.use_perceptron = use_perceptron
+        self.perceptron_segmentor = PerceptronSegmentor()
 
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
         if mode is None:
@@ -80,6 +85,10 @@ class Segmentor:
             if not self.crf_segmentor.is_trained():
                 raise RuntimeError("CRF model has not been trained. Call train_crf() or load_crf_model() first.")
             return self.crf_segmentor.segment(text)
+        elif mode == 'perceptron':
+            if not self.perceptron_segmentor.is_trained():
+                raise RuntimeError("Perceptron model has not been trained. Call train_perceptron() or load_perceptron_model() first.")
+            return self.perceptron_segmentor.segment(text)
         elif mode == 'forward':
             return forward_max_match(text, self.dictionary)
         elif mode == 'backward':
@@ -87,7 +96,7 @@ class Segmentor:
         elif mode == 'bidirectional':
             return bidirectional_max_match(text, self.dictionary)
         else:
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', or 'crf'.")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', or 'perceptron'.")
 
     def segment_without_stopwords(self, text: str, mode: Optional[str] = None) -> List[str]:
         words = self.segment(text, mode)
@@ -101,6 +110,8 @@ class Segmentor:
             raise ValueError("HMM mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'crf':
             raise ValueError("CRF mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
+        elif mode == 'perceptron':
+            raise ValueError("Perceptron mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'forward':
             return forward_max_match_with_pos(text, self.dictionary)
         elif mode == 'backward':
@@ -202,8 +213,8 @@ class Segmentor:
         return self.similarity.batch_similarity(query, documents, self, method, stopwords)
 
     def set_mode(self, mode: str) -> None:
-        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf'):
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', or 'crf'.")
+        if mode not in ('forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron'):
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', or 'perceptron'.")
         self.mode = mode
 
     def load_dictionary(self, path: str) -> None:
@@ -324,3 +335,54 @@ class Segmentor:
     
     def set_use_crf(self, use_crf: bool) -> None:
         self.use_crf = use_crf
+    
+    def train_perceptron(
+        self,
+        corpus: List[List[str]],
+        learning_rate: float = 1.0,
+        max_iter: int = 10,
+        averaged: bool = True,
+        verbose: bool = True
+    ) -> None:
+        self.perceptron_segmentor.train(
+            corpus,
+            learning_rate=learning_rate,
+            max_iter=max_iter,
+            averaged=averaged,
+            verbose=verbose
+        )
+    
+    def train_perceptron_online(self, tokens: List[str], update_weights: bool = True) -> Tuple[bool, float]:
+        return self.perceptron_segmentor.train_online(tokens, update_weights)
+    
+    def partial_fit_perceptron(
+        self,
+        corpus: List[List[str]],
+        learning_rate: Optional[float] = None,
+        verbose: bool = False
+    ) -> None:
+        self.perceptron_segmentor.partial_fit(corpus, learning_rate, verbose)
+    
+    def train_perceptron_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
+        from .perceptron import train_from_file as perceptron_train_from_file
+        perceptron_train_from_file(self.perceptron_segmentor, filepath, encoding)
+    
+    def load_perceptron_model(self, filepath: str) -> None:
+        self.perceptron_segmentor.load_model(filepath)
+    
+    def save_perceptron_model(self, filepath: str) -> None:
+        self.perceptron_segmentor.save_model(filepath)
+    
+    def segment_with_perceptron_states(self, text: str) -> List[Tuple[str, str]]:
+        if not self.perceptron_segmentor.is_trained():
+            raise RuntimeError("Perceptron model has not been trained. Call train_perceptron() or load_perceptron_model() first.")
+        return self.perceptron_segmentor.segment_with_states(text)
+    
+    def get_perceptron_model_info(self) -> dict:
+        return self.perceptron_segmentor.get_model_info()
+    
+    def is_perceptron_trained(self) -> bool:
+        return self.perceptron_segmentor.is_trained()
+    
+    def set_use_perceptron(self, use_perceptron: bool) -> None:
+        self.use_perceptron = use_perceptron
