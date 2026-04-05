@@ -116,6 +116,7 @@ class TerminologyDatabase:
     DEFAULT_SOGOU_PATH = os.path.join(
         os.path.dirname(__file__), 'data', 'sogou'
     )
+    DOMAIN_VALUES = [domain.value for domain in TermDomain]
     
     def __init__(self, load_default: bool = True, load_sogou: bool = True):
         self._terms: Dict[str, Term] = {}
@@ -170,7 +171,6 @@ class TerminologyDatabase:
             raise FileNotFoundError(f"术语数据文件不存在: {path}")
         
         current_section = None
-        domain_values = [domain.value for domain in TermDomain]
         
         with open(path, 'r', encoding='utf-8') as f:
             for line in f:
@@ -178,7 +178,7 @@ class TerminologyDatabase:
                 if not line or line.startswith('#'):
                     if line.startswith('# @'):
                         section = line[3:].strip()
-                        if section in domain_values:
+                        if section in self.DOMAIN_VALUES:
                             current_section = section
                     continue
                 
