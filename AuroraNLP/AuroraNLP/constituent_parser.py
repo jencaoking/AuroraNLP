@@ -621,6 +621,12 @@ class CKYParser:
         
         return None
     
+    def _validate_backpointer(self, backpointer: Tuple) -> bool:
+        if not backpointer or len(backpointer) != 3:
+            return False
+        split, left_sym, right_sym = backpointer
+        return isinstance(split, int) and isinstance(left_sym, str) and isinstance(right_sym, str)
+    
     def _build_tree(
         self,
         chart: Dict,
@@ -642,9 +648,7 @@ class CKYParser:
         if backpointer and len(backpointer) == 3:
             split, left_sym, right_sym = backpointer
             
-            if not isinstance(split, int):
-                return None
-            if not isinstance(left_sym, str) or not isinstance(right_sym, str):
+            if not self._validate_backpointer(backpointer):
                 return None
             
             left_child = self._build_tree(chart, start, split, left_sym, words)
@@ -744,9 +748,7 @@ class CKYParser:
         if backpointer and len(backpointer) == 3:
             split, left_sym, right_sym = backpointer
             
-            if not isinstance(split, int):
-                return None
-            if not isinstance(left_sym, str) or not isinstance(right_sym, str):
+            if not self._validate_backpointer(backpointer):
                 return None
             
             left_child = self._build_tree_k_best(chart, start, split, left_sym, words, 0)
