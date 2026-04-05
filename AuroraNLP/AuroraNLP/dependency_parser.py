@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Optional, Iterator
+from typing import List, Tuple, Dict, Optional, Iterator, Any
 from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum, auto
@@ -892,7 +892,7 @@ class DependencyParser:
     def is_trained(self) -> bool:
         return self._trained
     
-    def get_model_info(self) -> Dict[str, any]:
+    def get_model_info(self) -> Dict[str, Any]:
         if not self._trained:
             return {'trained': False}
         

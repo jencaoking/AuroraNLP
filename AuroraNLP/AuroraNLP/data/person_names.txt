@@ -1,0 +1,493 @@
+# 人名词库数据文件
+# 格式说明:
+# 姓氏: 姓氏\t频率\t拼音\t起源
+# 名字用字: 用字\t男性频率\t女性频率\t中性频率\t分类\t含义\t拼音
+#
+
+# @surnames
+李	7.94	li	赢姓之后
+王	7.41	wang	姬姓之后
+张	7.07	zhang	黄帝之后
+刘	5.38	liu	尧帝之后
+陈	4.53	chen	妫姓之后
+杨	3.08	yang	姬姓之后
+赵	2.69	zhao	赢姓之后
+黄	2.52	huang	赢姓之后
+周	2.12	zhou	姬姓之后
+吴	2.05	wu	姬姓之后
+徐	1.93	xu	赢姓之后
+孙	1.86	sun	姬姓之后
+胡	1.54	hu	妫姓之后
+朱	1.41	zhu	曹姓之后
+高	1.21	gao	姜姓之后
+林	1.18	lin	子姓之后
+何	1.17	he	姬姓之后
+郭	1.05	guo	姬姓之后
+马	1.03	ma	赢姓之后
+罗	0.96	luo	熊姓之后
+梁	0.93	liang	赢姓之后
+宋	0.87	song	子姓之后
+郑	0.85	zheng	姬姓之后
+谢	0.79	xie	姜姓之后
+韩	0.73	han	姬姓之后
+唐	0.71	tang	姬姓之后
+冯	0.69	feng	姬姓之后
+于	0.67	yu	姬姓之后
+董	0.65	dong	姬姓之后
+萧	0.63	xiao	子姓之后
+程	0.61	cheng	姬姓之后
+曹	0.59	cao	姬姓之后
+袁	0.57	yuan	妫姓之后
+邓	0.55	deng	曼姓之后
+许	0.53	xu	姜姓之后
+傅	0.51	fu	姬姓之后
+沈	0.49	shen	姬姓之后
+曾	0.47	zeng	姒姓之后
+彭	0.45	peng	祝融之后
+吕	0.43	lv	姜姓之后
+苏	0.41	su	己姓之后
+卢	0.39	lu	姜姓之后
+蒋	0.37	jiang	姬姓之后
+蔡	0.35	cai	姬姓之后
+贾	0.33	jia	姬姓之后
+丁	0.31	ding	姜姓之后
+魏	0.29	wei	姬姓之后
+薛	0.27	xue	任姓之后
+叶	0.25	ye	芈姓之后
+阎	0.23	yan	姬姓之后
+余	0.21	yu	姬姓之后
+潘	0.19	pan	姬姓之后
+杜	0.17	du	祁姓之后
+戴	0.15	dai	子姓之后
+夏	0.13	xia	姒姓之后
+钟	0.11	zhong	子姓之后
+汪	0.09	wang	姬姓之后
+田	0.07	tian	妫姓之后
+任	0.05	ren	黄帝之后
+姜	0.04	jiang	炎帝之后
+范	0.03	fan	祁姓之后
+方	0.02	fang	姬姓之后
+石	0.02	shi	姬姓之后
+姚	0.02	yao	妫姓之后
+谭	0.02	tan	赢姓之后
+廖	0.02	liao	姬姓之后
+邹	0.02	zou	子姓之后
+熊	0.02	xiong	芈姓之后
+金	0.02	jin	赢姓之后
+陆	0.02	lu	妫姓之后
+郝	0.02	hao	子姓之后
+孔	0.02	kong	子姓之后
+白	0.02	bai	芈姓之后
+崔	0.02	cui	姜姓之后
+康	0.02	kang	姬姓之后
+毛	0.02	mao	姬姓之后
+邱	0.02	qiu	姜姓之后
+秦	0.02	qin	赢姓之后
+江	0.02	jiang	赢姓之后
+史	0.02	shi	仓颉之后
+顾	0.02	gu	姒姓之后
+侯	0.02	hou	姬姓之后
+邵	0.02	shao	姬姓之后
+孟	0.02	meng	姬姓之后
+龙	0.02	long	御龙氏之后
+万	0.02	wan	姬姓之后
+段	0.02	duan	姬姓之后
+雷	0.02	lei	方雷氏之后
+钱	0.02	qian	彭祖之后
+汤	0.02	tang	子姓之后
+尹	0.02	yin	姒姓之后
+黎	0.02	li	尧帝之后
+易	0.02	yi	姜姓之后
+常	0.02	chang	姬姓之后
+武	0.02	wu	姬姓之后
+乔	0.02	qiao	姬姓之后
+贺	0.02	he	姜姓之后
+赖	0.02	lai	姜姓之后
+龚	0.02	gong	共工氏之后
+文	0.02	wen	姬姓之后
+
+# @compound_surnames
+欧阳	0.008	ouyang	姒姓之后
+上官	0.005	shangguan	芈姓之后
+皇甫	0.004	huangfu	子姓之后
+司徒	0.003	situ	官职为姓
+诸葛	0.003	zhuge	葛姓之后
+司马	0.003	sima	官职为姓
+东方	0.002	dongfang	伏羲之后
+夏侯	0.002	xiahou	姒姓之后
+南宫	0.002	nangong	姬姓之后
+慕容	0.002	murong	鲜卑族姓
+令狐	0.001	linghu	姬姓之后
+轩辕	0.001	xuanyuan	黄帝之后
+长孙	0.001	zhangsun	拓跋氏之后
+公孙	0.001	gongsun	黄帝之后
+太史	0.001	taishi	官职为姓
+端木	0.001	duanmu	子贡之后
+独孤	0.001	dugu	鲜卑族姓
+宇文	0.001	yuwen	鲜卑族姓
+尉迟	0.001	yuchi	鲜卑族姓
+赫连	0.001	helian	匈奴族姓
+
+# @name_chars
+明	0.8	0.3	0.2	wisdom	光明、明亮	ming
+华	0.7	0.4	0.3	beauty	华丽、光彩	hua
+国	0.9	0.1	0.1	strength	国家	guo
+建	0.85	0.1	0.05	strength	建设、建立	jian
+文	0.6	0.5	0.4	literary	文雅、文化	wen
+永	0.7	0.3	0.2	virtue	永恒、永远	yong
+志	0.85	0.1	0.05	virtue	志向、意志	zhi
+俊	0.8	0.2	0.1	beauty	俊秀、英俊	jun
+海	0.6	0.4	0.3	water	大海、海洋	hai
+金	0.7	0.3	0.2	gem	金属、金色	jin
+辉	0.75	0.2	0.15	beauty	光辉、灿烂	hui
+强	0.9	0.05	0.05	strength	强壮、坚强	qiang
+平	0.6	0.4	0.3	virtue	平安、平和	ping
+安	0.5	0.5	0.4	auspicious	平安、安定	an
+伟	0.9	0.05	0.05	strength	伟大、雄伟	wei
+军	0.95	0.02	0.03	strength	军队、军事	jun
+波	0.65	0.3	0.2	water	波涛、波浪	bo
+涛	0.8	0.15	0.05	water	波涛、浪涛	tao
+勇	0.95	0.02	0.03	strength	勇敢、勇气	yong
+刚	0.92	0.05	0.03	strength	刚强、坚硬	gang
+敏	0.4	0.6	0.3	wisdom	敏捷、聪敏	min
+静	0.1	0.7	0.3	beauty	安静、宁静	jing
+丽	0.05	0.85	0.1	beauty	美丽、秀丽	li
+芳	0.02	0.9	0.08	beauty	芬芳、芳香	fang
+娟	0.02	0.92	0.06	beauty	娟秀、美好	juan
+英	0.5	0.4	0.3	beauty	英杰、花	ying
+梅	0.02	0.9	0.08	plant	梅花、梅子	mei
+燕	0.1	0.8	0.1	animal	燕子、安乐	yan
+玲	0.02	0.92	0.06	gem	玲珑、明亮	ling
+红	0.3	0.5	0.2	color	红色、红火	hong
+霞	0.05	0.85	0.1	sky	彩霞、云霞	xia
+婷	0.02	0.93	0.05	beauty	婷婷、美好	ting
+雪	0.1	0.7	0.2	nature	雪花、纯洁	xue
+琳	0.05	0.88	0.07	gem	美玉、琳琅	lin
+洁	0.2	0.6	0.2	virtue	清洁、纯洁	jie
+萍	0.02	0.9	0.08	plant	浮萍、萍踪	ping
+秀	0.3	0.5	0.2	beauty	秀丽、优秀	xiu
+云	0.3	0.5	0.2	sky	云彩、云朵	yun
+玉	0.2	0.6	0.2	gem	美玉、玉石	yu
+兰	0.02	0.9	0.08	plant	兰花、幽兰	lan
+琴	0.05	0.88	0.07	literary	琴瑟、音乐	qin
+娜	0.02	0.93	0.05	beauty	婀娜、美好	na
+晶	0.3	0.5	0.2	gem	晶莹、水晶	jing
+蓉	0.02	0.9	0.08	plant	芙蓉、蓉城	rong
+莲	0.02	0.9	0.08	plant	莲花、莲叶	lian
+倩	0.02	0.92	0.06	beauty	倩影、美好	qian
+颖	0.3	0.5	0.2	wisdom	聪颖、新颖	ying
+露	0.1	0.7	0.2	nature	露水、露珠	lu
+欣	0.3	0.5	0.2	beauty	欣喜、欣欣	xin
+怡	0.2	0.6	0.2	beauty	怡然、快乐	yi
+悦	0.2	0.6	0.2	beauty	喜悦、愉快	yue
+思	0.4	0.4	0.2	wisdom	思考、思念	si
+佳	0.3	0.5	0.2	beauty	美好、佳人	jia
+慧	0.3	0.5	0.2	wisdom	智慧、聪慧	hui
+梦	0.2	0.6	0.2	beauty	梦想、梦幻	meng
+瑶	0.05	0.88	0.07	gem	美玉、瑶池	yao
+萱	0.02	0.9	0.08	plant	萱草、忘忧	xuan
+妍	0.02	0.92	0.06	beauty	美好、美丽	yan
+蕾	0.02	0.9	0.08	plant	花蕾、蓓蕾	lei
+薇	0.02	0.9	0.08	plant	蔷薇、薇草	wei
+馨	0.05	0.85	0.1	beauty	温馨、芳香	xin
+琪	0.1	0.8	0.1	gem	美玉、琪花	qi
+瑶	0.05	0.88	0.07	gem	美玉、瑶池	yao
+媛	0.02	0.92	0.06	beauty	美好、美女	yuan
+娅	0.02	0.92	0.06	beauty	美好	ya
+娴	0.02	0.9	0.08	beauty	娴静、娴雅	xian
+瑾	0.1	0.8	0.1	gem	美玉、瑾瑜	jin
+璐	0.05	0.88	0.07	gem	美玉	lu
+晨	0.5	0.4	0.2	season	早晨、清晨	chen
+阳	0.7	0.2	0.1	sky	阳光、太阳	yang
+亮	0.7	0.2	0.1	beauty	明亮、光亮	liang
+飞	0.75	0.15	0.1	strength	飞翔、飞舞	fei
+龙	0.95	0.02	0.03	animal	龙、神龙	long
+凤	0.1	0.8	0.1	animal	凤凰、凤鸟	feng
+鹏	0.9	0.05	0.05	animal	大鹏、鹏鸟	peng
+翔	0.8	0.1	0.1	strength	飞翔、翱翔	xiang
+宇	0.7	0.2	0.1	sky	宇宙、气宇	yu
+泽	0.6	0.3	0.1	water	恩泽、润泽	ze
+浩	0.85	0.1	0.05	water	浩大、浩瀚	hao
+然	0.5	0.3	0.2	beauty	自然、然也	ran
+航	0.8	0.1	0.1	strength	航行、航海	hang
+瑞	0.5	0.3	0.2	auspicious	祥瑞、瑞气	rui
+霖	0.5	0.3	0.2	water	甘霖、雨霖	lin
+博	0.75	0.15	0.1	wisdom	博大、渊博	bo
+杰	0.85	0.1	0.05	virtue	杰出、豪杰	jie
+豪	0.9	0.05	0.05	virtue	豪迈、豪杰	hao
+凯	0.8	0.1	0.1	strength	凯旋、凯歌	kai
+峰	0.8	0.1	0.1	mountain	山峰、高峰	feng
+磊	0.85	0.1	0.05	virtue	磊落、光明	lei
+鑫	0.7	0.2	0.1	auspicious	多金、财富	xin
+阳	0.7	0.2	0.1	sky	阳光、太阳	yang
+威	0.9	0.05	0.05	strength	威武、威严	wei
+帅	0.85	0.1	0.05	beauty	英俊、帅气	shuai
+超	0.9	0.05	0.05	strength	超越、超群	chao
+坤	0.8	0.1	0.1	nature	乾坤、大地	kun
+健	0.9	0.05	0.05	strength	健康、健壮	jian
+林	0.6	0.3	0.1	plant	树林、森林	lin
+松	0.7	0.2	0.1	plant	松树、松柏	song
+柏	0.7	0.2	0.1	plant	柏树、松柏	bai
+杨	0.7	0.2	0.1	plant	杨树、白杨	yang
+柳	0.3	0.5	0.2	plant	柳树、杨柳	liu
+梅	0.02	0.9	0.08	plant	梅花、梅子	mei
+竹	0.5	0.3	0.2	plant	竹子、竹叶	zhu
+菊	0.05	0.85	0.1	plant	菊花、秋菊	ju
+荷	0.05	0.85	0.1	plant	荷花、荷叶	he
+莲	0.02	0.9	0.08	plant	莲花、莲叶	lian
+桂	0.3	0.5	0.2	plant	桂花、桂树	gui
+桃	0.2	0.6	0.2	plant	桃花、桃树	tao
+杏	0.2	0.6	0.2	plant	杏花、杏树	xing
+枫	0.5	0.3	0.2	plant	枫树、枫叶	feng
+桐	0.5	0.3	0.2	plant	梧桐、桐树	tong
+楠	0.6	0.3	0.1	plant	楠木、楠树	nan
+桦	0.5	0.3	0.2	plant	桦树、白桦	hua
+森	0.7	0.2	0.1	plant	森林、森然	sen
+彬	0.6	0.3	0.1	literary	彬彬、文雅	bin
+栋	0.85	0.1	0.05	strength	栋梁、栋宇	dong
+梁	0.7	0.2	0.1	strength	栋梁、桥梁	liang
+柱	0.85	0.1	0.05	strength	柱子、支柱	zhu
+楠	0.6	0.3	0.1	plant	楠木、楠树	nan
+棋	0.5	0.3	0.2	literary	棋艺、下棋	qi
+楠	0.6	0.3	0.1	plant	楠木、楠树	nan
+楷	0.7	0.2	0.1	virtue	楷模、楷书	kai
+荣	0.6	0.3	0.1	auspicious	荣耀、光荣	rong
+乐	0.5	0.3	0.2	beauty	快乐、欢乐	le
+欢	0.4	0.4	0.2	beauty	欢乐、欢欣	huan
+喜	0.5	0.3	0.2	auspicious	喜庆、欢喜	xi
+庆	0.6	0.3	0.1	auspicious	庆祝、喜庆	qing
+祥	0.6	0.3	0.1	auspicious	吉祥、祥瑞	xiang
+福	0.7	0.2	0.1	auspicious	福气、幸福	fu
+禄	0.7	0.2	0.1	auspicious	福禄、俸禄	lu
+寿	0.6	0.3	0.1	auspicious	长寿、寿辰	shou
+康	0.7	0.2	0.1	auspicious	健康、安康	kang
+宁	0.5	0.3	0.2	auspicious	安宁、宁静	ning
+顺	0.6	0.3	0.1	auspicious	顺利、顺心	shun
+昌	0.7	0.2	0.1	auspicious	昌盛、昌隆	chang
+盛	0.7	0.2	0.1	auspicious	昌盛、繁盛	sheng
+兴	0.6	0.3	0.1	auspicious	兴旺、兴盛	xing
+旺	0.7	0.2	0.1	auspicious	兴旺、旺盛	wang
+富	0.7	0.2	0.1	auspicious	富贵、富裕	fu
+贵	0.7	0.2	0.1	auspicious	富贵、尊贵	gui
+春	0.4	0.4	0.2	season	春天、春光	chun
+夏	0.4	0.4	0.2	season	夏天、夏季	xia
+秋	0.4	0.4	0.2	season	秋天、秋季	qiu
+冬	0.4	0.4	0.2	season	冬天、冬季	dong
+风	0.6	0.3	0.1	nature	风、风景	feng
+雨	0.4	0.4	0.2	nature	雨水、下雨	yu
+雷	0.8	0.1	0.1	nature	雷电、雷声	lei
+电	0.7	0.2	0.1	nature	闪电、电力	dian
+霜	0.2	0.6	0.2	nature	霜、霜降	shuang
+露	0.1	0.7	0.2	nature	露水、露珠	lu
+雾	0.3	0.5	0.2	nature	雾、雾气	wu
+虹	0.1	0.7	0.2	nature	彩虹、虹霓	hong
+星	0.4	0.4	0.2	sky	星星、星辰	xing
+月	0.3	0.5	0.2	sky	月亮、明月	yue
+日	0.6	0.3	0.1	sky	太阳、日子	ri
+天	0.6	0.3	0.1	sky	天空、天地	tian
+地	0.6	0.3	0.1	nature	大地、土地	di
+山	0.7	0.2	0.1	mountain	山峰、高山	shan
+川	0.6	0.3	0.1	water	河流、山川	chuan
+江	0.7	0.2	0.1	water	江河、长江	jiang
+河	0.6	0.3	0.1	water	河流、黄河	he
+湖	0.5	0.3	0.2	water	湖泊、湖光	hu
+海	0.6	0.3	0.1	water	大海、海洋	hai
+洋	0.6	0.3	0.1	water	海洋、大洋	yang
+溪	0.3	0.5	0.2	water	溪流、小溪	xi
+泉	0.4	0.4	0.2	water	泉水、源泉	quan
+源	0.6	0.3	0.1	water	源头、源泉	yuan
+清	0.4	0.4	0.2	water	清澈、清泉	qing
+洁	0.3	0.5	0.2	virtue	清洁、纯洁	jie
+净	0.3	0.5	0.2	virtue	干净、洁净	jing
+润	0.5	0.3	0.2	water	滋润、润泽	run
+涵	0.4	0.4	0.2	water	涵养、包含	han
+淳	0.5	0.3	0.2	virtue	淳朴、淳厚	chun
+澈	0.3	0.5	0.2	water	清澈、明澈	che
+渊	0.6	0.3	0.1	water	深渊、渊博	yuan
+涛	0.8	0.1	0.1	water	波涛、浪涛	tao
+澜	0.6	0.3	0.1	water	波澜、大浪	lan
+瀚	0.7	0.2	0.1	water	浩瀚、广大	han
+洋	0.6	0.3	0.1	water	海洋、大洋	yang
+淼	0.5	0.3	0.2	water	水大、浩淼	miao
+沁	0.3	0.5	0.2	water	沁人心脾	qin
+泽	0.6	0.3	0.1	water	恩泽、润泽	ze
+鸿	0.8	0.1	0.1	animal	鸿雁、鸿鹄	hong
+雁	0.4	0.4	0.2	animal	大雁、鸿雁	yan
+鹤	0.6	0.3	0.1	animal	仙鹤、鹤鸣	he
+鹏	0.9	0.05	0.05	animal	大鹏、鹏鸟	peng
+鹰	0.9	0.05	0.05	animal	雄鹰、老鹰	ying
+鸥	0.4	0.4	0.2	animal	海鸥、鸥鸟	ou
+凤	0.1	0.8	0.1	animal	凤凰、凤鸟	feng
+凰	0.05	0.88	0.07	animal	凤凰	huang
+鸾	0.1	0.7	0.2	animal	鸾鸟	luan
+燕	0.1	0.8	0.1	animal	燕子、安乐	yan
+莺	0.1	0.8	0.1	animal	黄莺、莺歌	ying
+鹃	0.1	0.8	0.1	animal	杜鹃、杜鹃花	juan
+雀	0.3	0.5	0.2	animal	麻雀、雀跃	que
+麒	0.8	0.1	0.1	animal	麒麟	qi
+麟	0.8	0.1	0.1	animal	麒麟	lin
+骏	0.9	0.05	0.05	animal	骏马、骏逸	jun
+驹	0.8	0.1	0.1	animal	马驹、少壮	ju
+骥	0.9	0.05	0.05	animal	千里马	ji
+虎	0.9	0.05	0.05	animal	老虎、虎威	hu
+豹	0.85	0.1	0.05	animal	豹子、豹纹	bao
+狮	0.85	0.1	0.05	animal	狮子、狮威	shi
+象	0.7	0.2	0.1	animal	大象、气象	xiang
+鹿	0.3	0.5	0.2	animal	鹿、梅花鹿	lu
+麟	0.8	0.1	0.1	animal	麒麟	lin
+龟	0.5	0.3	0.2	animal	乌龟、长寿	gui
+鱼	0.4	0.4	0.2	animal	鱼、游鱼	yu
+鲸	0.8	0.1	0.1	animal	鲸鱼	jing
+鲲	0.85	0.1	0.05	animal	鲲鹏	kun
+龙	0.95	0.02	0.03	animal	龙、神龙	long
+蛟	0.85	0.1	0.05	animal	蛟龙	jiao
+红	0.3	0.5	0.2	color	红色、红火	hong
+橙	0.3	0.5	0.2	color	橙色	cheng
+黄	0.4	0.4	0.2	color	黄色、金黄	huang
+绿	0.3	0.5	0.2	color	绿色	lv
+青	0.4	0.4	0.2	color	青色、青翠	qing
+蓝	0.3	0.5	0.2	color	蓝色	lan
+紫	0.2	0.6	0.2	color	紫色	zi
+白	0.4	0.4	0.2	color	白色、纯洁	bai
+黑	0.6	0.3	0.1	color	黑色	hei
+灰	0.4	0.4	0.2	color	灰色	hui
+金	0.7	0.2	0.1	color	金色	jin
+银	0.4	0.4	0.2	color	银色	yin
+翠	0.1	0.8	0.1	color	翠绿、翡翠	cui
+碧	0.2	0.6	0.2	color	碧绿、碧玉	bi
+丹	0.4	0.4	0.2	color	红色、丹心	dan
+朱	0.5	0.3	0.2	color	朱红	zhu
+彤	0.2	0.6	0.2	color	红色、彤云	tong
+墨	0.5	0.3	0.2	color	墨色、墨宝	mo
+黛	0.1	0.8	0.1	color	青黑、黛色	dai
+素	0.3	0.5	0.2	color	白色、朴素	su
+玄	0.6	0.3	0.1	color	黑色、玄妙	xuan
+玉	0.3	0.5	0.2	gem	美玉、玉石	yu
+珠	0.2	0.6	0.2	gem	珍珠、珠宝	zhu
+宝	0.6	0.3	0.1	gem	宝贝、珍宝	bao
+珍	0.3	0.5	0.2	gem	珍贵、珍宝	zhen
+琪	0.1	0.8	0.1	gem	美玉	qi
+瑶	0.1	0.8	0.1	gem	美玉	yao
+瑾	0.2	0.6	0.2	gem	美玉	jin
+瑜	0.3	0.5	0.2	gem	美玉	yu
+琳	0.1	0.8	0.1	gem	美玉	lin
+琅	0.3	0.5	0.2	gem	美玉	lang
+璇	0.1	0.8	0.1	gem	美玉	xuan
+玑	0.3	0.5	0.2	gem	珠玑	ji
+璋	0.5	0.3	0.2	gem	玉器	zhang
+珏	0.4	0.4	0.2	gem	双玉	jue
+璧	0.3	0.5	0.2	gem	玉璧	bi
+瑰	0.2	0.6	0.2	gem	瑰宝	gui
+瑛	0.2	0.6	0.2	gem	美玉	ying
+琼	0.2	0.6	0.2	gem	美玉	qiong
+瑗	0.2	0.6	0.2	gem	美玉	yuan
+珩	0.4	0.4	0.2	gem	佩玉	heng
+琦	0.2	0.6	0.2	gem	美玉	qi
+琬	0.2	0.6	0.2	gem	美玉	wan
+玮	0.4	0.4	0.2	gem	美玉	wei
+钰	0.3	0.5	0.2	gem	珍宝	yu
+钱	0.6	0.3	0.1	auspicious	金钱、财富	qian
+鑫	0.7	0.2	0.1	auspicious	多金、财富	xin
+银	0.5	0.3	0.2	gem	银子、银色	yin
+铂	0.6	0.3	0.1	gem	白金	bo
+钻	0.5	0.3	0.2	gem	钻石	zuan
+玛	0.2	0.6	0.2	gem	玛瑙	ma
+瑙	0.2	0.6	0.2	gem	玛瑙	nao
+珊	0.1	0.8	0.1	gem	珊瑚	shan
+瑚	0.2	0.6	0.2	gem	珊瑚	hu
+璃	0.2	0.6	0.2	gem	琉璃	li
+晶	0.4	0.4	0.2	gem	水晶	jing
+莹	0.2	0.6	0.2	gem	晶莹	ying
+璞	0.5	0.3	0.2	gem	璞玉	pu
+瑾	0.2	0.6	0.2	gem	美玉	jin
+瑜	0.3	0.5	0.2	gem	美玉	yu
+德	0.8	0.1	0.1	virtue	德行、品德	de
+仁	0.7	0.2	0.1	virtue	仁爱、仁义	ren
+义	0.8	0.1	0.1	virtue	正义、义气	yi
+礼	0.6	0.3	0.1	virtue	礼仪、礼貌	li
+智	0.7	0.2	0.1	wisdom	智慧、聪明	zhi
+信	0.7	0.2	0.1	virtue	诚信、信任	xin
+忠	0.8	0.1	0.1	virtue	忠诚、忠心	zhong
+孝	0.7	0.2	0.1	virtue	孝顺、孝敬	xiao
+勇	0.95	0.02	0.03	virtue	勇敢、勇气	yong
+诚	0.7	0.2	0.1	virtue	诚实、真诚	cheng
+正	0.8	0.1	0.1	virtue	正直、公正	zheng
+直	0.8	0.1	0.1	virtue	正直、直率	zhi
+善	0.6	0.3	0.1	virtue	善良、善行	shan
+美	0.3	0.5	0.2	beauty	美丽、美好	mei
+真	0.6	0.3	0.1	virtue	真诚、真实	zhen
+纯	0.3	0.5	0.2	virtue	纯洁、纯净	chun
+雅	0.3	0.5	0.2	beauty	高雅、文雅	ya
+淑	0.1	0.8	0.1	virtue	贤淑、淑女	shu
+贤	0.6	0.3	0.1	virtue	贤惠、贤能	xian
+良	0.6	0.3	0.1	virtue	善良、良好	liang
+惠	0.3	0.5	0.2	virtue	恩惠、惠爱	hui
+恩	0.5	0.3	0.2	virtue	恩情、感恩	en
+慈	0.2	0.6	0.2	virtue	慈爱、慈悲	ci
+爱	0.4	0.4	0.2	virtue	爱心、爱护	ai
+情	0.3	0.5	0.2	beauty	情感、情谊	qing
+心	0.5	0.3	0.2	beauty	心灵、心意	xin
+意	0.5	0.3	0.2	beauty	心意、意愿	yi
+念	0.4	0.4	0.2	beauty	思念、想念	nian
+恩	0.5	0.3	0.2	virtue	恩情、感恩	en
+惠	0.3	0.5	0.2	virtue	恩惠、惠爱	hui
+慈	0.2	0.6	0.2	virtue	慈爱、慈悲	ci
+爱	0.4	0.4	0.2	virtue	爱心、爱护	ai
+情	0.3	0.5	0.2	beauty	情感、情谊	qing
+心	0.5	0.3	0.2	beauty	心灵、心意	xin
+意	0.5	0.3	0.2	beauty	心意、意愿	yi
+念	0.4	0.4	0.2	beauty	思念、想念	nian
+思	0.4	0.4	0.2	wisdom	思考、思念	si
+想	0.5	0.3	0.2	wisdom	思想、想念	xiang
+悟	0.6	0.3	0.1	wisdom	领悟、觉悟	wu
+觉	0.5	0.3	0.2	wisdom	觉悟、觉醒	jue
+明	0.7	0.2	0.1	wisdom	明白、明亮	ming
+聪	0.5	0.3	0.2	wisdom	聪明、聪慧	cong
+慧	0.4	0.4	0.2	wisdom	智慧、聪慧	hui
+智	0.7	0.2	0.1	wisdom	智慧、聪明	zhi
+睿	0.6	0.3	0.1	wisdom	睿智、明智	rui
+哲	0.7	0.2	0.1	wisdom	哲学、哲人	zhe
+贤	0.6	0.3	0.1	virtue	贤惠、贤能	xian
+圣	0.7	0.2	0.1	virtue	圣贤、圣明	sheng
+达	0.7	0.2	0.1	wisdom	通达、达观	da
+通	0.6	0.3	0.1	wisdom	通达、通晓	tong
+晓	0.6	0.3	0.1	wisdom	知晓、晓悟	xiao
+知	0.6	0.3	0.1	wisdom	知识、知道	zhi
+识	0.6	0.3	0.1	wisdom	知识、见识	shi
+学	0.6	0.3	0.1	wisdom	学习、学问	xue
+问	0.5	0.3	0.2	wisdom	学问、提问	wen
+研	0.6	0.3	0.1	wisdom	研究、钻研	yan
+究	0.6	0.3	0.1	wisdom	研究、探究	jiu
+探	0.6	0.3	0.1	wisdom	探索、探究	tan
+索	0.6	0.3	0.1	wisdom	探索、索取	suo
+书	0.5	0.3	0.2	literary	书籍、书写	shu
+画	0.3	0.5	0.2	literary	绘画、图画	hua
+诗	0.4	0.4	0.2	literary	诗歌、诗词	shi
+词	0.4	0.4	0.2	literary	诗词、词章	ci
+赋	0.6	0.3	0.1	literary	辞赋、赋予	fu
+章	0.6	0.3	0.1	literary	文章、章节	zhang
+翰	0.7	0.2	0.1	literary	翰墨、文翰	han
+墨	0.6	0.3	0.1	literary	墨宝、笔墨	mo
+笔	0.6	0.3	0.1	literary	笔墨、笔法	bi
+砚	0.6	0.3	0.1	literary	砚台、笔墨	yan
+琴	0.2	0.6	0.2	literary	琴瑟、音乐	qin
+棋	0.5	0.3	0.2	literary	棋艺、下棋	qi
+书	0.5	0.3	0.2	literary	书籍、书法	shu
+画	0.3	0.5	0.2	literary	绘画、图画	hua
+韵	0.3	0.5	0.2	literary	韵律、韵味	yun
+律	0.5	0.3	0.2	literary	韵律、规律	lv
+曲	0.3	0.5	0.2	literary	曲调、歌曲	qu
+歌	0.4	0.4	0.2	literary	歌唱、歌曲	ge
+舞	0.3	0.5	0.2	beauty	舞蹈、舞动	wu
+乐	0.5	0.3	0.2	literary	音乐、快乐	le
+音	0.4	0.4	0.2	literary	音乐、声音	yin
+声	0.5	0.3	0.2	literary	声音、声调	sheng
+调	0.5	0.3	0.2	literary	声调、曲调	diao
+弦	0.4	0.4	0.2	literary	琴弦、弦乐	xian
+箫	0.5	0.3	0.2	literary	洞箫、箫声	xiao
+笛	0.4	0.4	0.2	literary	笛子、笛声	di
+筝	0.3	0.5	0.2	literary	古筝、筝琴	zheng
+瑟	0.4	0.4	0.2	literary	琴瑟	se
+笙	0.5	0.3	0.2	literary	笙箫、笙歌	sheng
+管	0.6	0.3	0.1	literary	管乐、管理	guan
+弦	0.4	0.4	0.2	literary	琴弦、弦乐	xian

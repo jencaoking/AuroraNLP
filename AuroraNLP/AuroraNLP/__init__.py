@@ -88,6 +88,42 @@ from .hybrid import (
 )
 from .scel_parser import ScelParser, ScelWord, ScelMetadata, ScelBatchParser
 from .sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
+from .managers import (
+    DictionaryService,
+    StopWordsManager,
+    KeywordExtractorManager,
+    SimilarityManager,
+    MLSegmentorManager,
+    LatticeSegmentorManager,
+    AmbiguityDetectorManager,
+    NewWordDetectorManager,
+    HybridSegmentorManager,
+)
+from .thesaurus import (
+    WordRelation,
+    CATEGORY_NAMES,
+    SUBCATEGORY_NAMES,
+    ThesaurusEntry,
+    SemanticCategory,
+    Thesaurus,
+    ThesaurusManager,
+)
+from .person_name import (
+    Gender,
+    SurnameType,
+    Surname,
+    NameChar,
+    PersonName,
+    NAME_CHAR_CATEGORIES,
+    PersonNameDictionary,
+    PersonNameManager,
+)
+from .location import (
+    AdminLevel,
+    Location,
+    LocationDatabase,
+    LocationManager,
+)
 
 __all__ = [
     "Segmentor",
@@ -196,4 +232,32 @@ __all__ = [
     "ScelConverter",
     "SogouDictionary",
     "SogouDictionaryManager",
+    "DictionaryService",
+    "StopWordsManager",
+    "KeywordExtractorManager",
+    "SimilarityManager",
+    "MLSegmentorManager",
+    "LatticeSegmentorManager",
+    "AmbiguityDetectorManager",
+    "NewWordDetectorManager",
+    "HybridSegmentorManager",
+    "WordRelation",
+    "CATEGORY_NAMES",
+    "SUBCATEGORY_NAMES",
+    "ThesaurusEntry",
+    "SemanticCategory",
+    "Thesaurus",
+    "ThesaurusManager",
+    "Gender",
+    "SurnameType",
+    "Surname",
+    "NameChar",
+    "PersonName",
+    "NAME_CHAR_CATEGORIES",
+    "PersonNameDictionary",
+    "PersonNameManager",
+    "AdminLevel",
+    "Location",
+    "LocationDatabase",
+    "LocationManager",
 ]

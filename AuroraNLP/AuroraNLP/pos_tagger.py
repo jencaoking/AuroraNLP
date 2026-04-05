@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Any
 from collections import defaultdict
 import math
 import pickle
@@ -249,7 +249,7 @@ class HMMPOSTagger:
     def is_trained(self) -> bool:
         return self._trained
     
-    def get_model_info(self) -> Dict[str, any]:
+    def get_model_info(self) -> Dict[str, Any]:
         if not self._trained:
             return {'trained': False}
         
@@ -563,7 +563,7 @@ class CRFPOSTagger:
     def is_trained(self) -> bool:
         return self._trained
     
-    def get_model_info(self) -> Dict[str, any]:
+    def get_model_info(self) -> Dict[str, Any]:
         if not self._trained:
             return {'trained': False}
         

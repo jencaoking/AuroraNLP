@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, Any
 from collections import defaultdict
 import math
 import pickle
@@ -243,7 +243,7 @@ class NGramModel:
     def is_trained(self) -> bool:
         return self._trained
     
-    def get_model_info(self) -> Dict[str, any]:
+    def get_model_info(self) -> Dict[str, Any]:
         if not self._trained:
             return {'trained': False}
         
@@ -453,7 +453,7 @@ class BigramModel(NGramModel):
             self._unigram_freq = defaultdict(int, model_data['unigram_freq'])
             self._total_bigrams = model_data['total_bigrams']
     
-    def get_model_info(self) -> Dict[str, any]:
+    def get_model_info(self) -> Dict[str, Any]:
         info = super().get_model_info()
         if self._trained:
             info['total_bigrams'] = self._total_bigrams
