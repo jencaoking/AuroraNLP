@@ -57,6 +57,20 @@ from .dependency_parser import (
     create_sample_dependency_corpus,
     train_dependency_parser_from_file,
 )
+from .constituent_parser import (
+    CONSTITUENT_LABELS,
+    POS_LABELS,
+    DEFAULT_NON_TERMINALS,
+    DEFAULT_TERMINALS,
+    GrammarRule,
+    ConstituentNode,
+    ConstituentTree,
+    PCFG,
+    CKYParser,
+    ConstituentParser,
+    create_sample_constituent_trees,
+    train_constituent_parser_from_file,
+)
 
 __all__ = [
     "Segmentor",
@@ -133,4 +147,16 @@ __all__ = [
     "DependencyParser",
     "create_sample_dependency_corpus",
     "train_dependency_parser_from_file",
+    "CONSTITUENT_LABELS",
+    "POS_LABELS",
+    "DEFAULT_NON_TERMINALS",
+    "DEFAULT_TERMINALS",
+    "GrammarRule",
+    "ConstituentNode",
+    "ConstituentTree",
+    "PCFG",
+    "CKYParser",
+    "ConstituentParser",
+    "create_sample_constituent_trees",
+    "train_constituent_parser_from_file",
 ]
