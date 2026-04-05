@@ -21,6 +21,7 @@ from .hmm import HMMSegmentor
 from .crf import CRFSegmentor
 from .perceptron import PerceptronSegmentor
 from .lattice import LatticeSegmentor, Lattice
+from .ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
 
 
 POS_TAG_NAMES = {
@@ -91,6 +92,8 @@ class Segmentor:
 
         self.use_lattice = use_lattice
         self.lattice_segmentor = LatticeSegmentor(self.dictionary)
+
+        self.ambiguity_detector = AmbiguityDetector(self.dictionary)
 
     @property
     def dict_manager(self) -> DictionaryManager:
@@ -601,3 +604,46 @@ class Segmentor:
 
     def set_use_lattice(self, use_lattice: bool) -> None:
         self.use_lattice = use_lattice
+
+    def detect_ambiguity(self, text: str) -> AmbiguityResult:
+        return self.ambiguity_detector.detect(text)
+
+    def detect_ambiguity_from_lattice(self, text: str) -> AmbiguityResult:
+        lattice = self.build_lattice(text)
+        return self.ambiguity_detector.detect_from_lattice(lattice)
+
+    def get_ambiguity_statistics(self, text: str) -> Dict:
+        return self.ambiguity_detector.get_ambiguity_statistics(text)
+
+    def has_ambiguity(self, text: str) -> bool:
+        result = self.detect_ambiguity(text)
+        return result.has_ambiguity()
+
+    def get_cross_ambiguities(self, text: str) -> List[AmbiguityRegion]:
+        result = self.detect_ambiguity(text)
+        return result.get_regions_by_type(AmbiguityType.CROSS)
+
+    def get_combination_ambiguities(self, text: str) -> List[AmbiguityRegion]:
+        result = self.detect_ambiguity(text)
+        return result.get_regions_by_type(AmbiguityType.COMBINATION)
+
+    def get_overlap_ambiguities(self, text: str) -> List[AmbiguityRegion]:
+        result = self.detect_ambiguity(text)
+        return result.get_regions_by_type(AmbiguityType.OVERLAP)
+
+    def resolve_ambiguity(
+        self, 
+        text: str, 
+        method: str = 'shortest'
+    ) -> List[str]:
+        if method == 'shortest':
+            return self.segment(text, mode='lattice')
+        elif method == 'ngram':
+            lattice = self.build_lattice(text)
+            self.lattice_segmentor.set_scoring_method('ngram')
+            return self.lattice_segmentor.segment(text)
+        elif method == 'frequency':
+            self.lattice_segmentor.set_scoring_method('frequency')
+            return self.lattice_segmentor.segment(text)
+        else:
+            return self.segment(text, mode='lattice')

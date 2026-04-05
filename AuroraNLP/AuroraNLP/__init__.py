@@ -11,6 +11,7 @@ from .ngram import NGramModel, BigramModel, TrigramModel
 from .crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
 from .perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFeatureTemplate
 from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
+from .ambiguity import AmbiguityType, AmbiguityRegion, AmbiguityResult, AmbiguityDetector
 
 __all__ = [
     "Segmentor",
@@ -41,5 +42,9 @@ __all__ = [
     "LatticeNode",
     "LatticeBuilder",
     "LatticeSegmentor",
-    "PathScorer"
+    "PathScorer",
+    "AmbiguityType",
+    "AmbiguityRegion",
+    "AmbiguityResult",
+    "AmbiguityDetector"
 ]
