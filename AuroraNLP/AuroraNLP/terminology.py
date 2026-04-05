@@ -177,7 +177,7 @@ class TerminologyDatabase:
                 if not line or line.startswith('#'):
                     if line.startswith('# @'):
                         section = line[3:].strip()
-                        if section in ['medical', 'legal', 'finance', 'it', 'other']:
+                        if section in [domain.value for domain in TermDomain]:
                             current_section = section
                     continue
                 
@@ -555,6 +555,10 @@ class TerminologyDatabase:
                         ]
                         f.write('\t'.join(parts) + '\n')
     
+    def load_sogou_data(self) -> None:
+        self._load_sogou_data()
+        self._sogou_loaded = True
+    
     def __len__(self) -> int:
         return self._term_count
     
@@ -588,8 +592,7 @@ class TerminologyManager:
         if path:
             self._database.load_data(path)
         if load_sogou:
-            self._database._load_sogou_data()
-            self._database._sogou_loaded = True
+            self._database.load_sogou_data()
     
     def get_database(self) -> Optional[TerminologyDatabase]:
         return self._database
