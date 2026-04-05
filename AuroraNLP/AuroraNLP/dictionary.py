@@ -63,7 +63,12 @@ class Dictionary:
                     try:
                         weight = float(weight_str)
                         word_priority = int(priority_str)
-                    except ValueError:
+                    except ValueError as e:
+                        warnings.warn(
+                            f"第 {line_num} 行: 权重或优先级格式错误，使用默认值: {e}",
+                            UserWarning,
+                            stacklevel=2
+                        )
                         weight = default_weight
                         word_priority = priority
                     self._trie.insert(word, pos_tag, weight, word_priority)
