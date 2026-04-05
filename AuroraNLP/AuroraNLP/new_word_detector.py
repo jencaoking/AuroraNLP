@@ -125,11 +125,11 @@ class NewWordDetector:
             char_freq = self._char_freq.get(char, 0)
             p_char = char_freq / self._total_chars if self._total_chars > 0 else 0
             if p_char == 0:
-                return 0.0
+                return float('-inf')
             p_chars *= p_char
 
         if p_chars == 0:
-            return 0.0
+            return float('-inf')
 
         pmi = math.log(p_word / p_chars)
 
@@ -345,7 +345,10 @@ class NewWordDetector:
         if not self._trained:
             raise RuntimeError("Model has not been trained. Call train() first.")
 
-        existing_words = dictionary.get_words() if hasattr(dictionary, 'get_words') else set()
+        if not (hasattr(dictionary, 'get_words') and hasattr(dictionary, 'add_word')):
+            raise TypeError("dictionary must have both 'get_words' and 'add_word' methods")
+
+        existing_words = dictionary.get_words()
 
         new_words = self.get_new_words(
             existing_words,
