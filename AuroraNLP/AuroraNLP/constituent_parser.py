@@ -1,10 +1,9 @@
-from typing import List, Tuple, Dict, Optional, Iterator, Set, Union
+from typing import List, Tuple, Dict, Optional, Iterator, Set
 from collections import defaultdict
 from dataclasses import dataclass, field
 import math
 import pickle
 import os
-import re
 
 
 CONSTITUENT_LABELS = {
@@ -163,7 +162,7 @@ class ConstituentNode:
         return result
     
     def get_height(self) -> int:
-        if self.is_terminal():
+        if self.is_terminal() or not self.children:
             return 0
         return 1 + max(child.get_height() for child in self.children)
     
@@ -436,7 +435,7 @@ class PCFG:
         
         self.non_terminals.add(rule.lhs)
         for symbol in rule.rhs:
-            if len(symbol) == 1 or symbol.isupper():
+            if symbol.isupper() and symbol.isalpha():
                 self.non_terminals.add(symbol)
             else:
                 self.terminals.add(symbol)
@@ -635,13 +634,16 @@ class CKYParser:
         
         prob, backpointer = chart[(start, end)][symbol]
         
-        if isinstance(backpointer[0], str) and len(backpointer) == 1:
+        if backpointer and len(backpointer) == 1 and isinstance(backpointer[0], str):
             word = backpointer[0]
             word_node = ConstituentNode(label=word, word=word, start=start, end=end)
             return ConstituentNode(label=symbol, children=[word_node], start=start, end=end)
         
-        if len(backpointer) == 3:
+        if backpointer and len(backpointer) == 3:
             split, left_sym, right_sym = backpointer
+            
+            if not isinstance(split, int):
+                return None
             
             left_child = self._build_tree(chart, start, split, left_sym, words)
             right_child = self._build_tree(chart, split, end, right_sym, words)
@@ -732,13 +734,16 @@ class CKYParser:
         
         prob, backpointer = chart[(start, end)][symbol][rank]
         
-        if isinstance(backpointer[0], str) and len(backpointer) == 1:
+        if backpointer and len(backpointer) == 1 and isinstance(backpointer[0], str):
             word = backpointer[0]
             word_node = ConstituentNode(label=word, word=word, start=start, end=end)
             return ConstituentNode(label=symbol, children=[word_node], start=start, end=end)
         
-        if len(backpointer) == 3:
+        if backpointer and len(backpointer) == 3:
             split, left_sym, right_sym = backpointer
+            
+            if not isinstance(split, int):
+                return None
             
             left_child = self._build_tree_k_best(chart, start, split, left_sym, words, 0)
             right_child = self._build_tree_k_best(chart, split, end, right_sym, words, 0)
