@@ -319,6 +319,15 @@ class LatticeSegmentor:
             path.append(edge)
             pos = edge.start
         
+        if not path and lattice.length > 0:
+            for i in range(lattice.length):
+                path.append(LatticeEdge(
+                    word=lattice.text[i],
+                    start=i,
+                    end=i + 1,
+                    pos_tag='x'
+                ))
+        
         path.reverse()
         return path
     
@@ -360,6 +369,15 @@ class LatticeSegmentor:
             path.append(edge)
             pos = edge.start
         
+        if not path and lattice.length > 0:
+            for i in range(lattice.length):
+                path.append(LatticeEdge(
+                    word=lattice.text[i],
+                    start=i,
+                    end=i + 1,
+                    pos_tag='x'
+                ))
+        
         path.reverse()
         return path
     
@@ -395,6 +413,9 @@ class LatticeSegmentor:
             edge = prev[pos]
             path.append(edge)
             pos = edge.start
+        
+        if not path and lattice.length > 0:
+            return self.shortest_path(lattice)
         
         path.reverse()
         return path

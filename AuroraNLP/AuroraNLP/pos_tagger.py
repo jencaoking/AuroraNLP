@@ -187,6 +187,9 @@ class HMMPOSTagger:
                 best_final_prob = V[length - 1][tag]
                 best_final_tag = tag
         
+        if best_final_tag is None:
+            return ['x'] * length
+        
         return path[best_final_tag]
     
     def tag(self, words: List[str]) -> List[str]:
@@ -507,6 +510,9 @@ class CRFPOSTagger:
             if viterbi_scores[length - 1][tag] > best_final_score:
                 best_final_score = viterbi_scores[length - 1][tag]
                 best_final_tag = tag
+        
+        if best_final_tag is None:
+            return ['x'] * length
         
         path = [best_final_tag]
         for pos in range(length - 1, 0, -1):

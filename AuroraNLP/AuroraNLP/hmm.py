@@ -166,6 +166,9 @@ class HMMSegmentor:
                 best_final_prob = V[length - 1][state]
                 best_final_state = state
         
+        if best_final_state is None:
+            return [self.STATE_S] * length
+        
         return path[best_final_state]
     
     def segment(self, text: str) -> List[str]:

@@ -374,6 +374,9 @@ class CRFModel:
                 best_final_score = viterbi_scores[length - 1][tag]
                 best_final_tag = tag
         
+        if best_final_tag is None:
+            return ['O'] * length
+        
         path = [best_final_tag]
         for pos in range(length - 1, 0, -1):
             path.append(backpointers[pos][path[-1]])
