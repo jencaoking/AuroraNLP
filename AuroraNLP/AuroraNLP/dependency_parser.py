@@ -183,8 +183,7 @@ class DependencyTree:
             return False
         
         arcs = self.get_arcs()
-        dependents = [arc.dependent for arc in arcs]
-        if len(dependents) != len(set(dependents)):
+        if len(arcs) != len({arc.dependent for arc in arcs}):
             return False
         
         visited = set()
