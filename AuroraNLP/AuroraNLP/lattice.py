@@ -492,7 +492,7 @@ class LatticeSegmentor:
                 for edge in outgoing:
                     for other_edge in outgoing:
                         if edge != other_edge:
-                            if edge.end > other_edge.start and edge.start < other_edge.end:
+                            if edge.end > other_edge.start and edge.start < other_edge.start:
                                 cross_ambiguity.append({
                                     'type': 'cross',
                                     'position': pos,

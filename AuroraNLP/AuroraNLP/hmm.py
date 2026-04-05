@@ -174,6 +174,9 @@ class HMMSegmentor:
         
         states = self.viterbi(text)
         
+        if not states:
+            return list(text)
+        
         words = []
         word_start = 0
         
@@ -187,7 +190,7 @@ class HMMSegmentor:
             elif state == self.STATE_B:
                 word_start = i
         
-        if word_start < len(text):
+        if word_start < len(text) and states and states[-1] not in (self.STATE_E, self.STATE_S):
             words.append(text[word_start:])
         
         return words

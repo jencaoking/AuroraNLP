@@ -490,6 +490,9 @@ class PerceptronSegmentor:
         chars = list(text)
         states = self.model.predict(chars)
         
+        if not states:
+            return list(text)
+        
         words = []
         word_start = 0
         
@@ -503,7 +506,7 @@ class PerceptronSegmentor:
             elif state == self.STATE_B:
                 word_start = i
         
-        if word_start < len(text):
+        if word_start < len(text) and states and states[-1] not in (self.STATE_E, self.STATE_S):
             words.append(text[word_start:])
         
         return words

@@ -427,14 +427,24 @@ class BigramModel(NGramModel):
             'total_bigrams': self._total_bigrams
         }
         
-        bigram_filepath = filepath.replace('.pkl', '_bigram.pkl')
+        base, ext = os.path.splitext(filepath)
+        if ext == '.pkl':
+            bigram_filepath = f"{base}_bigram.pkl"
+        else:
+            bigram_filepath = f"{filepath}_bigram.pkl"
+        
         with open(bigram_filepath, 'wb') as f:
             pickle.dump(model_data, f)
     
     def load_model(self, filepath: str):
         super().load_model(filepath)
         
-        bigram_filepath = filepath.replace('.pkl', '_bigram.pkl')
+        base, ext = os.path.splitext(filepath)
+        if ext == '.pkl':
+            bigram_filepath = f"{base}_bigram.pkl"
+        else:
+            bigram_filepath = f"{filepath}_bigram.pkl"
+        
         if os.path.exists(bigram_filepath):
             with open(bigram_filepath, 'rb') as f:
                 model_data = pickle.load(f)
