@@ -1,0 +1,131 @@
+# 机构名词库数据文件
+# 格式说明:
+# 机构ID\t名称\t类型\t子类型\t地区\t别名\t网址\t描述\t成立时间\t地址\t扩展字段
+#
+# 类型: enterprise(企业), school(学校), hospital(医院), government(政府机构)
+# 子类型:
+#   企业: state_owned(国企), private(民企), foreign(外企), joint_venture(合资), listed(上市), startup(创业)
+#   学校: university(大学), college(学院), high_school(高中), middle_school(初中), primary_school(小学), kindergarten(幼儿园), vocational(职业)
+#   医院: general(综合), specialized(专科), tcm(中医), community(社区), clinic(诊所), maternity(妇幼), children(儿童)
+#   政府: central(中央), province(省), city(市), county(县), town(乡镇)
+
+# @enterprises
+ENT001	阿里巴巴集团	enterprise	private	浙江	阿里巴巴,阿里,Alibaba	https://www.alibaba.com	全球领先的电子商务和科技公司	1999	浙江省杭州市	互联网
+ENT002	腾讯控股有限公司	enterprise	private	广东	腾讯,Tencent	https://www.tencent.com	中国最大的互联网综合服务提供商	1998	广东省深圳市	互联网
+ENT003	华为技术有限公司	enterprise	private	广东	华为,Huawei	https://www.huawei.com	全球领先的信息与通信技术解决方案供应商	1987	广东省深圳市	通信
+ENT004	百度在线网络技术有限公司	enterprise	private	北京	百度,Baidu	https://www.baidu.com	全球最大的中文搜索引擎	2000	北京市	互联网
+ENT005	京东集团	enterprise	private	北京	京东,JD	https://www.jd.com	中国领先的自营式电商企业	1998	北京市	电商
+ENT006	字节跳动有限公司	enterprise	private	北京	字节跳动,ByteDance	https://www.bytedance.com	全球化的内容平台和科技公司	2012	北京市	互联网
+ENT007	美团	enterprise	private	北京	美团,Meituan	https://www.meituan.com	中国领先的生活服务电子商务平台	2010	北京市	互联网
+ENT008	小米科技有限责任公司	enterprise	private	北京	小米,Xiaomi	https://www.mi.com	全球领先的智能手机和智能硬件公司	2010	北京市	电子
+ENT009	网易公司	enterprise	private	广东	网易,NetEase	https://www.163.com	中国领先的互联网技术公司	1997	广东省广州市	互联网
+ENT010	拼多多	enterprise	private	上海	拼多多,Pinduoduo	https://www.pinduoduo.com	新电商平台	2015	上海市	电商
+ENT011	中国石油天然气集团有限公司	enterprise	state_owned	北京	中石油,PetroChina	https://www.cnpc.com.cn	中国最大的油气生产商和供应商	1988	北京市	能源
+ENT012	中国石化集团有限公司	enterprise	state_owned	北京	中石化,Sinopec	https://www.sinopec.com	中国最大的成品油供应商	1983	北京市	能源
+ENT013	国家电网有限公司	enterprise	state_owned	北京	国家电网,State Grid	https://www.sgcc.com.cn	全球最大的公用事业企业	2002	北京市	电力
+ENT014	中国移动通信集团有限公司	enterprise	state_owned	北京	中国移动,China Mobile	https://www.chinamobile.com	全球网络规模最大的移动通信运营商	2000	北京市	通信
+ENT015	中国工商银行股份有限公司	enterprise	state_owned	北京	工商银行,ICBC	https://www.icbc.com.cn	中国最大的商业银行	1984	北京市	金融
+ENT016	中国建设银行股份有限公司	enterprise	state_owned	北京	建设银行,CCB	https://www.ccb.com	中国领先的大型商业银行	1954	北京市	金融
+ENT017	中国农业银行股份有限公司	enterprise	state_owned	北京	农业银行,ABC	https://www.abchina.com	中国主要的综合性金融服务提供商	1951	北京市	金融
+ENT018	中国银行股份有限公司	enterprise	state_owned	北京	中国银行,BOC	https://www.boc.cn	中国国际化和多元化程度最高的银行	1912	北京市	金融
+ENT019	中国平安保险(集团)股份有限公司	enterprise	private	广东	平安保险,平安,Ping An	https://www.pingan.com	中国第一家股份制保险企业	1988	广东省深圳市	金融
+ENT020	招商银行股份有限公司	enterprise	private	广东	招商银行,CMB	https://www.cmbchina.com	中国第一家完全由企业法人持股的股份制商业银行	1987	广东省深圳市	金融
+ENT021	海尔智家股份有限公司	enterprise	private	山东	海尔,Haier	https://www.haier.com	全球领先的家电品牌	1984	山东省青岛市	家电
+ENT022	格力电器股份有限公司	enterprise	private	广东	格力,Gree	https://www.gree.com	中国最大的空调生产企业	1991	广东省珠海市	家电
+ENT023	比亚迪股份有限公司	enterprise	private	广东	比亚迪,BYD	https://www.byd.com	中国领先的新能源汽车企业	1995	广东省深圳市	汽车
+ENT034	宁德时代新能源科技股份有限公司	enterprise	private	福建	宁德时代,CATL	https://www.catl.com	全球领先的动力电池企业	2011	福建省宁德市	新能源
+ENT025	大疆创新科技有限公司	enterprise	private	广东	大疆,DJI	https://www.dji.com	全球领先的民用无人机企业	2006	广东省深圳市	电子
+ENT026	滴滴出行科技有限公司	enterprise	private	北京	滴滴,Didi	https://www.didiglobal.com	全球领先的移动出行平台	2012	北京市	出行
+ENT027	蚂蚁科技集团股份有限公司	enterprise	private	浙江	蚂蚁集团,蚂蚁金服,Ant Group	https://www.antgroup.com	全球领先的金融科技开放平台	2004	浙江省杭州市	金融科技
+ENT028	上海汽车集团股份有限公司	enterprise	state_owned	上海	上汽集团,SAIC	https://www.saicmotor.com	中国最大的汽车集团	1984	上海市	汽车
+ENT029	中国第一汽车集团有限公司	enterprise	state_owned	吉林	一汽,FAW	https://www.faw.com.cn	中国汽车工业的摇篮	1953	吉林省长春市	汽车
+ENT030	东风汽车集团有限公司	enterprise	state_owned	湖北	东风,DFM	https://www.dfmg.com.cn	中国四大汽车集团之一	1969	湖北省武汉市	汽车
+ENT031	苹果公司	enterprise	foreign	美国	苹果,Apple	https://www.apple.com	全球领先的科技公司	1976	美国加利福尼亚州	电子
+ENT032	微软公司	enterprise	foreign	美国	微软,Microsoft	https://www.microsoft.com	全球最大的软件公司	1975	美国华盛顿州	软件
+ENT033	谷歌公司	enterprise	foreign	美国	谷歌,Google	https://www.google.com	全球最大的搜索引擎公司	1998	美国加利福尼亚州	互联网
+ENT034	亚马逊公司	enterprise	foreign	美国	亚马逊,Amazon	https://www.amazon.com	全球最大的电商平台	1994	美国华盛顿州	电商
+ENT035	特斯拉公司	enterprise	foreign	美国	特斯拉,Tesla	https://www.tesla.com	全球领先的电动汽车制造商	2003	美国德克萨斯州	汽车
+ENT036	三星电子	enterprise	foreign	韩国	三星,Samsung	https://www.samsung.com	全球领先的电子产品制造商	1969	韩国	电子
+ENT037	丰田汽车公司	enterprise	foreign	日本	丰田,Toyota	https://www.toyota.com	全球最大的汽车制造商之一	1937	日本	汽车
+ENT038	大众汽车集团	enterprise	foreign	德国	大众,Volkswagen	https://www.volkswagen.com	全球领先的汽车制造商	1937	德国	汽车
+ENT039	西门子股份公司	enterprise	foreign	德国	西门子,Siemens	https://www.siemens.com	全球领先的工业制造企业	1847	德国	工业
+ENT040	英特尔公司	enterprise	foreign	美国	英特尔,Intel	https://www.intel.com	全球最大的半导体芯片制造商	1968	美国加利福尼亚州	半导体
+
+# @schools
+SCH001	北京大学	school	university	北京	北大,燕京大学	https://www.pku.edu.cn	中国最高学府之一	1898	北京市海淀区	985
+SCH002	清华大学	school	university	北京	清华	https://www.tsinghua.edu.cn	中国顶尖学府	1911	北京市海淀区	985
+SCH003	复旦大学	school	university	上海	复旦	https://www.fudan.edu.cn	中国顶尖综合性大学	1905	上海市杨浦区	985
+SCH004	上海交通大学	school	university	上海	上海交大,交大	https://www.sjtu.edu.cn	中国顶尖研究型大学	1896	上海市闵行区	985
+SCH005	浙江大学	school	university	浙江	浙大	https://www.zju.edu.cn	中国顶尖综合性大学	1897	浙江省杭州市	985
+SCH006	南京大学	school	university	江苏	南大	https://www.nju.edu.cn	中国顶尖综合性大学	1902	江苏省南京市	985
+SCH007	中国科学技术大学	school	university	安徽	中科大	https://www.ustc.edu.cn	中国顶尖研究型大学	1958	安徽省合肥市	985
+SCH008	武汉大学	school	university	湖北	武大	https://www.whu.edu.cn	中国顶尖综合性大学	1893	湖北省武汉市	985
+SCH009	华中科技大学	school	university	湖北	华科,华中大	https://www.hust.edu.cn	中国顶尖研究型大学	1953	湖北省武汉市	985
+SCH010	中山大学	school	university	广东	中大	https://www.sysu.edu.cn	中国顶尖综合性大学	1924	广东省广州市	985
+SCH011	西安交通大学	school	university	陕西	西安交大	https://www.xjtu.edu.cn	中国顶尖研究型大学	1896	陕西省西安市	985
+SCH012	哈尔滨工业大学	school	university	黑龙江	哈工大	https://www.hit.edu.cn	中国顶尖工科大学	1920	黑龙江省哈尔滨市	985
+SCH013	同济大学	school	university	上海	同济	https://www.tongji.edu.cn	中国顶尖工科大学	1907	上海市杨浦区	985
+SCH014	南开大学	school	university	天津	南开	https://www.nankai.edu.cn	中国顶尖综合性大学	1919	天津市南开区	985
+SCH015	天津大学	school	university	天津	天大	https://www.tju.edu.cn	中国顶尖工科大学	1895	天津市南开区	985
+SCH016	北京师范大学	school	university	北京	北师大	https://www.bnu.edu.cn	中国顶尖师范类大学	1902	北京市海淀区	985
+SCH017	中国人民大学	school	university	北京	人大	https://www.ruc.edu.cn	中国顶尖人文社科大学	1937	北京市海淀区	985
+SCH018	北京航空航天大学	school	university	北京	北航	https://www.buaa.edu.cn	中国顶尖航空航天大学	1952	北京市海淀区	985
+SCH019	北京理工大学	school	university	北京	北理工	https://www.bit.edu.cn	中国顶尖工科大学	1940	北京市海淀区	985
+SCH020	四川大学	school	university	四川	川大	https://www.scu.edu.cn	中国西南地区顶尖大学	1896	四川省成都市	985
+SCH021	中国人民大学附属中学	school	high_school	北京	人大附中	https://www.rdfz.cn	北京市重点中学	1950	北京市海淀区	重点
+SCH022	北京市第四中学	school	high_school	北京	北京四中	https://www.bhsf.cn	北京市重点中学	1907	北京市西城区	重点
+SCH023	上海市上海中学	school	high_school	上海	上海中学	https://www.shs.sh.cn	上海市重点中学	1865	上海市徐汇区	重点
+SCH024	华东师范大学第二附属中学	school	high_school	上海	华师大二附中	https://www.hsefz.cn	上海市重点中学	1958	上海市浦东新区	重点
+SCH025	杭州第二中学	school	high_school	浙江	杭二中	https://www.hz2hs.cn	浙江省重点中学	1899	浙江省杭州市	重点
+SCH026	深圳中学	school	high_school	广东	深中	https://www.shenzhong.net	广东省重点中学	1947	广东省深圳市	重点
+SCH027	北京市第一实验小学	school	primary_school	北京	北京实验一小	https://www.bjsysx.cn	北京市重点小学	1912	北京市西城区	重点
+SCH028	北京市中关村第一小学	school	primary_school	北京	中关村一小	https://www.zgcyx.com	北京市重点小学	1949	北京市海淀区	重点
+SCH029	上海市实验小学	school	primary_school	上海	上海实验小学	https://www.syps.edu.cn	上海市重点小学	1911	上海市黄浦区	重点
+SCH030	北京市第一幼儿园	school	kindergarten	北京	北京一幼	https://www.bjyy.edu.cn	北京市示范幼儿园	1949	北京市东城区	示范
+
+# @hospitals
+HOS001	北京协和医院	hospital	general	北京	协和医院,协和,PUMCH	https://www.pumch.cn	中国顶尖综合性医院	1921	北京市东城区	三级甲等
+HOS002	中国人民解放军总医院	hospital	general	北京	解放军总医院,301医院	https://www.301hospital.com.cn	中国顶尖综合性医院	1953	北京市海淀区	三级甲等
+HOS003	北京大学第一医院	hospital	general	北京	北大医院	https://www.bddyyy.com.cn	北京大学附属医院	1915	北京市西城区	三级甲等
+HOS004	北京大学人民医院	hospital	general	北京	人民医院	https://www.pkuph.cn	北京大学附属医院	1918	北京市西城区	三级甲等
+HOS005	中日友好医院	hospital	general	北京	中日医院	https://www.zryhyy.com.cn	国家卫生健康委员会直属医院	1984	北京市朝阳区	三级甲等
+HOS006	上海交通大学医学院附属瑞金医院	hospital	general	上海	瑞金医院	https://www.rjh.com.cn	上海顶尖综合性医院	1907	上海市黄浦区	三级甲等
+HOS007	复旦大学附属中山医院	hospital	general	上海	中山医院	https://www.zs-hospital.sh.cn	复旦大学附属医院	1937	上海市徐汇区	三级甲等
+HOS008	复旦大学附属华山医院	hospital	general	上海	华山医院	https://www.huashan.org.cn	复旦大学附属医院	1907	上海市静安区	三级甲等
+HOS009	上海交通大学医学院附属仁济医院	hospital	general	上海	仁济医院	https://www.renji.com	上海交通大学附属医院	1844	上海市黄浦区	三级甲等
+HOS010	华中科技大学同济医学院附属同济医院	hospital	general	湖北	同济医院	https://www.tjh.com.cn	华中科技大学附属医院	1900	湖北省武汉市	三级甲等
+HOS011	华中科技大学同济医学院附属协和医院	hospital	general	湖北	协和医院武汉	https://www.whuh.com	华中科技大学附属医院	1866	湖北省武汉市	三级甲等
+HOS012	浙江大学医学院附属第一医院	hospital	general	浙江	浙一医院	https://www.zy91.com	浙江大学附属医院	1947	浙江省杭州市	三级甲等
+HOS013	浙江大学医学院附属第二医院	hospital	general	浙江	浙二医院	https://www.z2hospital.com	浙江大学附属医院	1869	浙江省杭州市	三级甲等
+HOS014	四川大学华西医院	hospital	general	四川	华西医院	https://www.wchscu.cn	中国西部顶尖医院	1892	四川省成都市	三级甲等
+HOS015	广东省人民医院	hospital	general	广东	省医	https://www.gdghospital.org.cn	广东省顶尖医院	1946	广东省广州市	三级甲等
+HOS016	中国医学科学院肿瘤医院	hospital	specialized	北京	肿瘤医院	https://www.cicams.ac.cn	中国顶尖肿瘤专科医院	1958	北京市朝阳区	三级甲等
+HOS017	中国医学科学院阜外医院	hospital	specialized	北京	阜外医院	https://www.fuwaihospital.org	中国顶尖心血管专科医院	1956	北京市西城区	三级甲等
+HOS018	首都医科大学附属北京天坛医院	hospital	specialized	北京	天坛医院	https://www.bjtth.org	中国顶尖神经外科医院	1956	北京市丰台区	三级甲等
+HOS019	首都医科大学附属北京同仁医院	hospital	specialized	北京	同仁医院	https://www.trhos.com	中国顶尖眼科医院	1886	北京市东城区	三级甲等
+HOS020	北京中医药大学东直门医院	hospital	tcm	北京	东直门医院	https://www.dzmyy.com.cn	北京中医药大学附属医院	1958	北京市东城区	三级甲等
+HOS021	中国中医科学院广安门医院	hospital	tcm	北京	广安门医院	https://www.gamhospital.ac.cn	中国顶尖中医院	1955	北京市西城区	三级甲等
+HOS022	首都儿科研究所附属儿童医院	hospital	children	北京	儿童医院	https://www.shouer.com.cn	北京顶尖儿童医院	1958	北京市朝阳区	三级甲等
+HOS023	北京市妇幼保健院	hospital	maternity	北京	北京妇产医院	https://www.bjogh.com.cn	北京顶尖妇幼保健院	1959	北京市东城区	三级甲等
+
+# @governments
+GOV001	中华人民共和国国务院	government	central	北京	国务院,中央政府	https://www.gov.cn	中华人民共和国最高国家权力机关的执行机关	1954	北京市西城区	中央
+GOV002	中华人民共和国外交部	government	central	北京	外交部	https://www.fmprc.gov.cn	中华人民共和国外交事务主管部门	1949	北京市朝阳区	中央
+GOV003	中华人民共和国教育部	government	central	北京	教育部	https://www.moe.gov.cn	中华人民共和国教育事务主管部门	1949	北京市西城区	中央
+GOV004	中华人民共和国科学技术部	government	central	北京	科技部	https://www.most.gov.cn	中华人民共和国科技事务主管部门	1956	北京市西城区	中央
+GOV005	中华人民共和国公安部	government	central	北京	公安部	https://www.mps.gov.cn	中华人民共和国公安事务主管部门	1949	北京市东城区	中央
+GOV006	中华人民共和国财政部	government	central	北京	财政部	https://www.mof.gov.cn	中华人民共和国财政事务主管部门	1949	北京市西城区	中央
+GOV007	中华人民共和国国家发展和改革委员会	government	central	北京	发改委	https://www.ndrc.gov.cn	中华人民共和国宏观经济管理主管部门	1952	北京市西城区	中央
+GOV008	中华人民共和国国家卫生健康委员会	government	central	北京	卫健委	https://www.nhc.gov.cn	中华人民共和国卫生健康事务主管部门	1949	北京市西城区	中央
+GOV009	北京市人民政府	government	city	北京	北京市政府	https://www.beijing.gov.cn	北京市行政机关	1949	北京市通州区	市级
+GOV010	上海市人民政府	government	city	上海	上海市政府	https://www.shanghai.gov.cn	上海市行政机关	1949	上海市黄浦区	市级
+GOV011	广东省人民政府	government	province	广东	广东省政府	https://www.gd.gov.cn	广东省行政机关	1949	广东省广州市	省级
+GOV012	浙江省人民政府	government	province	浙江	浙江省政府	https://www.zj.gov.cn	浙江省行政机关	1949	浙江省杭州市	省级
+GOV013	江苏省人民政府	government	province	江苏	江苏省政府	https://www.jiangsu.gov.cn	江苏省行政机关	1949	江苏省南京市	省级
+GOV014	深圳市人民政府	government	city	广东	深圳市政府	https://www.sz.gov.cn	深圳市行政机关	1979	广东省深圳市	市级
+GOV015	广州市人民政府	government	city	广东	广州市政府	https://www.gz.gov.cn	广州市行政机关	1949	广东省广州市	市级
+GOV016	杭州市人民政府	government	city	浙江	杭州市政府	https://www.hangzhou.gov.cn	杭州市行政机关	1949	浙江省杭州市	市级
+GOV017	北京市教育局	government	city	北京	北京教育局	https://jw.beijing.gov.cn	北京市教育行政主管部门	1949	北京市西城区	市级
+GOV018	上海市教育局	government	city	上海	上海教育局	https://edu.sh.gov.cn	上海市教育行政主管部门	1949	上海市黄浦区	市级
+GOV019	北京市公安局	government	city	北京	北京市公安局	https://gaj.beijing.gov.cn	北京市公安行政主管部门	1949	北京市东城区	市级
+GOV020	上海市公安局	government	city	上海	上海市公安局	https://gaj.sh.gov.cn	上海市公安行政主管部门	1949	上海市黄浦区	市级
