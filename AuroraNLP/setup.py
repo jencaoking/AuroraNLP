@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="AuroraNLP",
-    version="0.2.0b1",
+    version="0.3.0b1",
     codename="coca",
     packages=find_packages(exclude=['tests', 'tests.*']),
     package_data={
