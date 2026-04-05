@@ -28,6 +28,11 @@ from .ner import (
     NERRecognizer,
     create_sample_ner_corpus,
     train_ner_from_file,
+    NestedEntity,
+    EntityHierarchy,
+    NESTING_RULES,
+    NestedNERRecognizer,
+    create_nested_ner_corpus,
 )
 
 __all__ = [
@@ -81,4 +86,9 @@ __all__ = [
     "NERRecognizer",
     "create_sample_ner_corpus",
     "train_ner_from_file",
+    "NestedEntity",
+    "EntityHierarchy",
+    "NESTING_RULES",
+    "NestedNERRecognizer",
+    "create_nested_ner_corpus",
 ]

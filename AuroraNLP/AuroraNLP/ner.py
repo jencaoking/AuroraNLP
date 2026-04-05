@@ -886,6 +886,361 @@ def train_ner_from_file(
         recognizer.train(corpus)
 
 
+class NestedEntity(Entity):
+    def __init__(
+        self,
+        text: str,
+        entity_type: str,
+        start: int,
+        end: int,
+        confidence: float = 1.0,
+        level: int = 0
+    ):
+        super().__init__(text, entity_type, start, end, confidence)
+        self.children: List['NestedEntity'] = []
+        self.parent: Optional['NestedEntity'] = None
+        self.level = level
+    
+    def add_child(self, child: 'NestedEntity'):
+        if child not in self.children:
+            self.children.append(child)
+            child.parent = self
+            child.level = self.level + 1
+    
+    def remove_child(self, child: 'NestedEntity'):
+        if child in self.children:
+            self.children.remove(child)
+            child.parent = None
+            child.level = 0
+    
+    def get_all_children(self) -> List['NestedEntity']:
+        all_children = []
+        for child in self.children:
+            all_children.append(child)
+            all_children.extend(child.get_all_children())
+        return all_children
+    
+    def get_children_by_type(self, entity_type: str) -> List['NestedEntity']:
+        return [child for child in self.children if child.entity_type == entity_type]
+    
+    def get_deepest_level(self) -> int:
+        if not self.children:
+            return self.level
+        return max(child.get_deepest_level() for child in self.children)
+    
+    def is_nested(self) -> bool:
+        return len(self.children) > 0
+    
+    def contains(self, other: 'NestedEntity') -> bool:
+        return self.start <= other.start and other.end <= self.end
+    
+    def overlaps(self, other: 'NestedEntity') -> bool:
+        return not (self.end <= other.start or other.end <= self.start)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        result = super().to_dict()
+        result['level'] = self.level
+        result['is_nested'] = self.is_nested()
+        if self.children:
+            result['children'] = [child.to_dict() for child in self.children]
+        return result
+    
+    def to_tree_string(self, indent: int = 0) -> str:
+        prefix = '  ' * indent
+        result = f"{prefix}{self.text} [{self.entity_type}] (level={self.level})\n"
+        for child in self.children:
+            result += child.to_tree_string(indent + 1)
+        return result
+    
+    def __repr__(self) -> str:
+        return f"NestedEntity('{self.text}', {self.entity_type}, [{self.start}:{self.end}], level={self.level})"
+
+
+class EntityHierarchy:
+    def __init__(self):
+        self.root_entities: List[NestedEntity] = []
+        self.all_entities: List[NestedEntity] = []
+    
+    def add_entity(self, entity: NestedEntity):
+        self.all_entities.append(entity)
+        
+        parent_found = False
+        for potential_parent in self.all_entities:
+            if potential_parent != entity and potential_parent.contains(entity):
+                is_deepest_parent = True
+                for other in self.all_entities:
+                    if other != entity and other != potential_parent:
+                        if other.contains(entity) and potential_parent.contains(other):
+                            is_deepest_parent = False
+                            break
+                
+                if is_deepest_parent:
+                    potential_parent.add_child(entity)
+                    parent_found = True
+                    break
+        
+        if not parent_found and entity.parent is None:
+            self.root_entities.append(entity)
+    
+    def build_from_entities(self, entities: List[NestedEntity]):
+        self.root_entities = []
+        self.all_entities = []
+        
+        sorted_entities = sorted(entities, key=lambda e: (e.start, -(e.end - e.start)))
+        
+        for entity in sorted_entities:
+            entity.children = []
+            entity.parent = None
+            entity.level = 0
+            self.add_entity(entity)
+    
+    def get_entity_at_position(self, position: int) -> Optional[NestedEntity]:
+        for entity in self.all_entities:
+            if entity.start <= position < entity.end:
+                return entity
+        return None
+    
+    def get_entities_at_level(self, level: int) -> List[NestedEntity]:
+        return [e for e in self.all_entities if e.level == level]
+    
+    def get_entities_by_type(self, entity_type: str) -> List[NestedEntity]:
+        return [e for e in self.all_entities if e.entity_type == entity_type]
+    
+    def get_nested_entities(self) -> List[NestedEntity]:
+        return [e for e in self.all_entities if e.is_nested()]
+    
+    def get_max_depth(self) -> int:
+        if not self.root_entities:
+            return 0
+        return max(entity.get_deepest_level() for entity in self.root_entities)
+    
+    def flatten(self) -> List[NestedEntity]:
+        return sorted(self.all_entities, key=lambda e: (e.start, e.level))
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            'root_entities': [e.to_dict() for e in self.root_entities],
+            'all_entities': [e.to_dict() for e in self.all_entities],
+            'max_depth': self.get_max_depth(),
+            'total_entities': len(self.all_entities),
+            'nested_entities': len(self.get_nested_entities())
+        }
+    
+    def to_tree_string(self) -> str:
+        result = "Entity Hierarchy:\n"
+        for entity in sorted(self.root_entities, key=lambda e: e.start):
+            result += entity.to_tree_string()
+        return result
+    
+    def __repr__(self) -> str:
+        return f"EntityHierarchy(entities={len(self.all_entities)}, depth={self.get_max_depth()})"
+
+
+NESTING_RULES = {
+    'ORG': ['LOC', 'PER', 'ORG', 'TIME', 'NUM'],
+    'LOC': ['LOC', 'ORG'],
+    'PER': ['LOC'],
+    'TIME': ['NUM'],
+    'NUM': [],
+    'MISC': ['LOC', 'ORG', 'PER', 'TIME', 'NUM'],
+}
+
+
+class NestedNERRecognizer:
+    def __init__(self, base_recognizer: Optional[NERRecognizer] = None):
+        self.base_recognizer = base_recognizer or NERRecognizer()
+        self.nesting_rules = NESTING_RULES.copy()
+        self._trained = False
+    
+    def set_nesting_rule(self, parent_type: str, allowed_children: List[str]):
+        self.nesting_rules[parent_type] = allowed_children
+    
+    def can_nest(self, parent_type: str, child_type: str) -> bool:
+        allowed = self.nesting_rules.get(parent_type, [])
+        return child_type in allowed
+    
+    def train(
+        self,
+        corpus: List[Tuple[str, List[Entity]]],
+        learning_rate: float = 0.1,
+        l2_reg: float = 0.01,
+        max_iter: int = 100,
+        epsilon: float = 1e-6,
+        verbose: bool = True
+    ):
+        self.base_recognizer.train(
+            corpus,
+            learning_rate=learning_rate,
+            l2_reg=l2_reg,
+            max_iter=max_iter,
+            epsilon=epsilon,
+            verbose=verbose
+        )
+        self._trained = True
+    
+    def recognize_nested(self, text: str, max_levels: int = 3) -> EntityHierarchy:
+        if not self._trained:
+            raise RuntimeError("Model has not been trained. Call train() first.")
+        
+        hierarchy = EntityHierarchy()
+        
+        base_entities = self.base_recognizer.recognize(text)
+        
+        nested_entities = []
+        for entity in base_entities:
+            nested_entity = NestedEntity(
+                text=entity.text,
+                entity_type=entity.entity_type,
+                start=entity.start,
+                end=entity.end,
+                confidence=entity.confidence,
+                level=0
+            )
+            nested_entities.append(nested_entity)
+        
+        for level in range(1, max_levels):
+            entities_at_level = [e for e in nested_entities if e.level == level - 1]
+            
+            if not entities_at_level:
+                break
+            
+            new_entities = []
+            
+            for parent_entity in entities_at_level:
+                entity_text = parent_entity.text
+                entity_start = parent_entity.start
+                
+                inner_entities = self.base_recognizer.recognize(entity_text)
+                
+                for inner in inner_entities:
+                    if inner.text == parent_entity.text and inner.entity_type == parent_entity.entity_type:
+                        continue
+                    
+                    if self.can_nest(parent_entity.entity_type, inner.entity_type):
+                        adjusted_start = entity_start + inner.start
+                        adjusted_end = entity_start + inner.end
+                        
+                        nested_inner = NestedEntity(
+                            text=inner.text,
+                            entity_type=inner.entity_type,
+                            start=adjusted_start,
+                            end=adjusted_end,
+                            confidence=inner.confidence,
+                            level=level
+                        )
+                        
+                        new_entities.append(nested_inner)
+            
+            if not new_entities:
+                break
+            
+            nested_entities.extend(new_entities)
+        
+        hierarchy.build_from_entities(nested_entities)
+        
+        return hierarchy
+    
+    def recognize(self, text: str, max_levels: int = 3) -> List[NestedEntity]:
+        hierarchy = self.recognize_nested(text, max_levels)
+        return hierarchy.flatten()
+    
+    def get_nested_entities(self, text: str, max_levels: int = 3) -> List[NestedEntity]:
+        hierarchy = self.recognize_nested(text, max_levels)
+        return hierarchy.get_nested_entities()
+    
+    def get_entities_by_level(self, text: str, level: int, max_levels: int = 3) -> List[NestedEntity]:
+        hierarchy = self.recognize_nested(text, max_levels)
+        return hierarchy.get_entities_at_level(level)
+    
+    def annotate_nested(self, text: str, max_levels: int = 3) -> str:
+        hierarchy = self.recognize_nested(text, max_levels)
+        entities = hierarchy.flatten()
+        
+        if not entities:
+            return text
+        
+        result = []
+        last_end = 0
+        
+        for entity in entities:
+            if entity.start >= last_end:
+                result.append(text[last_end:entity.start])
+                
+                if entity.is_nested():
+                    annotation = f"[{entity.text}/{entity.entity_type}(L{entity.level}, {len(entity.children)} children)]"
+                else:
+                    annotation = f"[{entity.text}/{entity.entity_type}(L{entity.level})]"
+                
+                result.append(annotation)
+                last_end = entity.end
+        
+        result.append(text[last_end:])
+        
+        return ''.join(result)
+    
+    def save_model(self, filepath: str):
+        if not self._trained:
+            raise RuntimeError("Model has not been trained. Call train() first before saving.")
+        self.base_recognizer.save_model(filepath)
+    
+    def load_model(self, filepath: str):
+        self.base_recognizer.load_model(filepath)
+        self._trained = True
+    
+    def is_trained(self) -> bool:
+        return self._trained
+    
+    def get_model_info(self) -> Dict[str, Any]:
+        info = self.base_recognizer.get_model_info()
+        info['nesting_rules'] = self.nesting_rules
+        info['supports_nested'] = True
+        return info
+
+
+def create_nested_ner_corpus() -> List[Tuple[str, List[Entity]]]:
+    corpus = [
+        (
+            "北京协和医院是一家著名医院",
+            [
+                Entity("北京协和医院", "ORG", 0, 6),
+                Entity("北京", "LOC", 0, 2),
+            ]
+        ),
+        (
+            "上海交通大学医学院",
+            [
+                Entity("上海交通大学医学院", "ORG", 0, 9),
+                Entity("上海", "LOC", 0, 2),
+                Entity("交通大学", "ORG", 2, 6),
+            ]
+        ),
+        (
+            "广东省深圳市南山区",
+            [
+                Entity("广东省深圳市南山区", "LOC", 0, 8),
+                Entity("广东省", "LOC", 0, 3),
+                Entity("深圳市", "LOC", 3, 6),
+                Entity("南山区", "LOC", 6, 9),
+            ]
+        ),
+        (
+            "清华大学计算机系",
+            [
+                Entity("清华大学计算机系", "ORG", 0, 7),
+                Entity("清华大学", "ORG", 0, 4),
+            ]
+        ),
+        (
+            "中国科学院计算技术研究所",
+            [
+                Entity("中国科学院计算技术研究所", "ORG", 0, 11),
+                Entity("中国科学院", "ORG", 0, 5),
+            ]
+        ),
+    ]
+    return corpus
+
+
 __all__ = [
     'NER_ENTITY_TYPES',
     'NER_TAGS',
@@ -896,4 +1251,9 @@ __all__ = [
     'NERRecognizer',
     'create_sample_ner_corpus',
     'train_ner_from_file',
+    'NestedEntity',
+    'EntityHierarchy',
+    'NESTING_RULES',
+    'NestedNERRecognizer',
+    'create_nested_ner_corpus',
 ]
