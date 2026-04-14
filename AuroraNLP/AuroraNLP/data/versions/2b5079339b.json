@@ -1,0 +1,37 @@
+{
+  "version_id": "2b5079339b",
+  "message": "删除管理词语",
+  "author": "anonymous",
+  "timestamp": 1776160291.4005818,
+  "timestamp_str": "2026-04-14 17:51:31",
+  "changes": {
+    "管理": [
+      [
+        "delete",
+        {
+          "pos_tag": "n",
+          "weight": 1.0,
+          "priority": 10
+        },
+        null
+      ]
+    ]
+  },
+  "dictionary_state": {
+    "功能": {
+      "pos_tag": "n",
+      "weight": 1.0,
+      "priority": 10
+    },
+    "版本": {
+      "pos_tag": "n",
+      "weight": 1.0,
+      "priority": 10
+    },
+    "测试": {
+      "pos_tag": "v",
+      "weight": 2.0,
+      "priority": 20
+    }
+  }
+}

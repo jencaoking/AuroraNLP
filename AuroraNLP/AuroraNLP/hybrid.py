@@ -193,7 +193,8 @@ class WeightedFusionStrategy(FusionStrategy):
         weights = config.weights if config else {}
         normalized_weights = self._normalize_weights(weights)
         
-        text_length = sum(len(w) for w in results[0].words)
+        # 使用原始文本长度计算
+        text_length = len(context.text)
         self._position_scores.clear()
         
         for result in results:
@@ -248,12 +249,15 @@ class CascadeFusionStrategy(FusionStrategy):
         config = context.config
         order = config.cascade_order if config else []
         
+        # 使用配置中的置信度阈值
+        threshold = config.confidence_threshold if config else self.confidence_threshold
+        
         results_by_name = {r.segmenter_name: r for r in results}
         
         for segmenter_name in order:
             if segmenter_name in results_by_name:
                 result = results_by_name[segmenter_name]
-                if result.confidence >= self.confidence_threshold:
+                if result.confidence >= threshold:
                     return result.words
         
         if results:
@@ -264,6 +268,44 @@ class CascadeFusionStrategy(FusionStrategy):
     
     def get_name(self) -> str:
         return "cascade"
+
+
+class AdaptiveFusionStrategy(FusionStrategy):
+    """自适应融合策略"""
+    
+    def __init__(self):
+        self._text_classifier = TextClassifier()
+        self._strategy_selector = StrategySelector()
+    
+    def fuse(self, context: FusionContext) -> List[str]:
+        results = context.results
+        if not results:
+            return []
+        
+        if len(results) == 1:
+            return results[0].words
+        
+        text = context.text
+        features = self._text_classifier.extract_features(text)
+        
+        selected_strategy = self._strategy_selector.select(features, results)
+        
+        if selected_strategy == 'dict':
+            dict_results = [r for r in results if r.segmenter_name == 'dict']
+            if dict_results:
+                return dict_results[0].words
+        elif selected_strategy == 'statistical':
+            stat_results = [r for r in results if r.segmenter_type == SegmenterType.STATISTICAL]
+            if stat_results:
+                best_stat = max(stat_results, key=lambda r: r.confidence)
+                return best_stat.words
+        
+        # 默认使用置信度最高的结果
+        best_result = max(results, key=lambda r: r.confidence)
+        return best_result.words
+    
+    def get_name(self) -> str:
+        return "adaptive"
 
 
 
@@ -296,6 +338,7 @@ class FusionStrategyFactory:
         self.register_strategy('vote', VoteFusionStrategy())
         self.register_strategy('weighted', WeightedFusionStrategy())
         self.register_strategy('cascade', CascadeFusionStrategy())
+        self.register_strategy('adaptive', AdaptiveFusionStrategy())
         self.register_strategy('confidence', ConfidenceFusionStrategy())
     
     def register_strategy(self, name: str, strategy: FusionStrategy):
@@ -976,6 +1019,7 @@ __all__ = [
     'VoteFusionStrategy',
     'WeightedFusionStrategy',
     'CascadeFusionStrategy',
+    'AdaptiveFusionStrategy',
     'ConfidenceFusionStrategy',
     'FusionStrategyFactory',
     'ConfidenceEstimator',

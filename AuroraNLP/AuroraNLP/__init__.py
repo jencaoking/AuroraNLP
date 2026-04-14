@@ -263,7 +263,7 @@ __all__ = [
     "VoteFusionStrategy",
     "WeightedFusionStrategy",
     "CascadeFusionStrategy",
-    "AdaptiveFusionStrategy",
+
     "ConfidenceFusionStrategy",
     "FusionStrategyFactory",
     "ConfidenceEstimator",

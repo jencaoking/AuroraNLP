@@ -1,0 +1,59 @@
+{
+  "version_id": "a7bb7785b1",
+  "message": "添加测试词语",
+  "author": "anonymous",
+  "timestamp": 1776160291.390913,
+  "timestamp_str": "2026-04-14 17:51:31",
+  "changes": {
+    "管理": [
+      [
+        "add",
+        null,
+        {
+          "pos_tag": "n",
+          "weight": 1.0,
+          "priority": 10
+        }
+      ]
+    ],
+    "版本": [
+      [
+        "add",
+        null,
+        {
+          "pos_tag": "n",
+          "weight": 1.0,
+          "priority": 10
+        }
+      ]
+    ],
+    "测试": [
+      [
+        "add",
+        null,
+        {
+          "pos_tag": "v",
+          "weight": 1.0,
+          "priority": 10
+        }
+      ]
+    ]
+  },
+  "dictionary_state": {
+    "管理": {
+      "pos_tag": "n",
+      "weight": 1.0,
+      "priority": 10
+    },
+    "版本": {
+      "pos_tag": "n",
+      "weight": 1.0,
+      "priority": 10
+    },
+    "测试": {
+      "pos_tag": "v",
+      "weight": 1.0,
+      "priority": 10
+    }
+  }
+}

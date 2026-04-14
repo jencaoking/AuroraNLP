@@ -18,6 +18,7 @@ class DictionaryVersion:
         self.timestamp = timestamp
         self.timestamp_str = datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
         self.changes: Dict[str, List[Tuple[str, Any, Any]]] = {}
+        self.dictionary_state: Dict[str, Dict[str, Any]] = {}
     
     def add_change(self, word: str, old_value: Any, new_value: Any):
         """添加变更记录"""
@@ -37,6 +38,31 @@ class DictionaryVersion:
             self.changes[word] = []
         self.changes[word].append(('delete', value, None))
     
+    def save_dictionary_state(self, dictionary):
+        """保存词典状态"""
+        for word in dictionary.get_words():
+            found, pos_tag, weight, priority = dictionary.search_with_info(word)
+            if found:
+                self.dictionary_state[word] = {
+                    'pos_tag': pos_tag,
+                    'weight': weight,
+                    'priority': priority
+                }
+    
+    def restore_dictionary_state(self, dictionary):
+        """从版本恢复词典状态"""
+        # 先清空词典
+        for word in list(dictionary.get_words()):
+            dictionary.remove_word(word)
+        # 恢复词典状态
+        for word, info in self.dictionary_state.items():
+            dictionary.add_word(
+                word,
+                info['pos_tag'],
+                info['weight'],
+                info['priority']
+            )
+    
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {
@@ -45,7 +71,8 @@ class DictionaryVersion:
             'author': self.author,
             'timestamp': self.timestamp,
             'timestamp_str': self.timestamp_str,
-            'changes': self.changes
+            'changes': self.changes,
+            'dictionary_state': self.dictionary_state
         }
     
     @classmethod
@@ -58,6 +85,7 @@ class DictionaryVersion:
             data['timestamp']
         )
         version.changes = data.get('changes', {})
+        version.dictionary_state = data.get('dictionary_state', {})
         return version
 
 
@@ -113,9 +141,38 @@ class DictionaryVersionManager:
         # 与上一个版本比较，记录变更
         if self.current_version:
             prev_version = self.versions[self.current_version]
-            # 这里需要实现与上一版本的比较逻辑
-            # 由于我们没有存储每个版本的完整词典，这里简化处理
-            # 实际应用中可能需要存储每个版本的完整词典状态
+            
+            # 获取当前词典和上一版本词典的词语集合
+            current_words = set(dictionary.get_words())
+            prev_words = set(prev_version.dictionary_state.keys())
+            
+            # 找出新增的词语
+            added_words = current_words - prev_words
+            for word in added_words:
+                found, pos_tag, weight, priority = dictionary.search_with_info(word)
+                if found:
+                    value = {'pos_tag': pos_tag, 'weight': weight, 'priority': priority}
+                    version.add_addition(word, value)
+            
+            # 找出删除的词语
+            deleted_words = prev_words - current_words
+            for word in deleted_words:
+                if word in prev_version.dictionary_state:
+                    value = prev_version.dictionary_state[word]
+                    version.add_deletion(word, value)
+            
+            # 找出修改的词语
+            common_words = current_words & prev_words
+            for word in common_words:
+                found_current, pos_tag_current, weight_current, priority_current = dictionary.search_with_info(word)
+                if found_current:
+                    current_value = {'pos_tag': pos_tag_current, 'weight': weight_current, 'priority': priority_current}
+                    prev_value = prev_version.dictionary_state.get(word, {})
+                    if current_value != prev_value:
+                        version.add_change(word, prev_value, current_value)
+        
+        # 保存当前词典状态
+        version.save_dictionary_state(dictionary)
         
         # 保存版本
         self.versions[version_id] = version
@@ -129,12 +186,12 @@ class DictionaryVersionManager:
         if version_id not in self.versions:
             raise ValueError(f"版本 {version_id} 不存在")
         
-        # 这里需要实现从版本恢复词典的逻辑
-        # 由于我们没有存储每个版本的完整词典，这里简化处理
-        # 实际应用中可能需要存储每个版本的完整词典状态
+        # 从版本恢复词典状态
+        version = self.versions[version_id]
+        version.restore_dictionary_state(dictionary)
         
         self.current_version = version_id
-        return self.versions[version_id]
+        return version
     
     def rollback(self, steps: int, dictionary) -> str:
         """回滚到之前的版本"""
@@ -172,13 +229,31 @@ class DictionaryVersionManager:
         version1 = self.versions[version_id1]
         version2 = self.versions[version_id2]
         
-        # 这里需要实现版本差异比较逻辑
-        # 由于我们没有存储每个版本的完整词典，这里简化处理
+        # 比较两个版本的词典状态
+        state1 = version1.dictionary_state
+        state2 = version2.dictionary_state
+        
+        # 找出新增的词语
+        added_words = set(state2.keys()) - set(state1.keys())
+        
+        # 找出删除的词语
+        deleted_words = set(state1.keys()) - set(state2.keys())
+        
+        # 找出修改的词语
+        common_words = set(state1.keys()) & set(state2.keys())
+        modified_words = {word for word in common_words if state1[word] != state2[word]}
+        
+        # 构建差异结果
+        changes = {
+            'added': {word: state2[word] for word in added_words},
+            'deleted': {word: state1[word] for word in deleted_words},
+            'modified': {word: {'old': state1[word], 'new': state2[word]} for word in modified_words}
+        }
         
         return {
             'version1': version1.to_dict(),
             'version2': version2.to_dict(),
-            'changes': {}
+            'changes': changes
         }
 
 
