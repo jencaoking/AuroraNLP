@@ -308,11 +308,40 @@ manager = DomainDictionaryManager()
 manager.load_all_domains()
 ```
 
-### 32. 词典版本管理
+### 32. 词典版本管理 ✅ 已完成
 
-- [ ] Git-like版本控制
-- [ ] 变更历史追踪
-- [ ] 回滚机制
+新增 `dictionary_version.py` 模块，实现词典版本管理功能：
+
+- `DictionaryVersion` 类：词典版本类，记录版本信息和变更
+- `DictionaryVersionManager` 类：版本管理器，处理版本的创建、切换和回滚
+- `VersionedDictionary` 类：支持版本控制的词典类
+- `VersionedUserDictionary` 类：支持版本控制的用户词典类
+
+主要功能：
+
+- `commit(message, author)`: 提交词典变更，创建新版本
+- `checkout(version_id)`: 切换到指定版本
+- `rollback(steps)`: 回滚到之前的版本
+- `get_version_history()`: 获取版本历史
+- `get_current_version()`: 获取当前版本
+
+使用示例：
+
+```python
+from AuroraNLP import VersionedDictionary
+
+# 创建版本控制词典
+versioned_dict = VersionedDictionary(load_default=False)
+
+# 添加词语
+versioned_dict.add_word("人工智能", "n")
+
+# 提交版本
+version_id = versioned_dict.commit("初始版本", "admin")
+
+# 查看版本历史
+history = versioned_dict.get_version_history()
+```
 
 ### 33. 词典增量更新
 
