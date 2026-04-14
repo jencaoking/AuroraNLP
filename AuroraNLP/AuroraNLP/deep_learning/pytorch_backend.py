@@ -3,6 +3,7 @@
 # PyTorch框架后端实现
 
 import importlib
+import os
 from typing import Any, Optional
 from .framework import Framework, FrameworkType
 
@@ -53,6 +54,14 @@ class PyTorchBackend(Framework):
             raise RuntimeError("PyTorch is not available")
         
         try:
+            # 检查文件是否存在
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(f"Model file not found: {model_path}")
+            
+            # 检查模型文件格式
+            if not model_path.endswith(('.pth', '.pt', '.pkl')):
+                raise ValueError("Unsupported model file format")
+            
             # 添加 weights_only=False 以兼容旧版本的模型
             if 'weights_only' not in kwargs:
                 kwargs['weights_only'] = False

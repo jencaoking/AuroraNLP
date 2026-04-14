@@ -3,6 +3,7 @@
 # TensorFlow框架后端实现
 
 import importlib
+import os
 from typing import Any, Optional
 from .framework import Framework, FrameworkType
 
@@ -58,6 +59,14 @@ class TensorFlowBackend(Framework):
             raise RuntimeError("TensorFlow is not available")
         
         try:
+            # 检查文件是否存在
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(f"Model path not found: {model_path}")
+            
+            # 检查模型文件格式
+            if not os.path.isdir(model_path) and not model_path.endswith('.h5'):
+                raise ValueError("TensorFlow model should be a directory or .h5 file")
+            
             model = self._tf.keras.models.load_model(model_path, **kwargs)
             return model
         except Exception as e:
