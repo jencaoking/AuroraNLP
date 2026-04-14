@@ -7,8 +7,8 @@ from .similarity import Similarity
 from .hmm import HMMSegmentor
 from .crf import CRFSegmentor
 from .perceptron import PerceptronSegmentor
-from .lattice import LatticeSegmentor, Lattice
-from .ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
+from AuroraNLP.lattice import LatticeSegmentor, Lattice
+from AuroraNLP.ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
 from .new_word_detector import NewWordDetector
 from .hybrid import HybridSegmentor, HybridConfig
 

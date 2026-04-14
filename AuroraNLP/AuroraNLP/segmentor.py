@@ -26,8 +26,8 @@ from .managers import (
     NewWordDetectorManager,
     HybridSegmentorManager
 )
-from .lattice import Lattice
-from .ambiguity import AmbiguityResult, AmbiguityType, AmbiguityRegion
+from AuroraNLP.lattice import Lattice
+from AuroraNLP.ambiguity import AmbiguityResult, AmbiguityType, AmbiguityRegion
 from .hybrid import HybridConfig, HybridStrategy
 
 
