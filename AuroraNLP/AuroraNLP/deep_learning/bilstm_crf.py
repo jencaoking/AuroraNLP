@@ -45,9 +45,6 @@ class BiLSTMCRF:
     
     def _setup_model(self):
         """设置模型"""
-        if not self.framework:
-            raise RuntimeError("No deep learning framework available")
-        
         # 导入必要的库
         self._torch = importlib.import_module('torch')
         self._nn = importlib.import_module('torch.nn')
@@ -197,10 +194,13 @@ class BiLSTMCRF:
         self.model.eval()
         predictions = []
         
+        # 获取模型所在设备
+        device = next(self.model.parameters()).device
+        
         with self._torch.no_grad():
             for seq in input_data:
-                # 转换为张量
-                input_tensor = self._torch.tensor([seq], dtype=self._torch.long)
+                # 转换为张量并移动到模型所在设备
+                input_tensor = self._torch.tensor([seq], dtype=self._torch.long, device=device)
                 
                 # 预测
                 prediction = self.model.decode(input_tensor)
@@ -229,6 +229,17 @@ class BiLSTMCRF:
             raise RuntimeError("No deep learning framework available")
         
         self.model = self.framework.load_model(model_path)
+        
+        # 导入必要的库
+        self._torch = importlib.import_module('torch')
+        self._nn = importlib.import_module('torch.nn')
+        
+        # 尝试导入 pytorch-crf
+        try:
+            self._crf = importlib.import_module('torchcrf')
+        except ImportError:
+            # 如果没有安装 torchcrf，使用内置的 CRF 实现
+            pass
         
     class _BiLSTMCRFModel:
         """BiLSTM-CRF 模型内部类"""
