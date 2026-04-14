@@ -745,7 +745,7 @@ class Segmentor:
         
         if has_traditional:
             # 转换为简体中文后分词
-            simplified_text = self.traditional_converter.traditional_to_simplified(text)
+            simplified_text = self.traditional_converter.traditional_to_simplified(text, region)
             return self.segment(simplified_text, mode)
         else:
             # 直接分词
