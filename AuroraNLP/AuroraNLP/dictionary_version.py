@@ -51,17 +51,70 @@ class DictionaryVersion:
     
     def restore_dictionary_state(self, dictionary):
         """从版本恢复词典状态"""
-        # 先清空词典
-        for word in list(dictionary.get_words()):
-            dictionary.remove_word(word)
-        # 恢复词典状态
-        for word, info in self.dictionary_state.items():
-            dictionary.add_word(
-                word,
-                info['pos_tag'],
-                info['weight'],
-                info['priority']
-            )
+        # 备份当前状态
+        backup = {}
+        for word in dictionary.get_words():
+            found, pos_tag, weight, priority = dictionary.search_with_info(word)
+            if found:
+                backup[word] = {
+                    'pos_tag': pos_tag,
+                    'weight': weight,
+                    'priority': priority
+                }
+        
+        try:
+            # 清空词典
+            for word in list(dictionary.get_words()):
+                dictionary.remove_word(word)
+            
+            # 恢复词典状态
+            for word, info in self.dictionary_state.items():
+                dictionary.add_word(
+                    word,
+                    info['pos_tag'],
+                    info['weight'],
+                    info['priority']
+                )
+            
+            # 验证恢复后的状态
+            restored_words = set(dictionary.get_words())
+            expected_words = set(self.dictionary_state.keys())
+            
+            if restored_words != expected_words:
+                raise Exception(f"词典状态恢复不完整: 期望 {len(expected_words)} 个词语，实际恢复 {len(restored_words)} 个词语")
+            
+            # 验证每个词语的信息
+            for word in expected_words:
+                found, pos_tag, weight, priority = dictionary.search_with_info(word)
+                if not found:
+                    raise Exception(f"词语 {word} 未成功恢复")
+                
+                expected_info = self.dictionary_state[word]
+                if (
+                    pos_tag != expected_info['pos_tag'] or
+                    abs(weight - expected_info['weight']) > 1e-9 or
+                    priority != expected_info['priority']
+                ):
+                    raise Exception(f"词语 {word} 的信息恢复不正确")
+                    
+        except Exception as e:
+            # 恢复失败时回滚到备份状态
+            print(f"恢复词典状态失败: {e}，正在回滚到备份状态")
+            
+            # 清空词典
+            for word in list(dictionary.get_words()):
+                dictionary.remove_word(word)
+            
+            # 恢复备份
+            for word, info in backup.items():
+                dictionary.add_word(
+                    word,
+                    info['pos_tag'],
+                    info['weight'],
+                    info['priority']
+                )
+            
+            raise  # 重新抛出异常，让调用者知道恢复失败
     
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""

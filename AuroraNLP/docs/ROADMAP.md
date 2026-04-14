@@ -343,11 +343,47 @@ version_id = versioned_dict.commit("初始版本", "admin")
 history = versioned_dict.get_version_history()
 ```
 
-### 33. 词典增量更新
+### 33. 词典增量更新 ✅ 已完成
 
-- [ ] 热更新支持
-- [ ] 无需重启服务
-- [ ] 更新通知机制
+新增 `incremental_dictionary.py` 模块，实现词典增量更新功能：
+
+- `DictionaryUpdateEvent` 类：词典更新事件
+- `DictionaryObserver` 类：词典观察者接口
+- `IncrementalDictionary` 类：支持增量更新的词典类
+- `IncrementalUserDictionary` 类：支持增量更新的用户词典类
+- `DictionaryUpdateManager` 类：词典更新管理器
+- `HotUpdateDictionaryManager` 类：支持热更新的词典管理器
+
+主要功能：
+
+- 热更新支持：通过文件监控实现词典文件的自动更新
+- 无需重启服务：所有更新都是实时的，不需要重启应用
+- 更新通知机制：通过观察者模式实现词典更新的实时通知
+- 增量加载：支持从文件增量加载新词语
+- 手动更新：支持通过API手动触发词典更新
+
+使用示例：
+
+```python
+from AuroraNLP import IncrementalDictionary, HotUpdateDictionaryManager
+
+# 创建支持增量更新的词典
+inc_dict = IncrementalDictionary(name="test_dict")
+
+# 创建热更新词典管理器
+hot_manager = HotUpdateDictionaryManager()
+hot_manager.register_dictionary(inc_dict)
+
+# 启动文件监控
+hot_manager.start_file_monitoring()
+
+# 手动触发更新
+words = [
+    {"word": "机器学习", "pos_tag": "n", "weight": 15.0, "action": "add"},
+    {"word": "深度学习", "pos_tag": "n", "weight": 18.0, "action": "add"}
+]
+hot_manager.update_dictionary("test_dict", words)
+```
 
 ### 34. 训练语料库构建
 

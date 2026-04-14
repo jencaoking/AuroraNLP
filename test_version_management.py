@@ -81,6 +81,21 @@ def test_version_management():
     print(f"回滚成功，当前版本: {rolled_back_version}")
     print(f"词典词语数量: {len(dict_with_version.get_words())}")
     
+    # 测试词典状态恢复的安全性
+    print("\n9. 测试词典状态恢复的安全性")
+    # 先添加一些词语
+    dict_with_version.add_word("安全", "n", 1.0, 10)
+    dict_with_version.add_word("测试", "v", 3.0, 30)  # 修改已存在的词语
+    print(f"修改前词典词语数量: {len(dict_with_version.get_words())}")
+    print(f"修改前测试词语权重: {dict_with_version.get_weight('测试')}")
+    
+    # 恢复到版本1
+    print("恢复到版本1...")
+    dict_with_version.checkout(version1_id)
+    print(f"恢复后词典词语数量: {len(dict_with_version.get_words())}")
+    print(f"恢复后测试词语权重: {dict_with_version.get_weight('测试')}")
+    print(f"恢复后词典词语: {dict_with_version.get_words()}")
+    
     print("\n=== 测试完成 ===")
 
 if __name__ == "__main__":

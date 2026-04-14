@@ -7,6 +7,14 @@ from .dictionary import Dictionary, UserDictionary, DictionaryManager
 from .dictionary_version import DictionaryVersion, DictionaryVersionManager, VersionedDictionary, VersionedUserDictionary
 from .domain_dictionary import DomainDictionary, DomainDictionaryManager
 from .network_dictionary import NetworkDictionary
+from .incremental_dictionary import (
+    DictionaryUpdateEvent,
+    DictionaryObserver,
+    IncrementalDictionary,
+    IncrementalUserDictionary,
+    DictionaryUpdateManager,
+    HotUpdateDictionaryManager
+)
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
@@ -172,6 +180,12 @@ __all__ = [
     "DictionaryVersionManager",
     "VersionedDictionary",
     "VersionedUserDictionary",
+    "DictionaryUpdateEvent",
+    "DictionaryObserver",
+    "IncrementalDictionary",
+    "IncrementalUserDictionary",
+    "DictionaryUpdateManager",
+    "HotUpdateDictionaryManager",
     "StopWords",
     "KeywordExtractor",
     "Similarity",
