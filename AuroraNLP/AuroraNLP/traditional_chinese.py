@@ -327,12 +327,13 @@ class TraditionalChineseConverter:
                 result.append(char)
         return ''.join(result)
     
-    def traditional_to_simplified(self, text: str) -> str:
+    def traditional_to_simplified(self, text: str, region: Optional[str] = None) -> str:
         """
         将繁体中文转换为简体中文
         
         Args:
             text: 繁体中文字符串
+            region: 地区代码 ('tw', 'hk', 'mo')，可选
             
         Returns:
             简体中文字符串
