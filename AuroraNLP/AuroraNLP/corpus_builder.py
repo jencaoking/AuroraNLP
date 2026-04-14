@@ -1,6 +1,7 @@
 import os
 import json
 import re
+from datetime import datetime
 from typing import List, Dict, Optional, Tuple, Union
 
 
@@ -16,7 +17,6 @@ class CorpusBuilder:
         """
         if data_dir is None:
             # 使用包内的 data 目录
-            import os
             self.data_dir = os.path.join(os.path.dirname(__file__), "data")
         else:
             self.data_dir = data_dir
@@ -280,7 +280,6 @@ class CorpusManager:
         Args:
             data_dir: 数据目录路径，默认为包内的 data 目录
         """
-        import os
         if data_dir is None:
             # 使用包内的 data 目录
             self.data_dir = os.path.join(os.path.dirname(__file__), "data")
@@ -314,7 +313,6 @@ class CorpusManager:
             path: 语料文件路径
             description: 语料描述
         """
-        from datetime import datetime
         corpus_info = {
             "name": name,
             "type": corpus_type,
