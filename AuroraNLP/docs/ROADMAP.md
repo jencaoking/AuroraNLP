@@ -480,12 +480,14 @@ combined_path = manager.build_combined_corpus("combined", ["test_corpus"])
 - [ ] PyTorch后端支持
 - [ ] TensorFlow后端支持
 - [ ] 框架抽象层设计
+- [ ] 算力需求：高
 
 ### 37. BiLSTM-CRF模型
 
 - [ ] BiLSTM编码器
 - [ ] CRF解码层
 - [ ] 经典序列标注架构
+- [ ] 算力需求：高
 
 ### 38. BERT预训练模型集成
 
@@ -1211,6 +1213,7 @@ Python 3.8+                       Python 3.8+
 - [ ] bert-base-cased加载
 - [ ] Fine-tuning接口
 - [ ] 难度：⭐⭐⭐⭐
+- [ ] 算力需求：高
 
 ### 132. spaCy兼容层
 

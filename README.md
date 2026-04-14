@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-0.3.0--beta-blue.svg)](https://github.com/yourusername/AuroraNLP/releases)
+[![Version](https://img.shields.io/badge/version-0.3.0b1-blue.svg)](https://github.com/yourusername/AuroraNLP/releases)
 [![Codename](https://img.shields.io/badge/codename-coca-purple.svg)]()
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
@@ -32,6 +32,12 @@ AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种�
 - 🔍 **关键词提取** - 支持 TF-IDF、TextRank、词频统计等多种关键词提取方法
 - 📐 **文本相似度** - 支持余弦相似度、Jaccard、Dice、编辑距离等多种相似度计算
 - ⚡ **高性能** - 使用 Trie 树优化词典查询，支持批量处理
+- 📱 **领域词典** - 支持电商、法律、医疗、新闻等多个领域的专业词典
+- 🧠 **情感分析** - 支持情感极性分析和情感强度计算
+- 🌐 **网络词典** - 支持网络新词和流行词汇的识别
+- 🏛️ **机构名识别** - 支持组织机构名称的识别和归一化
+- 📍 **地名识别** - 支持地理位置名称的识别和归一化
+- 👤 **人名识别** - 支持人名的识别和归一化
 
 ---
 
@@ -258,6 +264,22 @@ documents = ["文本1", "文本2", "文本3"]
 results = seg.batch_similarity(query, documents, method='cosine')
 ```
 
+### 情感分析
+
+```python
+# 情感极性分析
+sentiment = seg.analyze_sentiment("这部电影非常好看，我很喜欢")
+print(f"情感极性: {sentiment['polarity']}, 情感强度: {sentiment['score']}")
+```
+
+### 领域词典
+
+```python
+# 加载领域词典
+seg.load_domain_dictionary("ecommerce")  # 加载电商领域词典
+seg.load_domain_dictionary("medical")   # 加载医疗领域词典
+```
+
 ---
 
 ## 示例
@@ -368,6 +390,27 @@ tree = seg.parse_constituency(text)
 print(tree.pretty_print())
 ```
 
+### 情感分析示例
+
+```python
+from AuroraNLP import Segmentor
+
+seg = Segmentor()
+
+# 情感分析
+texts = [
+    "这部电影非常好看，我很喜欢",
+    "这个产品质量很差，非常失望",
+    "今天天气不错，心情很好"
+]
+
+for text in texts:
+    result = seg.analyze_sentiment(text)
+    print(f"文本: {text}")
+    print(f"情感极性: {result['polarity']}, 情感强度: {result['score']:.4f}")
+    print()
+```
+
 ---
 
 ## API 文档
@@ -410,6 +453,8 @@ print(tree.pretty_print())
 | `add_stopword(word)` | 添加停用词 |
 | `train_hmm(corpus)` | 训练 HMM 模型 |
 | `train_crf(corpus)` | 训练 CRF 模型 |
+| `analyze_sentiment(text)` | 情感分析 |
+| `load_domain_dictionary(domain)` | 加载领域词典 |
 
 ---
 
@@ -418,55 +463,115 @@ print(tree.pretty_print())
 ```
 AuroraNLP/
 ├── AuroraNLP/              # 核心源代码
-│   ├── __init__.py         # 包初始化
-│   ├── segmentor.py        # 主分词器
-│   ├── tokenizer.py        # 分词算法接口
-│   ├── dictionary.py       # 词典管理
-│   ├── trie.py             # Trie 树实现
-│   ├── hmm.py              # HMM 模型
-│   ├── viterbi.py          # Viterbi 算法
-│   ├── crf.py              # CRF 模型
-│   ├── perceptron.py       # 感知器模型
-│   ├── lattice.py          # Lattice 分词
-│   ├── shortest_path.py    # 最短路径分词
-│   ├── ngram.py            # N-gram 语言模型
-│   ├── pos_tagger.py       # 词性标注
-│   ├── ner.py              # 命名实体识别
-│   ├── entity_linker.py    # 实体链接
-│   ├── dependency_parser.py # 依存句法分析
-│   ├── constituency_parser.py # 成分句法分析
-│   ├── ambiguity.py        # 歧义检测
-│   ├── new_word_detector.py # 新词发现
-│   ├── keyword_extractor.py # 关键词提取
-│   ├── similarity.py       # 文本相似度
-│   ├── stopwords.py        # 停用词处理
-│   ├── batch_processor.py  # 批量处理
-│   ├── benchmark.py        # 性能测试
-│   └── data/               # 数据文件
-│       ├── dictionary.txt  # 默认词典
-│       ├── stopwords.txt   # 默认停用词
-│       └── train_corpus.txt # 训练语料
-├── tests/                  # 测试文件
-│   ├── test_crf.py
-│   ├── test_hmm.py
-│   ├── test_lattice.py
-│   ├── test_dependency_parser.py
-│   ├── test_constituency_parser.py
-│   └── ...
-├── examples/               # 示例代码
-│   ├── demo_crf.py
-│   ├── demo_hmm.py
-│   ├── demo_shortest_path.py
-│   ├── demo_dependency_parser.py
-│   └── demo_constituency_parser.py
-├── docs/                   # 文档
-│   ├── CRF.md
-│   ├── HMM.md
-│   ├── ROADMAP.md
-│   ├── DEPENDENCY_PARSING.md
-│   └── CONSTITUENCY_PARSING.md
-├── setup.py                # 安装配置
-├── requirements.txt        # 依赖列表
+│   ├── AuroraNLP/          # 主要源码目录
+│   │   ├── __init__.py         # 包初始化
+│   │   ├── segmentor.py        # 主分词器
+│   │   ├── tokenizer.py        # 分词算法接口
+│   │   ├── dictionary.py       # 词典管理
+│   │   ├── trie.py             # Trie 树实现
+│   │   ├── hmm.py              # HMM 模型
+│   │   ├── crf.py              # CRF 模型
+│   │   ├── perceptron.py       # 感知器模型
+│   │   ├── lattice.py          # Lattice 分词
+│   │   ├── shortest_path.py    # 最短路径分词
+│   │   ├── ngram.py            # N-gram 语言模型
+│   │   ├── pos_tagger.py       # 词性标注
+│   │   ├── ner.py              # 命名实体识别
+│   │   ├── entity_linker.py    # 实体链接
+│   │   ├── dependency_parser.py # 依存句法分析
+│   │   ├── constituent_parser.py # 成分句法分析
+│   │   ├── ambiguity.py        # 歧义检测
+│   │   ├── new_word_detector.py # 新词发现
+│   │   ├── keyword_extractor.py # 关键词提取
+│   │   ├── similarity.py       # 文本相似度
+│   │   ├── stopwords.py        # 停用词处理
+│   │   ├── batch_processor.py  # 批量处理
+│   │   ├── benchmark.py        # 性能测试
+│   │   ├── sentiment.py        # 情感分析
+│   │   ├── domain_dictionary.py # 领域词典
+│   │   ├── network_dictionary.py # 网络词典
+│   │   ├── person_name.py      # 人名识别
+│   │   ├── organization.py     # 机构名识别
+│   │   ├── location.py         # 地名识别
+│   │   ├── corpus_annotator.py # 语料标注工具
+│   │   ├── corpus_builder.py   # 语料构建工具
+│   │   ├── scel_parser.py      # 搜狗细胞词库解析
+│   │   ├── traditional_chinese.py # 繁体中文处理
+│   │   ├── thesaurus.py        # 同义词词典
+│   │   ├── terminology.py      # 术语词典
+│   │   ├── hybrid.py           # 混合分词器
+│   │   ├── incremental_dictionary.py # 增量词典
+│   │   ├── dictionary_version.py # 词典版本管理
+│   │   ├── managers.py         # 管理器
+│   │   └── data/               # 数据文件
+│   │       ├── dictionary.txt  # 默认词典
+│   │       ├── stopwords.txt   # 默认停用词
+│   │       ├── train_corpus.txt # 训练语料
+│   │       ├── pos_corpus.txt  # 词性标注语料
+│   │       ├── sentiment.txt   # 情感词典
+│   │       ├── person_names.txt # 人名词典
+│   │       ├── locations.txt   # 地名词典
+│   │       ├── organizations.txt # 机构名词典
+│   │       ├── terminology.txt # 术语词典
+│   │       ├── thesaurus.txt   # 同义词词典
+│   │       ├── network_words.json # 网络词典
+│   │       ├── degree_words.txt # 程度词词典
+│   │       ├── negation_words.txt # 否定词词典
+│   │       ├── domain_dictionaries/ # 领域词典
+│   │       │   ├── ecommerce.txt # 电商领域词典
+│   │       │   ├── legal.txt    # 法律领域词典
+│   │       │   ├── medical.txt  # 医疗领域词典
+│   │       │   └── news.txt     # 新闻领域词典
+│   │       ├── stopwords/       # 停用词目录
+│   │       │   ├── common/      # 通用停用词
+│   │       │   └── domain/      # 领域停用词
+│   │       ├── sogou/           # 搜狗细胞词库
+│   │       └── versions/        # 词典版本记录
+│   ├── data/               # 数据文件
+│   ├── docs/               # 文档
+│   │   ├── CRF.md
+│   │   ├── HMM.md
+│   │   └── ROADMAP.md
+│   ├── examples/           # 示例代码
+│   │   ├── demo_constituent_parser.py
+│   │   ├── demo_corpus_annotator.py
+│   │   ├── demo_corpus_builder.py
+│   │   ├── demo_crf.py
+│   │   ├── demo_dependency_parser.py
+│   │   ├── demo_dictionary_version.py
+│   │   ├── demo_entity_linker.py
+│   │   ├── demo_hmm.py
+│   │   ├── demo_incremental_dictionary.py
+│   │   ├── demo_nested_ner.py
+│   │   ├── demo_network_dictionary.py
+│   │   ├── demo_sentiment.py
+│   │   └── demo_shortest_path.py
+│   ├── tests/              # 测试文件
+│   │   ├── test_ambiguity.py
+│   │   ├── test_constituent_parser.py
+│   │   ├── test_crf.py
+│   │   ├── test_dependency_parser.py
+│   │   ├── test_domain_dictionary.py
+│   │   ├── test_entity_linker.py
+│   │   ├── test_hmm.py
+│   │   ├── test_lattice.py
+│   │   ├── test_location.py
+│   │   ├── test_ner.py
+│   │   ├── test_new_features.py
+│   │   ├── test_ngram.py
+│   │   ├── test_organization.py
+│   │   ├── test_perceptron.py
+│   │   ├── test_pos_tagger.py
+│   │   ├── test_segment.py
+│   │   ├── test_sentiment.py
+│   │   ├── test_sentiment_fixes.py
+│   │   ├── test_sogou_dict.py
+│   │   ├── test_terminology.py
+│   │   ├── test_thesaurus.py
+│   │   └── test_user_dictionary.py
+│   ├── setup.py            # 安装配置
+│   └── requirements.txt    # 依赖列表
+├── LICENSE                 # 许可证
 └── README.md               # 说明文档
 ```
 
@@ -474,9 +579,9 @@ AuroraNLP/
 
 ## 版本信息
 
-### 当前版本 (v0.3.0-beta "coca")
+### 当前版本 (v0.3.0b1 "coca")
 
-**版本号**: 0.3.0-beta  
+**版本号**: 0.3.0b1  
 **内部代号**: coca  
 **发布日期**: 2026-04-05  
 **开发状态**: Beta
@@ -508,6 +613,12 @@ AuroraNLP/
 - ✅ 依存句法分析（Arc-eager算法）
 - ✅ 成分句法分析（PCFG/CKY算法）
 - ✅ 混合分词架构（规则+统计+深度学习融合）
+- ✅ 情感分析（极性和强度计算）
+- ✅ 领域词典（电商、法律、医疗、新闻）
+- ✅ 网络词典（网络新词和流行词汇）
+- ✅ 机构名识别和归一化
+- ✅ 地名识别和归一化
+- ✅ 人名识别和归一化
 
 #### 已实现功能
 
@@ -532,12 +643,24 @@ AuroraNLP/
 - ✅ 停用词过滤
 - ✅ 批量处理接口
 - ✅ 性能基准测试工具
+- ✅ 情感分析
+- ✅ 领域词典
+- ✅ 网络词典
+- ✅ 机构名识别
+- ✅ 地名识别
+- ✅ 人名识别
+- ✅ 搜狗细胞词库支持
+- ✅ 繁体中文处理
+- ✅ 同义词词典
+- ✅ 术语词典
+- ✅ 增量词典
+- ✅ 词典版本管理
 
 ---
 
 ## 路线图
 
-详见 [ROADMAP.md](docs/ROADMAP.md)
+详见 [ROADMAP.md](AuroraNLP/docs/ROADMAP.md)
 
 ### 开发进度
 
@@ -577,7 +700,7 @@ cd AuroraNLP
 pip install -e ".[dev]"
 
 # 运行测试
-pytest tests/
+pytest AuroraNLP/tests/
 ```
 
 ### 提交规范
