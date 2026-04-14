@@ -1,0 +1,58 @@
+{
+  "scenarios": {
+    "general": {
+      "name": "通用场景",
+      "description": "适用于一般文本处理",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": [],
+        "custom": []
+      }
+    },
+    "news_analysis": {
+      "name": "新闻分析",
+      "description": "适用于新闻文本分析",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": ["news/news.txt"],
+        "custom": []
+      }
+    },
+    "medical_research": {
+      "name": "医疗研究",
+      "description": "适用于医疗文本研究",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": ["medical/medical.txt"],
+        "custom": []
+      }
+    },
+    "legal_document": {
+      "name": "法律文档",
+      "description": "适用于法律文本处理",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": ["legal/legal.txt"],
+        "custom": []
+      }
+    },
+    "ecommerce_analysis": {
+      "name": "电商分析",
+      "description": "适用于电商文本分析",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": ["ecommerce/ecommerce.txt"],
+        "custom": []
+      }
+    },
+    "multi_domain": {
+      "name": "多领域混合",
+      "description": "适用于多领域混合文本",
+      "stopwords": {
+        "common": ["common.txt"],
+        "domain": ["news/news.txt", "medical/medical.txt", "legal/legal.txt", "ecommerce/ecommerce.txt"],
+        "custom": []
+      }
+    }
+  }
+}
