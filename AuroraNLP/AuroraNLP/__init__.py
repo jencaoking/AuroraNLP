@@ -4,6 +4,7 @@ __version_info__ = (0, 3, 0, "beta")
 
 from .segmentor import Segmentor
 from .dictionary import Dictionary, UserDictionary, DictionaryManager
+from .domain_dictionary import DomainDictionary, DomainDictionaryManager
 from .network_dictionary import NetworkDictionary
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
@@ -162,6 +163,8 @@ __all__ = [
     "Segmentor",
     "Dictionary",
     "UserDictionary",
+    "DomainDictionary",
+    "DomainDictionaryManager",
     "NetworkDictionary",
     "DictionaryManager",
     "StopWords",

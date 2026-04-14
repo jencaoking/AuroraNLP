@@ -274,12 +274,39 @@
 - 4级(STRONG): 较强，分数 0.8
 - 5级(VERY_STRONG): 极强，分数 1.0
 
-### 31. 领域词典系统
+### 31. 领域词典系统 ✅ 已完成
 
-- [ ] 新闻领域词典
-- [ ] 医疗领域词典
-- [ ] 法律领域词典
-- [ ] 电商领域词典
+新增 `domain_dictionary.py` 模块，实现领域词典系统功能：
+
+- `DomainDictionary` 类：核心领域词典类，支持特定领域的词典管理
+- `DomainDictionaryManager` 类：领域词典管理器
+
+主要功能：
+
+- 支持新闻、医疗、法律、电商四个领域的词典
+- 领域词典优先级管理
+- 领域词典自动加载
+- 与 DictionaryManager 集成
+
+数据文件：
+
+- `data/domain_dictionaries/news.txt`: 新闻领域词典
+- `data/domain_dictionaries/medical.txt`: 医疗领域词典
+- `data/domain_dictionaries/legal.txt`: 法律领域词典
+- `data/domain_dictionaries/ecommerce.txt`: 电商领域词典
+
+使用示例：
+
+```python
+from AuroraNLP import DomainDictionary, DomainDictionaryManager
+
+# 创建新闻领域词典
+news_dict = DomainDictionary('news')
+
+# 加载所有领域词典
+manager = DomainDictionaryManager()
+manager.load_all_domains()
+```
 
 ### 32. 词典版本管理
 

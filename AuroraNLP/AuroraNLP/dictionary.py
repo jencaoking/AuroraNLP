@@ -429,6 +429,7 @@ class DictionaryManager:
     def __init__(self):
         self._dictionaries: Dict[str, Dictionary] = {}
         self._user_dictionaries: Dict[str, UserDictionary] = {}
+        self._domain_dictionaries: Dict[str, 'DomainDictionary'] = {}
         self._merged_trie: Optional[Trie] = None
         self._cache_valid: bool = False
 
@@ -440,6 +441,10 @@ class DictionaryManager:
         self._user_dictionaries[user_dict.name] = user_dict
         self._cache_valid = False
 
+    def register_domain_dictionary(self, domain_dict: 'DomainDictionary') -> None:
+        self._domain_dictionaries[domain_dict.domain] = domain_dict
+        self._cache_valid = False
+
     def unregister_dictionary(self, name: str) -> bool:
         if name in self._dictionaries:
             del self._dictionaries[name]
@@ -449,6 +454,10 @@ class DictionaryManager:
             del self._user_dictionaries[name]
             self._cache_valid = False
             return True
+        if name in self._domain_dictionaries:
+            del self._domain_dictionaries[name]
+            self._cache_valid = False
+            return True
         return False
 
     def get_dictionary(self, name: str) -> Optional[Dictionary]:
@@ -456,6 +465,9 @@ class DictionaryManager:
 
     def get_user_dictionary(self, name: str) -> Optional[UserDictionary]:
         return self._user_dictionaries.get(name)
+
+    def get_domain_dictionary(self, domain: str) -> Optional['DomainDictionary']:
+        return self._domain_dictionaries.get(domain)
 
     def _rebuild_cache(self) -> None:
         if self._cache_valid and self._merged_trie is not None:
@@ -467,6 +479,8 @@ class DictionaryManager:
         for d in self._dictionaries.values():
             all_dicts.append((d.priority, d))
         for d in self._user_dictionaries.values():
+            all_dicts.append((d.priority, d))
+        for d in self._domain_dictionaries.values():
             all_dicts.append((d.priority, d))
 
         all_dicts.sort(key=lambda x: x[0])
@@ -537,6 +551,15 @@ class DictionaryManager:
             result.append({
                 'name': name,
                 'type': 'user',
+                'priority': d.priority,
+                'word_count': len(d)
+            })
+        for domain, d in self._domain_dictionaries.items():
+            result.append({
+                'name': d.name,
+                'type': 'domain',
+                'domain': domain,
+                'domain_name': d.domain_name,
                 'priority': d.priority,
                 'word_count': len(d)
             })
