@@ -722,12 +722,12 @@
 当前状态                          目标状态
 ────────                          ────────
 Python 3.8+                       Python 3.8+
-纯Python实现                      Python + Cython + Rust
-无依赖                            PyTorch/TensorFlow (可选)
-最大匹配算法                      规则+统计+深度学习混合
-小型词典                          百万级多领域词典
+纯Python实现                      Python + Cython
+无依赖                            PyTorch (可选)
+规则+统计混合                      规则+统计+深度学习混合
+百万级词典                        千万级多领域词典
 单机运行                          分布式支持
-命令行/API                        RESTful/gRPC/K8s
+命令行/API                        RESTful API + 容器化
 ```
 
 ***

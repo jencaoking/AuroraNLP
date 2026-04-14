@@ -60,6 +60,11 @@ NER_TAG_MAP = {
 
 
 class Segmentor:
+    """分词器类"""
+    
+    # 有效的地区代码列表
+    VALID_REGIONS = ['tw', 'hk', 'mo']
+    
     def __init__(
         self,
         dictionary: Optional[Dictionary] = None,
@@ -722,7 +727,7 @@ class Segmentor:
         Raises:
             ValueError: 如果地区代码无效
         """
-        if region is not None and region not in ['tw', 'hk', 'mo']:
+        if region is not None and region not in self.VALID_REGIONS:
             raise ValueError(f"无效的地区代码: {region}")
     
     def segment_traditional(self, text: str, mode: Optional[str] = None, region: Optional[str] = None) -> List[str]:
