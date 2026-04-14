@@ -385,12 +385,57 @@ words = [
 hot_manager.update_dictionary("test_dict", words)
 ```
 
-### 34. 训练语料库构建
+### 34. 训练语料库构建 ✅ 已完成
 
-- [ ] 人民日报语料
-- [ ] CTB语料
-- [ ] MSRA语料
-- [ ] 自有语料整合
+新增 `corpus_builder.py` 模块，实现训练语料库构建功能：
+
+- `CorpusBuilder` 类：核心语料库构建类，支持语料加载、预处理和格式转换
+- `CorpusManager` 类：语料库管理器，支持语料库注册和组合
+
+主要功能：
+
+- `load_corpus(corpus_type, file_path)`: 加载语料库文件
+- `preprocess_corpus(lines, corpus_type)`: 预处理语料
+- `convert_to_standard_format(lines, format_type)`: 转换为标准格式
+- `build_corpus(corpus_config)`: 构建综合语料库
+- `split_corpus(corpus_path, train_ratio, val_ratio)`: 分割语料库
+- `statistics(corpus_path)`: 计算语料库统计信息
+- `register_corpus(name, corpus_type, path, description)`: 注册语料库
+- `build_combined_corpus(name, corpus_names, output_format)`: 构建组合语料库
+
+支持的语料类型：
+
+- 人民日报语料
+- CTB语料
+- MSRA语料
+- 自有语料
+
+使用示例：
+
+```python
+from AuroraNLP import CorpusBuilder, CorpusManager
+
+# 创建语料库构建器
+builder = CorpusBuilder()
+
+# 构建语料库
+corpus_config = {
+    "output_path": "data/train_corpus.txt",
+    "corpora": [
+        {"type": "custom", "path": "data/test_corpus.txt"}
+    ],
+    "format": "segmented"
+}
+result_path = builder.build_corpus(corpus_config)
+
+# 分割语料库
+train_path, val_path, test_path = builder.split_corpus(result_path)
+
+# 使用语料库管理器
+manager = CorpusManager()
+manager.register_corpus("test_corpus", "custom", "data/test_corpus.txt")
+combined_path = manager.build_combined_corpus("combined", ["test_corpus"])
+```
 
 ### 35. 语料自动标注
 

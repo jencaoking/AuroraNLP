@@ -167,6 +167,7 @@ from .terminology import (
     TerminologyDatabase,
     TerminologyManager,
 )
+from .corpus_builder import CorpusBuilder, CorpusManager
 
 __all__ = [
     "Segmentor",
@@ -345,4 +346,6 @@ __all__ = [
     "Term",
     "TerminologyDatabase",
     "TerminologyManager",
+    "CorpusBuilder",
+    "CorpusManager",
 ]
