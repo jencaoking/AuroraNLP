@@ -1,4 +1,4 @@
-from AuroraNLP.network_dictionary import NetworkDictionary
+from AuroraNLP import NetworkDictionary
 
 # 测试 NetworkDictionary 类的基本功能
 def test_network_dictionary():
