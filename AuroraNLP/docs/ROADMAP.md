@@ -224,11 +224,55 @@
 - [x] 领域停用词
 - [x] 场景化配置
 
-### 30. 情感词典
+### 30. 情感词典 ✅ 已完成
 
-- [ ] 正面情感词
-- [ ] 负面情感词
-- [ ] 情感强度标注
+新增 `sentiment.py` 模块，实现中文情感词典功能：
+
+- `SentimentDictionary` 类：核心情感词典类，支持正面/负面情感词管理
+- `SentimentAnalyzer` 类：情感分析器
+- `SentimentWord` 数据类：情感词条目
+- `DegreeWord` 数据类：程度副词条目
+- `NegationWord` 数据类：否定词条目
+- `SentimentResult` 数据类：情感分析结果
+- `SentimentPolarity` 枚举：情感极性（正面/负面/中性）
+- `SentimentIntensity` 枚举：情感强度等级（1-5级）
+
+主要功能：
+
+- `add_positive_word(word, intensity, category)`: 添加正面情感词
+- `add_negative_word(word, intensity, category)`: 添加负面情感词
+- `add_negation_word(word, strength)`: 添加否定词
+- `add_degree_word(word, degree, category)`: 添加程度副词
+- `is_positive(word)`: 判断是否为正面情感词
+- `is_negative(word)`: 判断是否为负面情感词
+- `is_sentiment_word(word)`: 判断是否为情感词
+- `get_word_score(word)`: 获取词语情感分数
+- `get_word_intensity(word)`: 获取词语情感强度
+- `get_word_category(word)`: 获取词语情感类别
+- `get_words_by_category(category)`: 按类别获取情感词
+- `get_words_by_intensity(intensity)`: 按强度获取情感词
+- `analyze(text, words)`: 分析文本情感
+- `get_positive_words()`: 获取所有正面情感词
+- `get_negative_words()`: 获取所有负面情感词
+
+数据文件：
+
+- `data/sentiment.txt`: 情感词库（正面/负面情感词，含强度标注和类别）
+- `data/negation_words.txt`: 否定词库
+- `data/degree_words.txt`: 程度副词库
+
+情感类别：
+
+- 正面：喜悦(joy)、喜爱(love)、赞扬(praise)、信任(trust)、期待(anticipation)、惊喜(surprise_good)
+- 负面：愤怒(anger)、悲伤(sadness)、恐惧(fear)、厌恶(disgust)、震惊(surprise_bad)
+
+情感强度等级：
+
+- 1级(VERY_WEAK): 轻微，分数 0.2
+- 2级(WEAK): 较弱，分数 0.4
+- 3级(MEDIUM): 中等，分数 0.6
+- 4级(STRONG): 较强，分数 0.8
+- 5级(VERY_STRONG): 极强，分数 1.0
 
 ### 31. 领域词典系统
 
