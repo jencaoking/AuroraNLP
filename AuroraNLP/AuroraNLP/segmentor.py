@@ -14,6 +14,7 @@ from .tokenizer import (
     bidirectional_max_match_weighted_with_pos
 )
 from .dictionary import Dictionary, UserDictionary, DictionaryManager
+from .traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
 from .managers import (
     DictionaryService,
     StopWordsManager,
@@ -82,6 +83,10 @@ class Segmentor:
         self.lattice_manager = LatticeSegmentorManager(self.dict_manager.dictionary, use_lattice)
         self.ambiguity_manager = AmbiguityDetectorManager(self.dict_manager.dictionary)
         self.new_word_manager = NewWordDetectorManager()
+        
+        # 繁体中文支持
+        self.traditional_converter = TraditionalChineseConverter()
+        self.traditional_dictionary = TraditionalChineseDictionary(self.traditional_converter)
         
         self._init_hybrid_manager(hybrid_config)
         
@@ -666,3 +671,119 @@ class Segmentor:
     
     def is_hybrid_enabled(self) -> bool:
         return self.hybrid_manager.is_enabled()
+    
+    def add_traditional_word(self, word: str, traditional: Optional[str] = None) -> None:
+        """
+        添加繁体中文词汇
+        
+        Args:
+            word: 词汇（可以是简体或繁体）
+            traditional: 对应的繁体形式（可选）
+        """
+        self.traditional_dictionary.add_word(word, traditional)
+    
+    def add_traditional_words(self, words: List[str]) -> None:
+        """
+        批量添加繁体中文词汇
+        
+        Args:
+            words: 词汇列表
+        """
+        self.traditional_dictionary.add_words(words)
+    
+    def load_traditional_dictionary(self, file_path: str) -> int:
+        """
+        从文件加载繁体中文词典
+        
+        Args:
+            file_path: 文件路径
+            
+        Returns:
+            加载的词汇数量
+        """
+        return self.traditional_dictionary.load_from_file(file_path)
+    
+    def save_traditional_dictionary(self, file_path: str) -> None:
+        """
+        保存繁体中文词典到文件
+        
+        Args:
+            file_path: 文件路径
+        """
+        self.traditional_dictionary.save_to_file(file_path)
+    
+    def segment_traditional(self, text: str, mode: Optional[str] = None, region: Optional[str] = None) -> List[str]:
+        """
+        分词繁体中文文本
+        
+        Args:
+            text: 繁体中文字符串
+            mode: 分词模式
+            region: 地区代码 ('tw', 'hk', 'mo')，可选
+            
+        Returns:
+            分词结果
+        """
+        # 转换为简体中文后分词
+        simplified_text = self.traditional_converter.traditional_to_simplified(text)
+        return self.segment(simplified_text, mode)
+    
+    def segment_with_traditional(self, text: str, mode: Optional[str] = None, region: Optional[str] = None) -> List[str]:
+        """
+        处理包含繁体中文的文本
+        
+        Args:
+            text: 中文字符串（可能包含繁体）
+            mode: 分词模式
+            region: 地区代码 ('tw', 'hk', 'mo')，可选
+            
+        Returns:
+            分词结果
+        """
+        # 检测是否包含繁体中文
+        has_traditional = any(char in self.traditional_converter.get_traditional_chars() for char in text)
+        
+        if has_traditional:
+            # 转换为简体中文后分词
+            simplified_text = self.traditional_converter.traditional_to_simplified(text)
+            return self.segment(simplified_text, mode)
+        else:
+            # 直接分词
+            return self.segment(text, mode)
+    
+    def simplified_to_traditional(self, text: str, region: Optional[str] = None) -> str:
+        """
+        将简体中文转换为繁体中文
+        
+        Args:
+            text: 简体中文字符串
+            region: 地区代码 ('tw', 'hk', 'mo')，可选
+            
+        Returns:
+            繁体中文字符串
+        """
+        return self.traditional_converter.simplified_to_traditional(text, region)
+    
+    def traditional_to_simplified(self, text: str) -> str:
+        """
+        将繁体中文转换为简体中文
+        
+        Args:
+            text: 繁体中文字符串
+            
+        Returns:
+            简体中文字符串
+        """
+        return self.traditional_converter.traditional_to_simplified(text)
+    
+    def detect_language_variant(self, text: str) -> Optional[str]:
+        """
+        检测文本的繁体中文变体类型
+        
+        Args:
+            text: 中文文本
+            
+        Returns:
+            地区代码 ('tw', 'hk', 'mo') 或 None
+        """
+        return self.traditional_converter.detect_language_variant(text)
