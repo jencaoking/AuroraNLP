@@ -724,6 +724,9 @@ class Segmentor:
         Returns:
             分词结果
         """
+        # 验证region参数
+        if region is not None and region not in ['tw', 'hk', 'mo']:
+            raise ValueError(f"无效的地区代码: {region}")
         # 转换为简体中文后分词
         simplified_text = self.traditional_converter.traditional_to_simplified(text, region)
         return self.segment(simplified_text, mode)
@@ -740,6 +743,9 @@ class Segmentor:
         Returns:
             分词结果
         """
+        # 验证region参数
+        if region is not None and region not in ['tw', 'hk', 'mo']:
+            raise ValueError(f"无效的地区代码: {region}")
         # 检测是否包含繁体中文
         has_traditional = any(char in self.traditional_converter.get_traditional_chars() for char in text)
         
@@ -762,6 +768,9 @@ class Segmentor:
         Returns:
             繁体中文字符串
         """
+        # 验证region参数
+        if region is not None and region not in ['tw', 'hk', 'mo']:
+            raise ValueError(f"无效的地区代码: {region}")
         return self.traditional_converter.simplified_to_traditional(text, region)
     
     def traditional_to_simplified(self, text: str, region: Optional[str] = None) -> str:
@@ -775,6 +784,9 @@ class Segmentor:
         Returns:
             简体中文字符串
         """
+        # 验证region参数
+        if region is not None and region not in ['tw', 'hk', 'mo']:
+            raise ValueError(f"无效的地区代码: {region}")
         return self.traditional_converter.traditional_to_simplified(text, region)
     
     def detect_language_variant(self, text: str) -> Optional[str]:
