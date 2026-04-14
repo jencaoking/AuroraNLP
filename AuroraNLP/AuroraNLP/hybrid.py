@@ -266,40 +266,7 @@ class CascadeFusionStrategy(FusionStrategy):
         return "cascade"
 
 
-class AdaptiveFusionStrategy(FusionStrategy):
-    """自适应融合策略"""
-    
-    def __init__(self):
-        self._text_classifier = TextClassifier()
-        self._strategy_selector = StrategySelector()
-    
-    def fuse(self, context: FusionContext) -> List[str]:
-        results = context.results
-        if not results:
-            return []
-        
-        if len(results) == 1:
-            return results[0].words
-        
-        text = context.text
-        text_features = self._text_classifier.extract_features(text)
-        best_strategy = self._strategy_selector.select(text_features, results)
-        
-        if best_strategy == 'dict':
-            dict_results = [r for r in results if r.segmenter_type == SegmenterType.RULE_BASED]
-            if dict_results:
-                return dict_results[0].words
-        elif best_strategy == 'statistical':
-            stat_results = [r for r in results if r.segmenter_type == SegmenterType.STATISTICAL]
-            if stat_results:
-                best = max(stat_results, key=lambda r: r.confidence)
-                return best.words
-        
-        best_result = max(results, key=lambda r: r.confidence)
-        return best_result.words
-    
-    def get_name(self) -> str:
-        return "adaptive"
+
 
 
 class ConfidenceFusionStrategy(FusionStrategy):
@@ -329,7 +296,6 @@ class FusionStrategyFactory:
         self.register_strategy('vote', VoteFusionStrategy())
         self.register_strategy('weighted', WeightedFusionStrategy())
         self.register_strategy('cascade', CascadeFusionStrategy())
-        self.register_strategy('adaptive', AdaptiveFusionStrategy())
         self.register_strategy('confidence', ConfidenceFusionStrategy())
     
     def register_strategy(self, name: str, strategy: FusionStrategy):
@@ -1010,7 +976,6 @@ __all__ = [
     'VoteFusionStrategy',
     'WeightedFusionStrategy',
     'CascadeFusionStrategy',
-    'AdaptiveFusionStrategy',
     'ConfidenceFusionStrategy',
     'FusionStrategyFactory',
     'ConfidenceEstimator',

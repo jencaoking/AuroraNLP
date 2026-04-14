@@ -1,5 +1,6 @@
 from typing import List, Tuple, Optional, Set, Dict, Any
 from .dictionary import Dictionary, UserDictionary, DictionaryManager
+from .network_dictionary import NetworkDictionary
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
@@ -24,6 +25,7 @@ class DictionaryService:
             self._dict_manager.register_dictionary(self.dictionary)
         
         self._user_dictionaries: Dict[str, UserDictionary] = {}
+        self._network_dictionary: Optional[NetworkDictionary] = None
     
     def create_user_dictionary(
         self,
@@ -36,6 +38,39 @@ class DictionaryService:
         self._user_dictionaries[name] = user_dict
         self._dict_manager.register_user_dictionary(user_dict)
         return user_dict
+    
+    def create_network_dictionary(
+        self,
+        priority: int = 50,
+        update_interval: Optional[int] = None,
+        expiry_days: Optional[int] = None
+    ) -> NetworkDictionary:
+        network_dict = NetworkDictionary(load_default=True, priority=priority)
+        if update_interval is not None:
+            network_dict.update_interval = update_interval
+        if expiry_days is not None:
+            network_dict.expiry_days = expiry_days
+        self._network_dictionary = network_dict
+        self._dict_manager.register_dictionary(network_dict)
+        return network_dict
+    
+    def get_network_dictionary(self) -> Optional[NetworkDictionary]:
+        return self._network_dictionary
+    
+    def update_network_hotwords(self) -> int:
+        if self._network_dictionary:
+            return self._network_dictionary.update_hotwords()
+        return 0
+    
+    def cleanup_expired_network_words(self) -> int:
+        if self._network_dictionary:
+            return self._network_dictionary.cleanup_expired_words()
+        return 0
+    
+    def get_network_dictionary_statistics(self) -> Dict[str, Any]:
+        if self._network_dictionary:
+            return self._network_dictionary.get_statistics()
+        return {}
     
     def get_user_dictionary(self, name: str) -> Optional[UserDictionary]:
         return self._user_dictionaries.get(name)

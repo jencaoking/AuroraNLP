@@ -4,6 +4,7 @@ __version_info__ = (0, 3, 0, "beta")
 
 from .segmentor import Segmentor
 from .dictionary import Dictionary, UserDictionary, DictionaryManager
+from .network_dictionary import NetworkDictionary
 from .stopwords import StopWords
 from .keyword_extractor import KeywordExtractor
 from .similarity import Similarity
@@ -81,7 +82,6 @@ from .hybrid import (
     VoteFusionStrategy,
     WeightedFusionStrategy,
     CascadeFusionStrategy,
-    AdaptiveFusionStrategy,
     ConfidenceFusionStrategy,
     FusionStrategyFactory,
     ConfidenceEstimator,
@@ -162,6 +162,7 @@ __all__ = [
     "Segmentor",
     "Dictionary",
     "UserDictionary",
+    "NetworkDictionary",
     "DictionaryManager",
     "StopWords",
     "KeywordExtractor",
