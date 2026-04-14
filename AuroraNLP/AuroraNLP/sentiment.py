@@ -410,15 +410,31 @@ class SentimentDictionary:
         while i < len(words):
             word = words[i]
             
-            # 检查否定词
+            # 检查否定词（改进版本）
             negation = 1.0
-            if i > 0 and self.is_negation_word(words[i - 1]):
+            negation_count = 0
+            
+            # 检查前3个词范围内的否定词
+            start_idx = max(0, i - 4)  # 扩大范围以包含更多否定词
+            for j in range(start_idx, i):
+                if self.is_negation_word(words[j]):
+                    negation_count += 1
+            
+            # 奇数个否定词表示否定，偶数个表示肯定
+            if negation_count % 2 == 1:
                 negation = -1.0
             
-            # 检查程度副词
+            # 检查程度副词（改进版本）
             degree = 1.0
-            if i > 0 and self.is_degree_word(words[i - 1]):
-                degree = self.get_degree(words[i - 1])
+            
+            # 检查前3个词范围内的程度副词
+            for j in range(start_idx, i):
+                if self.is_degree_word(words[j]):
+                    degree *= self.get_degree(words[j])
+            
+            # 检查后1个词范围内的程度副词（如"好极了"）
+            if i + 1 < len(words) and self.is_degree_word(words[i + 1]):
+                degree *= self.get_degree(words[i + 1])
             
             sentiment_word = self.get_sentiment_word(word)
             if sentiment_word:
