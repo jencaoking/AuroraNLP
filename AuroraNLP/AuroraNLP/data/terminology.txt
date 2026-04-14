@@ -5,7 +5,7 @@
 
 # @medical
 MED001	高血压	medical	心血管疾病	hypertension	血压高、原发性高血压	以体循环动脉血压持续升高为主要特征的慢性疾病	医学词典
-MED002	糖尿病	medical	内分泌疾病	diabetes	mellitus	血糖高、消渴症	以高血糖为特征的代谢性疾病	医学词典
+MED002	糖尿病	medical	内分泌疾病	diabetes mellitus	血糖高、消渴症	以高血糖为特征的代谢性疾病	医学词典
 MED003	冠心病	medical	心血管疾病	coronary heart disease	冠状动脉粥样硬化性心脏病、缺血性心脏病	冠状动脉血管发生动脉粥样硬化病变引起血管腔狭窄或阻塞	医学词典
 MED004	心肌梗死	medical	心血管疾病	myocardial infarction	心梗、心肌梗塞	冠状动脉急性、持续性缺血缺氧所引起的心肌坏死	医学词典
 MED005	脑卒中	medical	脑血管疾病	stroke	中风、脑血管意外	急性脑血管病引起的脑部血液循环障碍	医学词典

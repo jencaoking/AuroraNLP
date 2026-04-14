@@ -4,7 +4,7 @@
 
 import os
 import pytest
-from auroranlp.terminology import (
+from AuroraNLP.terminology import (
     TermDomain,
     Term,
     TerminologyDatabase,

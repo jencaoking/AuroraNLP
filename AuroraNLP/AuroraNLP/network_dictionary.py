@@ -9,14 +9,6 @@ from typing import Set, Optional, List, Dict, Any
 
 from .dictionary import Dictionary
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger('NetworkDictionary')
-
-
 class NetworkDictionary(Dictionary):
     DEFAULT_NETWORK_DICT_PATH = os.path.join(os.path.dirname(__file__), 'data', 'network_words.json')
     DEFAULT_UPDATE_INTERVAL = 24 * 60 * 60  # 24小时
@@ -29,6 +21,15 @@ class NetworkDictionary(Dictionary):
         self._expiry_days = self.DEFAULT_EXPIRY_DAYS
         self._last_update = 0
         self._words_with_timestamp: Dict[str, Dict[str, Any]] = {}
+        
+        # 配置日志
+        self.logger = logging.getLogger('AuroraNLP.NetworkDictionary')
+        if not self.logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            handler.setFormatter(formatter)
+            self.logger.addHandler(handler)
+            self.logger.setLevel(logging.INFO)
         
         if load_default:
             self._load_network_dictionary()
@@ -70,7 +71,7 @@ class NetworkDictionary(Dictionary):
                     self._trie.insert(word, pos_tag, weight, priority)
                     
             except Exception as e:
-                logger.error(f"加载网络词典失败: {e}")
+                self.logger.error(f"加载网络词典失败: {e}")
 
     def save_network_dictionary(self) -> None:
         data = {
@@ -83,7 +84,7 @@ class NetworkDictionary(Dictionary):
             with open(self.DEFAULT_NETWORK_DICT_PATH, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            logger.error(f"保存网络词典失败: {e}")
+            self.logger.error(f"保存网络词典失败: {e}")
 
     def add_word(
         self,
@@ -137,12 +138,12 @@ class NetworkDictionary(Dictionary):
                     try:
                         return response.json()
                     except json.JSONDecodeError as e:
-                        logger.warning(f"解析JSON失败: {e}")
+                        self.logger.warning(f"解析JSON失败: {e}")
                         return None
                 else:
-                    logger.warning(f"请求失败，状态码: {response.status_code}")
+                    self.logger.warning(f"请求失败，状态码: {response.status_code}")
             except requests.RequestException as e:
-                logger.warning(f"请求异常 (尝试 {attempt+1}/{max_retries}): {e}")
+                self.logger.warning(f"请求异常 (尝试 {attempt+1}/{max_retries}): {e}")
                 
                 # 指数退避策略
                 if attempt < max_retries - 1:
@@ -156,42 +157,42 @@ class NetworkDictionary(Dictionary):
         hotwords = []
         
         # 爬取微博热词
-        logger.info("开始爬取微博热词")
+        self.logger.info("开始爬取微博热词")
         data = self._make_request('https://api.weibo.com/2/trends/hot.json')
         if data and 'trends' in data:
             try:
                 hotwords.extend([item['name'] for item in data['trends'][:20]])
-                logger.info(f"成功爬取微博热词 {len(data['trends'][:20])} 个")
+                self.logger.info(f"成功爬取微博热词 {len(data['trends'][:20])} 个")
             except (KeyError, TypeError) as e:
-                logger.warning(f"处理微博热词数据失败: {e}")
+                self.logger.warning(f"处理微博热词数据失败: {e}")
         
         # 爬取百度热词
-        logger.info("开始爬取百度热词")
+        self.logger.info("开始爬取百度热词")
         data = self._make_request('https://top.baidu.com/api/board')
         if data and 'data' in data and 'cards' in data['data']:
             try:
                 for card in data['data']['cards']:
                     if 'content' in card:
                         hotwords.extend([item['word'] for item in card['content'][:20]])
-                logger.info("成功爬取百度热词")
+                self.logger.info("成功爬取百度热词")
             except (KeyError, TypeError) as e:
-                logger.warning(f"处理百度热词数据失败: {e}")
+                self.logger.warning(f"处理百度热词数据失败: {e}")
         
         # 爬取知乎热词
-        logger.info("开始爬取知乎热词")
+        self.logger.info("开始爬取知乎热词")
         data = self._make_request('https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total')
         if data and 'data' in data:
             try:
                 for item in data['data'][:20]:
                     if 'target' in item and 'title' in item['target']:
                         hotwords.extend([item['target']['title']])
-                logger.info(f"成功爬取知乎热词 {len(data['data'][:20])} 个")
+                self.logger.info(f"成功爬取知乎热词 {len(data['data'][:20])} 个")
             except (KeyError, TypeError) as e:
-                logger.warning(f"处理知乎热词数据失败: {e}")
+                self.logger.warning(f"处理知乎热词数据失败: {e}")
         
         # 去重
         unique_hotwords = list(set(hotwords))
-        logger.info(f"总共爬取到 {len(unique_hotwords)} 个网络热词")
+        self.logger.info(f"总共爬取到 {len(unique_hotwords)} 个网络热词")
         return unique_hotwords
 
     def update_hotwords(self) -> int:
@@ -233,9 +234,9 @@ class NetworkDictionary(Dictionary):
                 if current_time - self._last_update >= self._update_interval:
                     added = self.update_hotwords()
                     expired = self.cleanup_expired_words()
-                    logger.info(f"网络新词库自动更新: 添加{added}个新词, 清理{expired}个过期词")
+                    self.logger.info(f"网络新词库自动更新: 添加{added}个新词, 清理{expired}个过期词")
             except Exception as e:
-                logger.error(f"自动更新任务失败: {e}")
+                self.logger.error(f"自动更新任务失败: {e}")
             finally:
                 time.sleep(self._update_interval)
 

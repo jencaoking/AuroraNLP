@@ -202,7 +202,11 @@ class TerminologyDatabase:
         
         aliases = []
         if len(parts) > 5 and parts[5].strip():
-            aliases = [a.strip() for a in parts[5].split(',') if a.strip()]
+            # 处理中文逗号和英文逗号
+            alias_str = parts[5].strip()
+            # 先将中文逗号替换为英文逗号，然后分割
+            alias_str = alias_str.replace('、', ',')
+            aliases = [a.strip() for a in alias_str.split(',') if a.strip()]
         
         definition = parts[6].strip() if len(parts) > 6 and parts[6].strip() else None
         source = parts[7].strip() if len(parts) > 7 and parts[7].strip() else None

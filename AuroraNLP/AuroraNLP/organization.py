@@ -210,6 +210,7 @@ class Enterprise(Organization):
     industry: Optional[str] = None
     stock_code: Optional[str] = None
     employees: Optional[int] = None
+    org_type: OrgType = OrgType.ENTERPRISE
     
     def __post_init__(self):
         self.org_type = OrgType.ENTERPRISE
@@ -220,6 +221,7 @@ class School(Organization):
     school_type: SchoolType = SchoolType.OTHER
     is_public: bool = True
     level: Optional[str] = None
+    org_type: OrgType = OrgType.SCHOOL
     
     def __post_init__(self):
         self.org_type = OrgType.SCHOOL
@@ -231,6 +233,7 @@ class Hospital(Organization):
     level: Optional[str] = None
     is_public: bool = True
     bed_count: Optional[int] = None
+    org_type: OrgType = OrgType.HOSPITAL
     
     def __post_init__(self):
         self.org_type = OrgType.HOSPITAL
@@ -240,6 +243,7 @@ class Hospital(Organization):
 class Government(Organization):
     gov_type: GovType = GovType.OTHER
     department: Optional[str] = None
+    org_type: OrgType = OrgType.GOVERNMENT
     
     def __post_init__(self):
         self.org_type = OrgType.GOVERNMENT
