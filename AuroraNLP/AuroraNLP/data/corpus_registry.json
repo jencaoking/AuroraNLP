@@ -1,0 +1,11 @@
+{
+  "corpora": [
+    {
+      "name": "combined",
+      "type": "combined",
+      "path": "J:\\PROJECT\\Python project\\NLP\\AuroraNLP\\AuroraNLP\\data\\combined_corpus.txt",
+      "description": "组合语料库: test_corpus",
+      "registered_at": "2026-04-14T18:19:39.266835"
+    }
+  ]
+}

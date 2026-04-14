@@ -7,14 +7,19 @@ from typing import List, Dict, Optional, Tuple, Union
 class CorpusBuilder:
     """训练语料库构建器"""
     
-    def __init__(self, data_dir: str = "data"):
+    def __init__(self, data_dir: str = None):
         """
         初始化语料库构建器
         
         Args:
-            data_dir: 数据目录路径
+            data_dir: 数据目录路径，默认为包内的 data 目录
         """
-        self.data_dir = data_dir
+        if data_dir is None:
+            # 使用包内的 data 目录
+            import os
+            self.data_dir = os.path.join(os.path.dirname(__file__), "data")
+        else:
+            self.data_dir = data_dir
         self.corpus_types = {
             "people_daily": "人民日报语料",
             "ctb": "CTB语料",
@@ -268,16 +273,21 @@ class CorpusBuilder:
 class CorpusManager:
     """语料库管理器"""
     
-    def __init__(self, data_dir: str = "data"):
+    def __init__(self, data_dir: str = None):
         """
         初始化语料库管理器
         
         Args:
-            data_dir: 数据目录路径
+            data_dir: 数据目录路径，默认为包内的 data 目录
         """
-        self.data_dir = data_dir
-        self.builder = CorpusBuilder(data_dir)
-        self.corpus_registry = os.path.join(data_dir, "corpus_registry.json")
+        import os
+        if data_dir is None:
+            # 使用包内的 data 目录
+            self.data_dir = os.path.join(os.path.dirname(__file__), "data")
+        else:
+            self.data_dir = data_dir
+        self.builder = CorpusBuilder(self.data_dir)
+        self.corpus_registry = os.path.join(self.data_dir, "corpus_registry.json")
         self._load_registry()
     
     def _load_registry(self):
@@ -304,12 +314,13 @@ class CorpusManager:
             path: 语料文件路径
             description: 语料描述
         """
+        from datetime import datetime
         corpus_info = {
             "name": name,
             "type": corpus_type,
             "path": path,
             "description": description,
-            "registered_at": "2026-04-14"  # 实际应用中应该使用当前时间
+            "registered_at": datetime.now().isoformat()
         }
         
         # 检查是否已存在

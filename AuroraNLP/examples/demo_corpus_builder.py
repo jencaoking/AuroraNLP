@@ -6,6 +6,11 @@
 
 from AuroraNLP import CorpusBuilder, CorpusManager
 import os
+import sys
+
+# 获取包内的 data 目录路径
+data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "AuroraNLP", "data")
+os.makedirs(data_dir, exist_ok=True)
 
 
 def demo_corpus_builder():
@@ -13,13 +18,13 @@ def demo_corpus_builder():
     print("=== 语料库构建示例 ===")
     
     # 创建语料库构建器
-    builder = CorpusBuilder()
+    builder = CorpusBuilder(data_dir)
     
     # 示例1: 构建单个语料库
     print("\n1. 构建单个语料库:")
     
     # 假设我们有一个简单的测试语料文件
-    test_corpus_path = "data/test_corpus.txt"
+    test_corpus_path = os.path.join(data_dir, "test_corpus.txt")
     
     # 确保测试文件存在
     if not os.path.exists(test_corpus_path):
@@ -32,7 +37,7 @@ def demo_corpus_builder():
     
     # 构建语料库配置
     corpus_config = {
-        "output_path": "data/train_corpus.txt",
+        "output_path": os.path.join(data_dir, "train_corpus.txt"),
         "corpora": [
             {"type": "custom", "path": test_corpus_path}
         ],
@@ -62,13 +67,13 @@ def demo_corpus_manager():
     print("\n=== 语料库管理器示例 ===")
     
     # 创建语料库管理器
-    manager = CorpusManager()
+    manager = CorpusManager(data_dir)
     
     # 注册语料库
     print("\n1. 注册语料库:")
     
     # 注册测试语料库
-    test_corpus_path = "data/test_corpus.txt"
+    test_corpus_path = os.path.join(data_dir, "test_corpus.txt")
     manager.register_corpus(
         name="test_corpus",
         corpus_type="custom",
