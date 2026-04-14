@@ -3,10 +3,18 @@ import json
 import time
 import requests
 import threading
+import logging
 from datetime import datetime, timedelta
 from typing import Set, Optional, List, Dict, Any
 
 from .dictionary import Dictionary
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger('NetworkDictionary')
 
 
 class NetworkDictionary(Dictionary):
@@ -62,7 +70,7 @@ class NetworkDictionary(Dictionary):
                     self._trie.insert(word, pos_tag, weight, priority)
                     
             except Exception as e:
-                print(f"加载网络词典失败: {e}")
+                logger.error(f"加载网络词典失败: {e}")
 
     def save_network_dictionary(self) -> None:
         data = {
@@ -75,7 +83,7 @@ class NetworkDictionary(Dictionary):
             with open(self.DEFAULT_NETWORK_DICT_PATH, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            print(f"保存网络词典失败: {e}")
+            logger.error(f"保存网络词典失败: {e}")
 
     def add_word(
         self,
@@ -105,42 +113,86 @@ class NetworkDictionary(Dictionary):
             del self._words_with_timestamp[word]
         return result
 
+    def _make_request(self, url: str, max_retries: int = 3, backoff_factor: float = 0.5) -> Optional[Dict]:
+        """发送HTTP请求，支持重试机制
+        
+        Args:
+            url: 请求URL
+            max_retries: 最大重试次数
+            backoff_factor: 重试间隔因子
+            
+        Returns:
+            响应JSON数据，如果请求失败返回None
+        """
+        for attempt in range(max_retries):
+            try:
+                # 添加请求头，模拟浏览器
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+                response = requests.get(url, timeout=10, headers=headers)
+                
+                # 检查状态码
+                if response.status_code == 200:
+                    try:
+                        return response.json()
+                    except json.JSONDecodeError as e:
+                        logger.warning(f"解析JSON失败: {e}")
+                        return None
+                else:
+                    logger.warning(f"请求失败，状态码: {response.status_code}")
+            except requests.RequestException as e:
+                logger.warning(f"请求异常 (尝试 {attempt+1}/{max_retries}): {e}")
+                
+                # 指数退避策略
+                if attempt < max_retries - 1:
+                    sleep_time = backoff_factor * (2 ** attempt)
+                    time.sleep(sleep_time)
+                    continue
+        
+        return None
+    
     def _crawl_network_hotwords(self) -> List[str]:
         hotwords = []
         
         # 爬取微博热词
-        try:
-            response = requests.get('https://api.weibo.com/2/trends/hot.json', timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if 'trends' in data:
-                    hotwords.extend([item['name'] for item in data['trends'][:20]])
-        except Exception as e:
-            print(f"爬取微博热词失败: {e}")
+        logger.info("开始爬取微博热词")
+        data = self._make_request('https://api.weibo.com/2/trends/hot.json')
+        if data and 'trends' in data:
+            try:
+                hotwords.extend([item['name'] for item in data['trends'][:20]])
+                logger.info(f"成功爬取微博热词 {len(data['trends'][:20])} 个")
+            except (KeyError, TypeError) as e:
+                logger.warning(f"处理微博热词数据失败: {e}")
         
         # 爬取百度热词
-        try:
-            response = requests.get('https://top.baidu.com/api/board', timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if 'data' in data and 'cards' in data['data']:
-                    for card in data['data']['cards']:
-                        if 'content' in card:
-                            hotwords.extend([item['word'] for item in card['content'][:20]])
-        except Exception as e:
-            print(f"爬取百度热词失败: {e}")
+        logger.info("开始爬取百度热词")
+        data = self._make_request('https://top.baidu.com/api/board')
+        if data and 'data' in data and 'cards' in data['data']:
+            try:
+                for card in data['data']['cards']:
+                    if 'content' in card:
+                        hotwords.extend([item['word'] for item in card['content'][:20]])
+                logger.info("成功爬取百度热词")
+            except (KeyError, TypeError) as e:
+                logger.warning(f"处理百度热词数据失败: {e}")
         
         # 爬取知乎热词
-        try:
-            response = requests.get('https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total', timeout=10)
-            if response.status_code == 200:
-                data = response.json()
-                if 'data' in data:
-                    hotwords.extend([item['target']['title'] for item in data['data'][:20]])
-        except Exception as e:
-            print(f"爬取知乎热词失败: {e}")
+        logger.info("开始爬取知乎热词")
+        data = self._make_request('https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total')
+        if data and 'data' in data:
+            try:
+                for item in data['data'][:20]:
+                    if 'target' in item and 'title' in item['target']:
+                        hotwords.extend([item['target']['title']])
+                logger.info(f"成功爬取知乎热词 {len(data['data'][:20])} 个")
+            except (KeyError, TypeError) as e:
+                logger.warning(f"处理知乎热词数据失败: {e}")
         
-        return list(set(hotwords))
+        # 去重
+        unique_hotwords = list(set(hotwords))
+        logger.info(f"总共爬取到 {len(unique_hotwords)} 个网络热词")
+        return unique_hotwords
 
     def update_hotwords(self) -> int:
         hotwords = self._crawl_network_hotwords()
@@ -181,9 +233,9 @@ class NetworkDictionary(Dictionary):
                 if current_time - self._last_update >= self._update_interval:
                     added = self.update_hotwords()
                     expired = self.cleanup_expired_words()
-                    print(f"网络新词库自动更新: 添加{added}个新词, 清理{expired}个过期词")
+                    logger.info(f"网络新词库自动更新: 添加{added}个新词, 清理{expired}个过期词")
             except Exception as e:
-                print(f"自动更新任务失败: {e}")
+                logger.error(f"自动更新任务失败: {e}")
             finally:
                 time.sleep(self._update_interval)
 
