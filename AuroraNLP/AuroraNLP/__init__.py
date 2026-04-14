@@ -169,7 +169,7 @@ from .terminology import (
 )
 from .corpus_builder import CorpusBuilder, CorpusManager
 from .corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
-from .deep_learning import Framework, FrameworkType, get_framework, PyTorchBackend, TensorFlowBackend
+from .deep_learning import Framework, FrameworkType, get_framework, PyTorchBackend, TensorFlowBackend, BiLSTMCRF
 
 __all__ = [
     "Segmentor",
@@ -359,4 +359,5 @@ __all__ = [
     "get_framework",
     "PyTorchBackend",
     "TensorFlowBackend",
+    "BiLSTMCRF",
 ]

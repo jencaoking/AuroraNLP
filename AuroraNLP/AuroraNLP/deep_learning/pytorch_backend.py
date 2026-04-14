@@ -53,6 +53,9 @@ class PyTorchBackend(Framework):
             raise RuntimeError("PyTorch is not available")
         
         try:
+            # 添加 weights_only=False 以兼容旧版本的模型
+            if 'weights_only' not in kwargs:
+                kwargs['weights_only'] = False
             model = self._torch.load(model_path, **kwargs)
             return model
         except Exception as e:

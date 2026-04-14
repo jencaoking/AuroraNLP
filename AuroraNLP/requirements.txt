@@ -27,3 +27,14 @@ pytest>=7.0.0
 
 # 覆盖率 (Coverage)
 # pytest-cov>=4.0.0
+
+# 深度学习依赖 (Deep Learning dependencies)
+# ----------------------------------------
+# 以下依赖用于 BiLSTM-CRF 模型
+# The following dependencies are for BiLSTM-CRF model
+
+# PyTorch
+# torch>=2.0.0
+
+# CRF 实现
+# torchcrf>=1.1.1
