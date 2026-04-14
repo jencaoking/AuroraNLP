@@ -764,17 +764,18 @@ class Segmentor:
         """
         return self.traditional_converter.simplified_to_traditional(text, region)
     
-    def traditional_to_simplified(self, text: str) -> str:
+    def traditional_to_simplified(self, text: str, region: Optional[str] = None) -> str:
         """
         将繁体中文转换为简体中文
         
         Args:
             text: 繁体中文字符串
+            region: 地区代码 ('tw', 'hk', 'mo')，可选
             
         Returns:
             简体中文字符串
         """
-        return self.traditional_converter.traditional_to_simplified(text)
+        return self.traditional_converter.traditional_to_simplified(text, region)
     
     def detect_language_variant(self, text: str) -> Optional[str]:
         """
