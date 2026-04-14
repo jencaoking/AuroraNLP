@@ -437,11 +437,37 @@ manager.register_corpus("test_corpus", "custom", "data/test_corpus.txt")
 combined_path = manager.build_combined_corpus("combined", ["test_corpus"])
 ```
 
-### 35. 语料自动标注
+### 35. 语料自动标注 ✅ 已完成
 
-- [ ] 半监督标注工具
-- [ ] 主动学习策略
-- [ ] 标注质量评估
+新增 `corpus_annotator.py` 模块，实现语料自动标注功能：
+
+- `CorpusAnnotator` 类：核心标注器类，支持语料加载、半监督标注和质量评估
+- `AnnotationManager` 类：标注管理器，支持多标注器管理和全局评估
+- `ActiveLearningStrategy` 类：主动学习策略，支持不确定性采样、多样性采样和组合采样
+- `AnnotationQualityEvaluator` 类：标注质量评估器，计算精确率、召回率和F1分数
+
+主要功能：
+
+- `semi_supervised_annotate(model, sample_size, confidence_threshold)`: 半监督标注
+- `active_learning_sample(model, sample_size, strategy)`: 主动学习采样
+- `evaluate_annotation_quality(annotated_data)`: 评估标注质量
+- `get_quality_report()`: 获取质量报告
+- `add_manual_annotation(text, annotation, confidence)`: 添加手动标注
+- `save_annotated_corpus(output_path)`: 保存标注语料
+
+主动学习策略：
+
+- `uncertainty_sampling`: 基于模型不确定性的采样
+- `diversity_sampling`: 基于文本多样性的采样
+- `combination_sampling`: 结合不确定性和多样性的采样
+
+质量评估指标：
+
+- 平均置信度
+- 置信度标准差
+- 标注覆盖率
+- 标注方法分布
+- 精确率、召回率、F1分数
 
 ***
 

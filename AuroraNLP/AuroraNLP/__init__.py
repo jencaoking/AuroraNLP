@@ -168,6 +168,7 @@ from .terminology import (
     TerminologyManager,
 )
 from .corpus_builder import CorpusBuilder, CorpusManager
+from .corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
 
 __all__ = [
     "Segmentor",
@@ -348,4 +349,8 @@ __all__ = [
     "TerminologyManager",
     "CorpusBuilder",
     "CorpusManager",
+    "CorpusAnnotator",
+    "AnnotationManager",
+    "ActiveLearningStrategy",
+    "AnnotationQualityEvaluator",
 ]
