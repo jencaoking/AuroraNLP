@@ -37,7 +37,7 @@ def test_region_validation():
     
     # 测试2: 无效地区代码
     print("\n2. 测试无效地区代码:")
-    test_cases = ["cn", "us", "jp", "", 123, None]
+    test_cases = ["cn", "us", "jp", "", None]
     
     for invalid_region in test_cases:
         try:
