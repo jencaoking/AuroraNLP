@@ -33,7 +33,7 @@ def demo_semi_supervised_annotation():
     ]
     
     for text in test_data:
-        annotator.unannotated_data.append(text)
+        annotator.unannotated_data.add(text)
     
     # 创建一个简单的模型（使用分词器作为示例）
     class SimpleModel:
@@ -95,7 +95,7 @@ def demo_active_learning():
     ]
     
     for text in test_data:
-        annotator.unannotated_data.append(text)
+        annotator.unannotated_data.add(text)
     
     # 创建一个简单的模型
     class SimpleModel:
@@ -163,7 +163,7 @@ def demo_annotation_quality():
     ]
     
     annotator.annotated_data = annotated_data
-    annotator.unannotated_data = ["未标注数据1", "未标注数据2"]
+    annotator.unannotated_data = {"未标注数据1", "未标注数据2"}
     
     # 评估标注质量
     quality_metrics = annotator.evaluate_annotation_quality()

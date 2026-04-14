@@ -9,7 +9,7 @@ class CorpusAnnotator:
     def __init__(self, corpus_path: str = None):
         self.corpus_path = corpus_path
         self.annotated_data = []
-        self.unannotated_data = []
+        self.unannotated_data = set()
         self.quality_metrics = defaultdict(list)
         
         if corpus_path and os.path.exists(corpus_path):
@@ -20,7 +20,7 @@ class CorpusAnnotator:
             for line in f:
                 line = line.strip()
                 if line:
-                    self.unannotated_data.append(line)
+                    self.unannotated_data.add(line)
     
     def save_annotated_corpus(self, output_path: str):
         with open(output_path, 'w', encoding='utf-8') as f:
@@ -34,7 +34,8 @@ class CorpusAnnotator:
         if not self.unannotated_data:
             return []
         
-        samples = random.sample(self.unannotated_data, min(sample_size, len(self.unannotated_data)))
+        unannotated_list = list(self.unannotated_data)
+        samples = random.sample(unannotated_list, min(sample_size, len(unannotated_list)))
         annotated_samples = []
         
         for sample in samples:
@@ -63,8 +64,9 @@ class CorpusAnnotator:
         if not self.unannotated_data:
             return []
         
+        unannotated_list = list(self.unannotated_data)
         scores = []
-        for i, sample in enumerate(self.unannotated_data):
+        for i, sample in enumerate(unannotated_list):
             try:
                 if strategy == 'uncertainty':
                     result = model.analyze(sample)
@@ -79,7 +81,7 @@ class CorpusAnnotator:
         
         scores.sort(key=lambda x: x[1], reverse=True)
         selected_indices = [idx for idx, _ in scores[:sample_size]]
-        selected_samples = [self.unannotated_data[idx] for idx in selected_indices]
+        selected_samples = [unannotated_list[idx] for idx in selected_indices]
         
         return selected_samples
     
@@ -267,7 +269,7 @@ class AnnotationQualityEvaluator:
     @staticmethod
     def evaluate_annotations(annotated_data: List[Dict], ground_truth: List[Dict]) -> Dict:
         if len(annotated_data) != len(ground_truth):
-            raise ValueError("Annotated data and ground truth must have the same length")
+            raise ValueError(f"Length mismatch: annotated_data={len(annotated_data)}, ground_truth={len(ground_truth)}")
         
         predicted = [item['annotation'] for item in annotated_data if isinstance(item, dict) and 'annotation' in item]
         truth = ground_truth
