@@ -179,6 +179,27 @@ from .pipeline import (
     AsyncPipeline, AsyncTaskManager, StreamProcessor, ProgressCallback,
     Plugin, PluginManager, PluginDependency
 )
+from .performance import (
+    ObjectPool, PoolContext,
+    BatchProcessor,
+    MemoryPool, MemoryBlock,
+    DelayedGC,
+    ThreadPoolExecutor,
+    ParallelTokenizer,
+    ProcessPoolExecutor,
+    GPUInterface,
+    BatchInference,
+    MixedPrecisionInference,
+    TensorRTInterface,
+    MemoryMappedFile,
+    DictionaryCompressor,
+    LRUResultCache,
+    PerformanceMonitor,
+    OptimizationSuite,
+    Metric,
+    DistributedTask,
+    SimpleTaskScheduler
+)
 
 __all__ = [
     "Segmentor",
@@ -395,4 +416,26 @@ __all__ = [
     "Plugin",
     "PluginManager",
     "PluginDependency",
+    # 性能优化 (步骤66-80)
+    "ObjectPool",
+    "PoolContext",
+    "BatchProcessor",
+    "MemoryPool",
+    "MemoryBlock",
+    "DelayedGC",
+    "ThreadPoolExecutor",
+    "ParallelTokenizer",
+    "ProcessPoolExecutor",
+    "GPUInterface",
+    "BatchInference",
+    "MixedPrecisionInference",
+    "TensorRTInterface",
+    "MemoryMappedFile",
+    "DictionaryCompressor",
+    "LRUResultCache",
+    "PerformanceMonitor",
+    "OptimizationSuite",
+    "Metric",
+    "DistributedTask",
+    "SimpleTaskScheduler",
 ]
