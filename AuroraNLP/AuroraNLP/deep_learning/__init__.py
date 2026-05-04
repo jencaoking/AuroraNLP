@@ -37,7 +37,36 @@ from .pretrained import (
     BERTClassifier,
     ClassificationResult,
     CLASSIFICATION_LABELS,
-    create_bert_classifier
+    create_bert_classifier,
+    # 步骤 44: 模型微调接口
+    FineTuningConfig,
+    FineTuningTrainer,
+    create_finetuning_config,
+    # 步骤 45: 迁移学习框架
+    FewShotLearningConfig,
+    FewShotLearner,
+    create_fewshot_learner,
+    # 步骤 46: 知识蒸馏
+    KnowledgeDistillationConfig,
+    KnowledgeDistiller,
+    create_knowledge_distiller,
+    # 步骤 47: 模型量化
+    QuantizationConfig,
+    ModelQuantizer,
+    create_quantizer,
+    # 步骤 48: ONNX导出
+    ONNXExportConfig,
+    ONNXExporter,
+    create_onnx_exporter,
+    # 步骤 49: 模型热加载
+    HotLoadConfig,
+    HotModelLoader,
+    create_hot_loader,
+    # 步骤 50: 模型管理系统
+    ModelVersion,
+    ModelCacheConfig,
+    ModelManager,
+    create_model_manager
 )
 
 __all__ = [
@@ -78,5 +107,34 @@ __all__ = [
     'BERTClassifier',
     'ClassificationResult',
     'CLASSIFICATION_LABELS',
-    'create_bert_classifier'
+    'create_bert_classifier',
+    # 步骤 44: 模型微调接口
+    'FineTuningConfig',
+    'FineTuningTrainer',
+    'create_finetuning_config',
+    # 步骤 45: 迁移学习框架
+    'FewShotLearningConfig',
+    'FewShotLearner',
+    'create_fewshot_learner',
+    # 步骤 46: 知识蒸馏
+    'KnowledgeDistillationConfig',
+    'KnowledgeDistiller',
+    'create_knowledge_distiller',
+    # 步骤 47: 模型量化
+    'QuantizationConfig',
+    'ModelQuantizer',
+    'create_quantizer',
+    # 步骤 48: ONNX导出
+    'ONNXExportConfig',
+    'ONNXExporter',
+    'create_onnx_exporter',
+    # 步骤 49: 模型热加载
+    'HotLoadConfig',
+    'HotModelLoader',
+    'create_hot_loader',
+    # 步骤 50: 模型管理系统
+    'ModelVersion',
+    'ModelCacheConfig',
+    'ModelManager',
+    'create_model_manager'
 ]

@@ -571,6 +571,292 @@ def test_bert_classifier_labels():
         assert clf.labels == label_set
 
 
+# ==================== 步骤44: 模型微调接口测试
+def test_finetuning_config():
+    """测试微调配置"""
+    from AuroraNLP.deep_learning.pretrained import FineTuningConfig, create_finetuning_config
+    
+    # 默认配置
+    config = FineTuningConfig()
+    assert config.learning_rate == 2e-5
+    assert config.batch_size == 32
+    assert config.epochs == 3
+    
+    # 自定义配置
+    config = create_finetuning_config(learning_rate=5e-5, batch_size=16, epochs=2)
+    assert config.learning_rate == 5e-5
+    assert config.batch_size == 16
+    assert config.epochs == 2
+
+
+def test_finetuning_trainer():
+    """测试微调训练器"""
+    from AuroraNLP.deep_learning.pretrained import (
+        FineTuningConfig,
+        FineTuningTrainer,
+        PreTrainedModelType
+    )
+    
+    config = FineTuningConfig()
+    trainer = FineTuningTrainer(
+        None,
+        config,
+        PreTrainedModelType.BERT_CHINESE
+    )
+    
+    assert trainer is not None
+    assert trainer.is_available is not None
+    assert hasattr(trainer, "prepare_data")
+    assert hasattr(trainer, "train_epoch")
+    assert hasattr(trainer, "train")
+    assert hasattr(trainer, "history")
+
+
+def test_training_history():
+    """测试训练历史记录"""
+    from AuroraNLP.deep_learning.pretrained import (
+        FineTuningConfig,
+        FineTuningTrainer,
+        PreTrainedModelType
+    )
+    
+    config = FineTuningConfig(epochs=2)
+    trainer = FineTuningTrainer(None, config, PreTrainedModelType.BERT_CHINESE)
+    assert len(trainer.history["loss"]) == 0
+    
+    # 模拟训练
+    for epoch in range(2):
+        trainer.train_epoch(epoch)
+    
+    assert len(trainer.history["loss"]) == 2
+    assert len(trainer.history["val_loss"]) == 2
+
+
+# ==================== 步骤45: 迁移学习框架测试
+def test_fewshot_config():
+    """测试FewShot学习配置"""
+    from AuroraNLP.deep_learning.pretrained import FewShotLearningConfig
+    
+    config = FewShotLearningConfig()
+    assert config.num_classes == 5
+    assert config.num_shots == 5
+    assert config.use_prototypical is True
+    assert config.use_maml is False
+
+
+def test_fewshot_learner():
+    """测试FewShot学习器"""
+    from AuroraNLP.deep_learning.pretrained import FewShotLearner, FewShotLearningConfig, create_fewshot_learner
+
+    # 创建学习器
+    learner = FewShotLearner(FewShotLearningConfig())
+    assert hasattr(learner, "is_available")
+
+    # 便捷函数
+    learner = create_fewshot_learner()
+    assert learner is not None
+
+    # 检查接口
+    assert hasattr(learner, "train_on_few_shots")
+    assert hasattr(learner, "predict_on_few_shots")
+
+
+# ==================== 步骤46: 知识蒸馏测试
+def test_knowledge_distillation_config():
+    """测试知识蒸馏配置"""
+    from AuroraNLP.deep_learning.pretrained import KnowledgeDistillationConfig
+    
+    config = KnowledgeDistillationConfig()
+    assert config.temperature == 4.0
+    assert config.alpha == 0.5
+    assert config.use_lm_loss is False
+
+
+def test_knowledge_distiller():
+    """测试知识蒸馏器"""
+    from AuroraNLP.deep_learning.pretrained import (
+        KnowledgeDistiller,
+        KnowledgeDistillationConfig,
+        create_knowledge_distiller
+    )
+    
+    teacher = None
+    student = None
+    config = KnowledgeDistillationConfig()
+    distiller = KnowledgeDistiller(teacher, student, config)
+    
+    assert distiller.is_available
+    assert hasattr(distiller, "distill")
+    assert hasattr(distiller, "distill_step")
+    
+    # 便捷函数
+    distiller = create_knowledge_distiller(teacher, student, temperature=2.0)
+    assert distiller._config.temperature == 2.0
+
+
+# ==================== 步骤47: 模型量化测试
+def test_quantization_config():
+    """测试量化配置"""
+    from AuroraNLP.deep_learning.pretrained import QuantizationConfig
+    
+    config = QuantizationConfig()
+    assert config.quantization_type == "dynamic_int8"
+    assert config.do_quantize is True
+    
+    # 测试常量
+    assert QuantizationConfig.QuantizationType.DYNAMIC_INT8 == "dynamic_int8"
+    assert QuantizationConfig.QuantizationType.STATIC_INT8 == "static_int8"
+
+
+def test_model_quantizer():
+    """测试模型量化器"""
+    from AuroraNLP.deep_learning.pretrained import ModelQuantizer, QuantizationConfig, create_quantizer
+    
+    # 创建量化器
+    config = QuantizationConfig()
+    quantizer = ModelQuantizer(config)
+    assert quantizer.is_available
+    assert hasattr(quantizer, "quantize")
+    assert hasattr(quantizer, "evaluate_quantization")
+    
+    # 便捷函数
+    quantizer = create_quantizer("static_int8")
+    assert quantizer._config.quantization_type == "static_int8"
+    
+    # 测试评估方法
+    result = quantizer.evaluate_quantization(None, None, None)
+    assert "size_reduction" in result
+    assert "speedup" in result
+
+
+# ==================== 步骤48: ONNX导出测试
+def test_onnx_config():
+    """测试ONNX配置"""
+    from AuroraNLP.deep_learning.pretrained import ONNXExportConfig
+    
+    config = ONNXExportConfig()
+    assert config.opset_version == 14
+    assert config.optimize is True
+
+
+def test_onnx_exporter():
+    """测试ONNX导出器"""
+    from AuroraNLP.deep_learning.pretrained import ONNXExporter, ONNXExportConfig, create_onnx_exporter
+    
+    # 创建导出器
+    config = ONNXExportConfig(export_path="test.onnx")
+    exporter = ONNXExporter(config)
+    
+    assert exporter.is_available
+    assert hasattr(exporter, "export")
+    assert hasattr(exporter, "load_onnx_model")
+    
+    # 便捷函数
+    exporter = create_onnx_exporter("my_model.onnx")
+    assert exporter._config.export_path == "my_model.onnx"
+
+
+# ==================== 步骤49: 热加载测试
+def test_hot_load_config():
+    """测试热加载配置"""
+    from AuroraNLP.deep_learning.pretrained import HotLoadConfig
+    
+    config = HotLoadConfig()
+    assert config.auto_reload is True
+    assert config.check_interval == 60
+
+
+def test_hot_model_loader():
+    """测试热加载器"""
+    from AuroraNLP.deep_learning.pretrained import HotModelLoader, HotLoadConfig, create_hot_loader
+    
+    # 创建加载器
+    model = None
+    config = HotLoadConfig()
+    loader = HotModelLoader(model, config)
+    
+    assert loader.is_available
+    assert loader.is_running is False
+    assert hasattr(loader, "start_monitoring")
+    assert hasattr(loader, "stop_monitoring")
+    assert hasattr(loader, "switch_model")
+    
+    # 便捷函数
+    loader = create_hot_loader(model)
+    assert loader is not None
+    
+    # 测试监控功能
+    loader.start_monitoring()
+    assert loader.is_running is True
+    loader.stop_monitoring()
+    assert loader.is_running is False
+
+
+def test_version_switch():
+    """测试版本切换功能"""
+    from AuroraNLP.deep_learning.pretrained import HotModelLoader, HotLoadConfig
+    
+    model = None
+    loader = HotModelLoader(model, HotLoadConfig())
+    initial_version = loader._current_version
+    
+    # 切换版本
+    result = loader.switch_model(None)
+    assert result is True
+    assert loader._current_version != initial_version
+
+
+# ==================== 步骤50: 模型管理系统测试
+def test_model_version():
+    """测试模型版本"""
+    from AuroraNLP.deep_learning.pretrained import ModelVersion
+    
+    version = ModelVersion("v0.1", "model.pt", "First version")
+    assert version.version == "v0.1"
+    assert version.file_path == "model.pt"
+    assert version.description == "First version"
+
+
+def test_model_cache_config():
+    """测试模型缓存配置"""
+    from AuroraNLP.deep_learning.pretrained import ModelCacheConfig
+    
+    config = ModelCacheConfig(max_versions=5, cache_dir="/tmp")
+    assert config.max_versions == 5
+    assert config.cache_dir == "/tmp"
+
+
+def test_model_manager():
+    """测试模型管理器"""
+    from AuroraNLP.deep_learning.pretrained import (
+        ModelManager,
+        ModelCacheConfig,
+        create_model_manager
+    )
+    
+    # 创建管理器
+    config = ModelCacheConfig(max_versions=10)
+    manager = ModelManager(config)
+    
+    assert manager.is_available
+    assert hasattr(manager, "register_model")
+    assert hasattr(manager, "get_model")
+    assert hasattr(manager, "delete_old_versions")
+    
+    # 便捷函数
+    manager = create_model_manager(max_versions=5)
+    assert manager is not None
+    
+    # 测试注册模型
+    result = manager.register_model("bert", "v0.1", "model.pt")
+    assert result is True
+    
+    # 测试获取模型
+    version = manager.get_model("bert", "v0.1")
+    assert version is not None
+    assert version.version == "v0.1"
+
+
 if __name__ == "__main__":
     # 简单运行一些测试
     test_module_import()
