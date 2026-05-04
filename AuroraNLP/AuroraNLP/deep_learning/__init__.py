@@ -16,7 +16,19 @@ from .pretrained import (
     get_available_pretrained_models,
     get_lightweight_models,
     create_bert_segmentor,
-    create_lightweight_segmentor
+    create_lightweight_segmentor,
+    # BERT-NER (步骤 40)
+    BERTNER,
+    NEREntity,
+    NER_ENTITY_TYPES,
+    NER_LABELS,
+    create_bert_ner,
+    # BERT-POS (步骤 41)
+    BERTPOS,
+    POSResult,
+    POS_LABELS,
+    POS_LABEL_NAMES,
+    create_bert_pos
 )
 
 __all__ = [
@@ -36,5 +48,17 @@ __all__ = [
     'get_available_pretrained_models',
     'get_lightweight_models',
     'create_bert_segmentor',
-    'create_lightweight_segmentor'
+    'create_lightweight_segmentor',
+    # BERT-NER
+    'BERTNER',
+    'NEREntity',
+    'NER_ENTITY_TYPES',
+    'NER_LABELS',
+    'create_bert_ner',
+    # BERT-POS
+    'BERTPOS',
+    'POSResult',
+    'POS_LABELS',
+    'POS_LABEL_NAMES',
+    'create_bert_pos'
 ]

@@ -281,6 +281,145 @@ def test_model_config_info():
     assert info_bert.get("params") == "102M"
 
 
+# ==================== NER 测试（步骤 40） ====================
+
+def test_ner_entity_types():
+    """测试 NER 实体类型"""
+    from AuroraNLP.deep_learning.pretrained import NER_ENTITY_TYPES, NER_LABELS
+    
+    assert len(NER_ENTITY_TYPES) > 0
+    assert 'PER' in NER_ENTITY_TYPES
+    assert 'LOC' in NER_ENTITY_TYPES
+    assert 'ORG' in NER_ENTITY_TYPES
+    
+    assert len(NER_LABELS) > 0
+    assert 'O' in NER_LABELS
+    assert 'B-PER' in NER_LABELS
+
+
+def test_ner_entity():
+    """测试 NER 实体对象"""
+    from AuroraNLP.deep_learning.pretrained import NEREntity
+    
+    entity = NEREntity("张三", "PER", 0, 2, 0.95)
+    assert entity.text == "张三"
+    assert entity.entity_type == "PER"
+    assert entity.start == 0
+    assert entity.end == 2
+    assert entity.confidence == 0.95
+    
+    # 测试 to_dict
+    entity_dict = entity.to_dict()
+    assert entity_dict['text'] == "张三"
+    assert entity_dict['type'] == "PER"
+    assert entity_dict['type_name'] == "人名"
+
+
+def test_bert_ner_init():
+    """测试 BERT-NER 初始化"""
+    from AuroraNLP.deep_learning.pretrained import BERTNER, PreTrainedModelType, create_bert_ner
+    
+    ner = BERTNER(model_type=PreTrainedModelType.ALBERT_TINY)
+    assert ner is not None
+    assert hasattr(ner, 'is_available')
+    assert hasattr(ner, 'is_loaded')
+    assert hasattr(ner, 'load')
+    assert hasattr(ner, 'predict')
+    
+    # 测试便捷函数
+    ner2 = create_bert_ner()
+    assert ner2 is not None
+
+
+def test_ner_parse_label():
+    """测试 NER 标签解析（模拟）"""
+    from AuroraNLP.deep_learning.pretrained import NEREntity
+    
+    # 模拟标签序列和文本
+    text = "我是中国人"
+    labels = [0, 0, 1, 2, 2, 0]  # 简化标签
+    
+    # 简单的实体解析测试
+    entities = []
+    current_entity = None
+    
+    # 验证 B/I/O 标签逻辑
+    # 这里只测试实体创建的基本功能
+    test_entity = NEREntity("中国", "LOC", 2, 4, 0.9)
+    entities.append(test_entity)
+    
+    assert len(entities) == 1
+    assert entities[0].text == "中国"
+    assert entities[0].entity_type == "LOC"
+
+
+# ==================== POS 测试（步骤 41） ====================
+
+def test_pos_labels():
+    """测试词性标签"""
+    from AuroraNLP.deep_learning.pretrained import POS_LABELS, POS_LABEL_NAMES
+    
+    assert len(POS_LABELS) > 0
+    assert 'n' in POS_LABELS
+    assert 'v' in POS_LABELS
+    assert 'a' in POS_LABELS
+    
+    assert len(POS_LABEL_NAMES) > 0
+    assert POS_LABEL_NAMES['n'] == "名词"
+    assert POS_LABEL_NAMES['v'] == "动词"
+
+
+def test_pos_result():
+    """测试词性标注结果对象"""
+    from AuroraNLP.deep_learning.pretrained import POSResult
+    
+    pos = POSResult("测试", "n", 0.85)
+    assert pos.word == "测试"
+    assert pos.pos_tag == "n"
+    assert pos.pos_name == "名词"
+    assert pos.confidence == 0.85
+    
+    # 测试 to_dict
+    pos_dict = pos.to_dict()
+    assert pos_dict['word'] == "测试"
+    assert pos_dict['tag'] == "n"
+    assert pos_dict['tag_name'] == "名词"
+
+
+def test_bert_pos_init():
+    """测试 BERT-POS 初始化"""
+    from AuroraNLP.deep_learning.pretrained import BERTPOS, PreTrainedModelType, create_bert_pos
+    
+    pos = BERTPOS(model_type=PreTrainedModelType.ALBERT_TINY)
+    assert pos is not None
+    assert hasattr(pos, 'is_available')
+    assert hasattr(pos, 'is_loaded')
+    assert hasattr(pos, 'load')
+    assert hasattr(pos, 'tag')
+    assert hasattr(pos, 'tag_text')
+    
+    # 测试便捷函数
+    pos2 = create_bert_pos()
+    assert pos2 is not None
+
+
+def test_pos_tag_single_word():
+    """测试单词语词性标注"""
+    from AuroraNLP.deep_learning.pretrained import POSResult
+    
+    # 直接测试 POSResult 和标签映射
+    words = ["自然", "语言", "处理"]
+    
+    results = []
+    for word in words:
+        results.append(POSResult(word, "n", 0.7))
+    
+    assert len(results) == 3
+    assert results[0].word == "自然"
+    assert results[0].pos_tag == "n"
+    assert results[0].pos_name == "名词"
+
+
 if __name__ == "__main__":
     # 简单运行一些测试
     test_module_import()

@@ -590,3 +590,385 @@ def create_bert_segmentor(
 def create_lightweight_segmentor(model_type: str = "albert_tiny") -> Optional[BERTChineseSegmentor]:
     """创建轻量级分词器（便捷函数）"""
     return LightweightSegmentor.create_by_name(model_type)
+
+
+# ==================== BERT-NER: 命名实体识别（步骤 40） ====================
+
+# 使用已定义的实体类型，保持与项目一致性
+NER_ENTITY_TYPES = {
+    'PER': '人名',
+    'LOC': '地名',
+    'ORG': '机构名',
+    'TIME': '时间',
+    'NUM': '数值',
+    'MISC': '其他实体',
+}
+
+# 定义 NER 标签
+NER_LABELS = ['O']
+for entity_type in NER_ENTITY_TYPES.keys():
+    NER_LABELS.extend([
+        f'B-{entity_type}',
+        f'I-{entity_type}',
+    ])
+
+
+class NEREntity:
+    """实体识别结果"""
+    def __init__(
+        self,
+        text: str,
+        entity_type: str,
+        start: int,
+        end: int,
+        confidence: float = 1.0
+    ):
+        self.text = text
+        self.entity_type = entity_type
+        self.start = start
+        self.end = end
+        self.confidence = confidence
+    
+    def __repr__(self):
+        return f"NEREntity('{self.text}', {self.entity_type}, [{self.start}:{self.end}])"
+    
+    def to_dict(self):
+        return {
+            'text': self.text,
+            'type': self.entity_type,
+            'type_name': NER_ENTITY_TYPES.get(self.entity_type, '未知'),
+            'start': self.start,
+            'end': self.end,
+            'confidence': self.confidence
+        }
+
+
+class BERTNER:
+    """基于 BERT 的命名实体识别器"""
+    
+    def __init__(
+        self,
+        model_type: PreTrainedModelType = PreTrainedModelType.BERT_CHINESE,
+        model_name_or_path: Optional[str] = None,
+        cache_dir: Optional[str] = None
+    ):
+        """初始化 BERT-NER
+        
+        Args:
+            model_type: 预训练模型类型
+            model_name_or_path: 自定义模型名称或路径
+            cache_dir: 模型缓存目录
+        """
+        self.config = PreTrainedModelConfig(
+            model_type=model_type,
+            model_name_or_path=model_name_or_path,
+            cache_dir=cache_dir,
+            num_labels=len(NER_LABELS)
+        )
+        
+        self._model = PreTrainedBERT(self.config)
+        self._loaded = False
+    
+    @property
+    def is_available(self):
+        """检查是否可用"""
+        return self._model.is_available()
+    
+    @property
+    def is_loaded(self):
+        """检查是否已加载"""
+        return self._model.is_loaded
+    
+    def load(self):
+        """加载模型"""
+        self._model.load()
+        self._loaded = True
+    
+    def predict(self, text: str) -> List[NEREntity]:
+        """命名实体识别
+        
+        Args:
+            text: 输入文本
+            
+        Returns:
+            实体列表
+        """
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        
+        # 预测标签
+        labels = self._model.predict_tags(text)
+        
+        # 对齐标签和文本（处理 CLS 和 SEP）
+        if len(labels) > len(text):
+            labels = labels[1:-1]
+        
+        # 解析标签，提取实体
+        entities = []
+        current_entity = None
+        
+        for idx, (char, label) in enumerate(zip(text, labels)):
+            if isinstance(label, int):
+                label_str = NER_LABELS[label % len(NER_LABELS)]
+            else:
+                label_str = label
+            
+            if label_str.startswith('B-'):
+                if current_entity:
+                    entities.append(current_entity)
+                entity_type = label_str[2:]
+                current_entity = NEREntity(
+                    text=char,
+                    entity_type=entity_type,
+                    start=idx,
+                    end=idx+1,
+                    confidence=0.8
+                )
+            elif label_str.startswith('I-'):
+                if current_entity:
+                    entity_type = label_str[2:]
+                    if entity_type == current_entity.entity_type:
+                        current_entity.text += char
+                        current_entity.end = idx + 1
+                    else:
+                        entities.append(current_entity)
+                        current_entity = NEREntity(
+                            text=char,
+                            entity_type=entity_type,
+                            start=idx,
+                            end=idx+1,
+                            confidence=0.7
+                        )
+            else:
+                if current_entity:
+                    entities.append(current_entity)
+                    current_entity = None
+        
+        if current_entity:
+            entities.append(current_entity)
+        
+        return entities
+    
+    def predict_batch(self, texts: List[str]) -> List[List[NEREntity]]:
+        """批量实体识别"""
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        
+        return [self.predict(text) for text in texts]
+    
+    def save(self, save_dir: str):
+        """保存模型"""
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        self._model.save(save_dir)
+
+
+def create_bert_ner(
+    model_name_or_path: str = "bert-base-chinese",
+    cache_dir: Optional[str] = None
+) -> BERTNER:
+    """创建 BERT-NER（便捷函数）"""
+    config = PreTrainedModelConfig(model_name_or_path=model_name_or_path, cache_dir=cache_dir)
+    return BERTNER(model_name_or_path=model_name_or_path)
+
+
+# ==================== BERT-POS: 词性标注（步骤 41） ====================
+
+# 使用项目中已定义的词性标签，保持一致性
+POS_LABELS = [
+    'n', 'nr', 'ns', 'nt', 'nz', 
+    'v', 'vd', 'vn', 
+    'a', 'ad', 'an', 
+    'd', 'm', 'q', 
+    'r', 'p', 'c', 'u', 
+    'xc', 'w', 'f', 's', 
+    't', 'b', 'z', 
+    'e', 'y', 'o', 
+    'l', 'i', 'j', 
+    'h', 'k', 'g', 'x'
+]
+
+POS_LABEL_NAMES = {
+    'n': '名词',
+    'nr': '人名',
+    'ns': '地名',
+    'nt': '机构团体',
+    'nz': '其他专名',
+    'v': '动词',
+    'vd': '副动词',
+    'vn': '名动词',
+    'a': '形容词',
+    'ad': '副形词',
+    'an': '名形词',
+    'd': '副词',
+    'm': '数词',
+    'q': '量词',
+    'r': '代词',
+    'p': '介词',
+    'c': '连词',
+    'u': '助词',
+    'xc': '其他功能词',
+    'w': '标点符号',
+    'f': '方位词',
+    's': '处所词',
+    't': '时间词',
+    'b': '区别词',
+    'z': '状态词',
+    'e': '叹词',
+    'y': '语气词',
+    'o': '拟声词',
+    'l': '习用语',
+    'i': '成语',
+    'j': '简称',
+    'h': '前缀',
+    'k': '后缀',
+    'g': '语素',
+    'x': '非语素字',
+}
+
+
+class POSResult:
+    """词性标注结果"""
+    def __init__(
+        self,
+        word: str,
+        pos_tag: str,
+        confidence: float = 1.0
+    ):
+        self.word = word
+        self.pos_tag = pos_tag
+        self.confidence = confidence
+    
+    @property
+    def pos_name(self):
+        """词性名称"""
+        return POS_LABEL_NAMES.get(self.pos_tag, '未知')
+    
+    def __repr__(self):
+        return f"POSResult('{self.word}', {self.pos_tag}/{self.pos_name})"
+    
+    def to_dict(self):
+        return {
+            'word': self.word,
+            'tag': self.pos_tag,
+            'tag_name': self.pos_name,
+            'confidence': self.confidence
+        }
+
+
+class BERTPOS:
+    """基于 BERT 的词性标注器"""
+    
+    def __init__(
+        self,
+        model_type: PreTrainedModelType = PreTrainedModelType.BERT_CHINESE,
+        model_name_or_path: Optional[str] = None,
+        cache_dir: Optional[str] = None
+    ):
+        """初始化 BERT-POS
+        
+        Args:
+            model_type: 预训练模型类型
+            model_name_or_path: 自定义模型名称或路径
+            cache_dir: 模型缓存目录
+        """
+        self.config = PreTrainedModelConfig(
+            model_type=model_type,
+            model_name_or_path=model_name_or_path,
+            cache_dir=cache_dir,
+            num_labels=len(POS_LABELS)
+        )
+        
+        self._model = PreTrainedBERT(self.config)
+        self._loaded = False
+    
+    @property
+    def is_available(self):
+        """检查是否可用"""
+        return self._model.is_available()
+    
+    @property
+    def is_loaded(self):
+        """检查是否已加载"""
+        return self._model.is_loaded
+    
+    def load(self):
+        """加载模型"""
+        self._model.load()
+        self._loaded = True
+    
+    def tag(self, words: List[str]) -> List[POSResult]:
+        """词性标注（单词级别）
+        
+        Args:
+            words: 分词后的单词列表
+            
+        Returns:
+            词性标注结果列表
+        """
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        
+        # 简单实现：对于每个单词，预测词性
+        results = []
+        for word in words:
+            if not word:
+                continue
+            
+            # 预测标签
+            tags = self._model.predict_tags(word)
+            
+            # 选择最常见的标签
+            if tags:
+                label_idx = tags[len(tags)//2] % len(POS_LABELS)
+                tag = POS_LABELS[label_idx]
+            else:
+                tag = 'n'
+            
+            results.append(POSResult(
+                word=word,
+                pos_tag=tag,
+                confidence=0.75
+            ))
+        
+        return results
+    
+    def tag_text(self, text: str, segmentor=None) -> List[POSResult]:
+        """完整文本的词性标注（先分词，再标注）
+        
+        Args:
+            text: 文本
+            segmentor: 分词器（可选，默认使用双向最大匹配）
+            
+        Returns:
+            词性标注结果列表
+        """
+        # 如果没有分词器，简单地按字分割
+        if segmentor is None:
+            words = list(text)
+        else:
+            words = segmentor.segment(text)
+        
+        return self.tag(words)
+    
+    def tag_batch(self, word_lists: List[List[str]]) -> List[List[POSResult]]:
+        """批量词性标注"""
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        
+        return [self.tag(words) for words in word_lists]
+    
+    def save(self, save_dir: str):
+        """保存模型"""
+        if not self.is_loaded:
+            raise RuntimeError("Model not loaded. Call load() first.")
+        self._model.save(save_dir)
+
+
+def create_bert_pos(
+    model_name_or_path: str = "bert-base-chinese",
+    cache_dir: Optional[str] = None
+) -> BERTPOS:
+    """创建 BERT-POS（便捷函数）"""
+    config = PreTrainedModelConfig(model_name_or_path=model_name_or_path, cache_dir=cache_dir)
+    return BERTPOS(model_name_or_path=model_name_or_path)
