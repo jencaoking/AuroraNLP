@@ -170,6 +170,15 @@ from .terminology import (
 from .corpus_builder import CorpusBuilder, CorpusManager
 from .corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
 from .deep_learning import Framework, FrameworkType, get_framework, PyTorchBackend, TensorFlowBackend, BiLSTMCRF
+from .pipeline import (
+    StringStore, Doc, Span, Token,
+    PipelineComponent, ConditionalBranch, Pipeline,
+    ComponentRegistry, PipelineConfig, ConfigSchema, FreezableParams,
+    ModelVersion, ModelLifecycle, LRUCache, ModelCache,
+    APIServer, RPCServer, RPCClient,
+    AsyncPipeline, AsyncTaskManager, StreamProcessor, ProgressCallback,
+    Plugin, PluginManager, PluginDependency
+)
 
 __all__ = [
     "Segmentor",
@@ -360,4 +369,30 @@ __all__ = [
     "PyTorchBackend",
     "TensorFlowBackend",
     "BiLSTMCRF",
+    # 架构重构 (步骤51-65)
+    "StringStore",
+    "Doc",
+    "Span",
+    "Token",
+    "PipelineComponent",
+    "ConditionalBranch",
+    "Pipeline",
+    "ComponentRegistry",
+    "PipelineConfig",
+    "ConfigSchema",
+    "FreezableParams",
+    "ModelVersion",
+    "ModelLifecycle",
+    "LRUCache",
+    "ModelCache",
+    "APIServer",
+    "RPCServer",
+    "RPCClient",
+    "AsyncPipeline",
+    "AsyncTaskManager",
+    "StreamProcessor",
+    "ProgressCallback",
+    "Plugin",
+    "PluginManager",
+    "PluginDependency",
 ]
