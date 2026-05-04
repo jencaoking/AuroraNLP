@@ -11,8 +11,12 @@ from .pretrained import (
     PreTrainedModelBase,
     PreTrainedBERT,
     BERTChineseSegmentor,
+    LightweightSegmentor,
+    ModelComparator,
     get_available_pretrained_models,
-    create_bert_segmentor
+    get_lightweight_models,
+    create_bert_segmentor,
+    create_lightweight_segmentor
 )
 
 __all__ = [
@@ -27,6 +31,10 @@ __all__ = [
     'PreTrainedModelBase',
     'PreTrainedBERT',
     'BERTChineseSegmentor',
+    'LightweightSegmentor',
+    'ModelComparator',
     'get_available_pretrained_models',
-    'create_bert_segmentor'
+    'get_lightweight_models',
+    'create_bert_segmentor',
+    'create_lightweight_segmentor'
 ]

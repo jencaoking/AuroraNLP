@@ -1,6 +1,7 @@
-# Pre-trained Model Integration
-# ===========================
+# Pre-trained Model Integration - Extended
+# =======================================
 # 集成 HuggingFace Transformers 等开源预训练模型
+# 包含轻量级模型支持
 
 import importlib
 from typing import List, Dict, Any, Optional, Tuple
@@ -11,12 +12,21 @@ from .framework import get_framework
 
 class PreTrainedModelType(Enum):
     """预训练模型类型枚举"""
+    # 标准模型
     BERT = "bert"
     BERT_CHINESE = "bert_chinese"
     MACBERT = "macbert"
     ROBERTA_CHINESE = "roberta_chinese"
+    
+    # 轻量级模型
     ALBERT = "albert"
+    ALBERT_TINY = "albert_tiny"
+    ALBERT_SMALL = "albert_small"
     DISTILBERT = "distilbert"
+    TINY_BERT = "tiny_bert"
+    MINI_LM = "mini_lm"
+    
+    # 其他模型
     ELECTRA = "electra"
     XLNET = "xlnet"
 
@@ -24,21 +34,82 @@ class PreTrainedModelType(Enum):
 class PreTrainedModelConfig:
     """预训练模型配置"""
     
-    # 常用中文预训练模型
+    # 模型配置字典：模型类型 -> (模型ID, 参数数量, 模型大小)
     MODEL_CONFIGS = {
-        PreTrainedModelType.BERT_CHINESE: "bert-base-chinese",
-        PreTrainedModelType.MACBERT: "hfl/chinese-macbert-base",
-        PreTrainedModelType.ROBERTA_CHINESE: "hfl/chinese-roberta-wwm-ext",
-        PreTrainedModelType.ALBERT: "voidful/albert_chinese_tiny",
-        PreTrainedModelType.DISTILBERT: "distilbert-base-uncased-finetuned-sst-2-english"
+        # 标准中文模型
+        PreTrainedModelType.BERT_CHINESE: {
+            "model_name": "bert-base-chinese",
+            "params": "102M",
+            "size": "~400MB",
+            "speed": "慢",
+            "accuracy": "高"
+        },
+        PreTrainedModelType.MACBERT: {
+            "model_name": "hfl/chinese-macbert-base",
+            "params": "102M",
+            "size": "~400MB",
+            "speed": "慢",
+            "accuracy": "高"
+        },
+        PreTrainedModelType.ROBERTA_CHINESE: {
+            "model_name": "hfl/chinese-roberta-wwm-ext",
+            "params": "102M",
+            "size": "~400MB",
+            "speed": "慢",
+            "accuracy": "高"
+        },
+        
+        # 轻量级模型
+        PreTrainedModelType.ALBERT_TINY: {
+            "model_name": "voidful/albert_chinese_tiny",
+            "params": "4M",
+            "size": "~16MB",
+            "speed": "极快",
+            "accuracy": "中"
+        },
+        PreTrainedModelType.ALBERT_SMALL: {
+            "model_name": "albert/albert-small-v2",
+            "params": "12M",
+            "size": "~50MB",
+            "speed": "快",
+            "accuracy": "中高"
+        },
+        PreTrainedModelType.ALBERT: {
+            "model_name": "albert-base-v2",
+            "params": "12M",
+            "size": "~50MB",
+            "speed": "快",
+            "accuracy": "高"
+        },
+        PreTrainedModelType.DISTILBERT: {
+            "model_name": "distilbert-base-uncased",
+            "params": "66M",
+            "size": "~260MB",
+            "speed": "较快",
+            "accuracy": "中高"
+        },
+        PreTrainedModelType.TINY_BERT: {
+            "model_name": "cointegrated/rubert-tiny2",
+            "params": "29M",
+            "size": "~110MB",
+            "speed": "快",
+            "accuracy": "中"
+        },
+        PreTrainedModelType.MINI_LM: {
+            "model_name": "sentence-transformers/paraphrase-MiniLM-L3-v2",
+            "params": "22M",
+            "size": "~90MB",
+            "speed": "快",
+            "accuracy": "中高"
+        },
     }
     
     def __init__(
         self,
-        model_type: PreTrainedModelType = PreTrainedModelType.BERT_CHINESE,
+        model_type: PreTrainedModelType = PreTrainedModelType.ALBERT_TINY,
         model_name_or_path: Optional[str] = None,
         cache_dir: Optional[str] = None,
-        max_seq_length: int = 512,
+        max_seq_length: int = 128,  # 轻量级模型通常用较短序列
         use_auth_token: Optional[str] = None,
         num_labels: int = 4
     ):
@@ -53,11 +124,26 @@ class PreTrainedModelConfig:
             num_labels: 分类标签数
         """
         self.model_type = model_type
-        self.model_name_or_path = model_name_or_path or self.MODEL_CONFIGS.get(model_type)
+        self.model_name_or_path = model_name_or_path or self.MODEL_CONFIGS.get(model_type, {}).get("model_name")
         self.cache_dir = cache_dir
         self.max_seq_length = max_seq_length
         self.use_auth_token = use_auth_token
         self.num_labels = num_labels
+    
+    def get_model_info(self) -> Dict[str, str]:
+        """获取模型信息"""
+        return self.MODEL_CONFIGS.get(self.model_type, {})
+    
+    def is_lightweight(self) -> bool:
+        """判断是否为轻量级模型"""
+        lightweight_types = [
+            PreTrainedModelType.ALBERT_TINY,
+            PreTrainedModelType.ALBERT_SMALL,
+            PreTrainedModelType.DISTILBERT,
+            PreTrainedModelType.TINY_BERT,
+            PreTrainedModelType.MINI_LM
+        ]
+        return self.model_type in lightweight_types
 
 
 class PreTrainedModelBase:
@@ -137,12 +223,17 @@ class PreTrainedBERT(PreTrainedModelBase):
                          PreTrainedModelType.ROBERTA_CHINESE]:
             model_cls = transformers.BertForTokenClassification
             tokenizer_cls = transformers.BertTokenizer
-        elif model_type == PreTrainedModelType.ALBERT:
+        elif model_type in [PreTrainedModelType.ALBERT,
+                          PreTrainedModelType.ALBERT_TINY,
+                          PreTrainedModelType.ALBERT_SMALL]:
             model_cls = transformers.AlbertForTokenClassification
-            tokenizer_cls = transformers.AlbertTokenizer
+            tokenizer_cls = transformers.AlbertTokenizerFast
         elif model_type == PreTrainedModelType.DISTILBERT:
             model_cls = transformers.DistilBertForTokenClassification
             tokenizer_cls = transformers.DistilBertTokenizer
+        elif model_type == PreTrainedModelType.TINY_BERT:
+            model_cls = transformers.BertForTokenClassification
+            tokenizer_cls = transformers.BertTokenizer
         elif model_type == PreTrainedModelType.ELECTRA:
             model_cls = transformers.ElectraForTokenClassification
             tokenizer_cls = transformers.ElectraTokenizer
@@ -173,7 +264,6 @@ class PreTrainedBERT(PreTrainedModelBase):
         if not self.is_loaded:
             raise RuntimeError("Model not loaded. Call load() first.")
         
-        # 参数配置
         max_length = kwargs.get("max_length", self.config.max_seq_length)
         padding = kwargs.get("padding", "max_length")
         truncation = kwargs.get("truncation", True)
@@ -212,14 +302,11 @@ class PreTrainedBERT(PreTrainedModelBase):
         
         self._model.eval()
         
-        # 编码
         inputs = self.encode(text, return_tensors="pt")
         
-        # 获取设备
         device = next(self._model.parameters()).device
         inputs = {k: v.to(device) for k, v in inputs.items()}
         
-        # 预测
         with self._torch.no_grad():
             outputs = self._model(**inputs)
             logits = outputs.logits
@@ -264,7 +351,6 @@ class BERTChineseSegmentor:
         max_seq_length: int = 512
     ):
         """初始化 BERT 分词器"""
-        # 配置
         self.config = PreTrainedModelConfig(
             model_type=model_type,
             model_name_or_path=model_name_or_path,
@@ -273,7 +359,6 @@ class BERTChineseSegmentor:
             num_labels=4  # B/M/E/S 标签
         )
         
-        # 加载模型
         self._bert_model = PreTrainedBERT(self.config)
         self._loaded = False
     
@@ -299,32 +384,20 @@ class BERTChineseSegmentor:
         if not text:
             return []
         
-        # 预测标签
         tags = self._bert_model.predict_tags(text)
         
-        # 标签转词（处理 CLS 和 SEP）
-        # HuggingFace 分词器会增加 [CLS] 和 [SEP]，我们跳过
         if len(tags) > len(text):
             tags = tags[1:-1]  # 去掉 CLS 和 SEP
         
-        # 使用 B/M/E/S 解码
         return self._decode_bmes(text, tags)
     
     def _decode_bmes(self, text: str, tags: List[int]) -> List[str]:
-        """将 B/M/E/S 标签解码为分词结果
-        
-        Args:
-            text: 原文本
-            tags: 标签序列
-            
-        Returns:
-            分词结果
-        """
+        """将 B/M/E/S 标签解码为分词结果"""
         words = []
         word = []
         
         for char, tag_idx in zip(text, tags):
-            tag = tag_idx % 4  # 防止越界
+            tag = tag_idx % 4
             
             if tag == 0:  # B
                 if word:
@@ -359,14 +432,149 @@ class BERTChineseSegmentor:
         return results
 
 
+# ==================== 轻量级模型专有类 ====================
+
+class LightweightSegmentor:
+    """轻量级分词器工厂类"""
+    
+    @staticmethod
+    def create_albert_tiny() -> BERTChineseSegmentor:
+        """创建 ALBERT Tiny 分词器（4M参数，极轻量）"""
+        return BERTChineseSegmentor(
+            model_type=PreTrainedModelType.ALBERT_TINY,
+            max_seq_length=128
+        )
+    
+    @staticmethod
+    def create_albert_small() -> BERTChineseSegmentor:
+        """创建 ALBERT Small 分词器（12M参数，轻量）"""
+        return BERTChineseSegmentor(
+            model_type=PreTrainedModelType.ALBERT_SMALL,
+            max_seq_length=128
+        )
+    
+    @staticmethod
+    def create_distilbert() -> BERTChineseSegmentor:
+        """创建 DistilBERT 分词器（66M参数，较轻量）"""
+        return BERTChineseSegmentor(
+            model_type=PreTrainedModelType.DISTILBERT,
+            max_seq_length=256
+        )
+    
+    @staticmethod
+    def create_tiny_bert() -> BERTChineseSegmentor:
+        """创建 TinyBERT 分词器（29M参数，轻量）"""
+        return BERTChineseSegmentor(
+            model_type=PreTrainedModelType.TINY_BERT,
+            max_seq_length=128
+        )
+    
+    @staticmethod
+    def create_by_name(model_name: str) -> Optional[BERTChineseSegmentor]:
+        """根据模型名称创建分词器"""
+        name_to_type = {
+            "albert_tiny": PreTrainedModelType.ALBERT_TINY,
+            "albert_small": PreTrainedModelType.ALBERT_SMALL,
+            "distilbert": PreTrainedModelType.DISTILBERT,
+            "tiny_bert": PreTrainedModelType.TINY_BERT,
+            "bert_chinese": PreTrainedModelType.BERT_CHINESE,
+            "macbert": PreTrainedModelType.MACBERT,
+            "roberta": PreTrainedModelType.ROBERTA_CHINESE,
+        }
+        
+        model_type = name_to_type.get(model_name.lower())
+        if model_type:
+            return BERTChineseSegmentor(model_type=model_type)
+        return None
+
+
+class ModelComparator:
+    """模型比较工具"""
+    
+    def __init__(self):
+        self.results = []
+    
+    def add_result(self, model_type: PreTrainedModelType, accuracy: float, speed: float, memory: float):
+        """添加比较结果
+        
+        Args:
+            model_type: 模型类型
+            accuracy: 准确率 (0-100)
+            speed: 速度 (tokens/second)
+            memory: 内存占用 (MB)
+        """
+        info = PreTrainedModelConfig.MODEL_CONFIGS.get(model_type, {})
+        self.results.append({
+            "type": model_type,
+            "name": info.get("model_name", ""),
+            "params": info.get("params", ""),
+            "size": info.get("size", ""),
+            "accuracy": accuracy,
+            "speed": speed,
+            "memory": memory
+        })
+    
+    def get_comparison_table(self) -> str:
+        """获取比较表格"""
+        if not self.results:
+            return "No results yet."
+        
+        header = f"{'Model':<30} {'Params':<10} {'Size':<12} {'Accuracy':<12} {'Speed':<15} {'Memory':<10}"
+        lines = [header, "-" * 100]
+        
+        for r in self.results:
+            line = f"{r['name']:<30} {r['params']:<10} {r['size']:<12} {r['accuracy']:.1f}%{'':<6} {r['speed']:.1f} tok/s{'':<5} {r['memory']:.1f} MB"
+            lines.append(line)
+        
+        return "\n".join(lines)
+    
+    def recommend_model(self, priority: str = "balanced") -> PreTrainedModelType:
+        """推荐最适合的模型
+        
+        Args:
+            priority: 优先级 ("speed", "accuracy", "balanced")
+            
+        Returns:
+            推荐的模型类型
+        """
+        if priority == "speed":
+            return PreTrainedModelType.ALBERT_TINY
+        elif priority == "accuracy":
+            return PreTrainedModelType.BERT_CHINESE
+        else:  # balanced
+            return PreTrainedModelType.ALBERT_SMALL
+
+
+# ==================== 便捷函数 ====================
+
 def get_available_pretrained_models() -> List[str]:
     """获取可用的预训练模型列表"""
-    return [
-        "bert-base-chinese",
-        "hfl/chinese-macbert-base",
-        "hfl/chinese-roberta-wwm-ext",
-        "voidful/albert_chinese_tiny"
+    models = []
+    for info in PreTrainedModelConfig.MODEL_CONFIGS.values():
+        models.append(info["model_name"])
+    return models
+
+
+def get_lightweight_models() -> List[Tuple[str, str, str]]:
+    """获取轻量级模型列表
+    
+    Returns:
+        List of (model_type, model_name, description)
+    """
+    lightweight_types = [
+        PreTrainedModelType.ALBERT_TINY,
+        PreTrainedModelType.ALBERT_SMALL,
+        PreTrainedModelType.DISTILBERT,
+        PreTrainedModelType.TINY_BERT
     ]
+    
+    result = []
+    for mt in lightweight_types:
+        info = PreTrainedModelConfig.MODEL_CONFIGS.get(mt, {})
+        if info:
+            result.append((mt.value, info["model_name"], f"{info['params']}, {info['speed']}"))
+    
+    return result
 
 
 def create_bert_segmentor(
@@ -377,3 +585,8 @@ def create_bert_segmentor(
     config = PreTrainedModelConfig(model_name_or_path=model_name_or_path, cache_dir=cache_dir)
     segmentor = BERTChineseSegmentor(model_name_or_path=model_name_or_path)
     return segmentor
+
+
+def create_lightweight_segmentor(model_type: str = "albert_tiny") -> Optional[BERTChineseSegmentor]:
+    """创建轻量级分词器（便捷函数）"""
+    return LightweightSegmentor.create_by_name(model_type)
