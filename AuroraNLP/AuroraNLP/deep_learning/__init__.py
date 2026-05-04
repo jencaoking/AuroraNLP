@@ -28,7 +28,16 @@ from .pretrained import (
     POSResult,
     POS_LABELS,
     POS_LABEL_NAMES,
-    create_bert_pos
+    create_bert_pos,
+    # BERT-情感分析 (步骤 42)
+    BERTSentiment,
+    SentimentResult,
+    create_bert_sentiment,
+    # BERT-文本分类 (步骤 43)
+    BERTClassifier,
+    ClassificationResult,
+    CLASSIFICATION_LABELS,
+    create_bert_classifier
 )
 
 __all__ = [
@@ -60,5 +69,14 @@ __all__ = [
     'POSResult',
     'POS_LABELS',
     'POS_LABEL_NAMES',
-    'create_bert_pos'
+    'create_bert_pos',
+    # BERT-情感分析
+    'BERTSentiment',
+    'SentimentResult',
+    'create_bert_sentiment',
+    # BERT-文本分类
+    'BERTClassifier',
+    'ClassificationResult',
+    'CLASSIFICATION_LABELS',
+    'create_bert_classifier'
 ]

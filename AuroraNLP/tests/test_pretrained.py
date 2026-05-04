@@ -420,6 +420,157 @@ def test_pos_tag_single_word():
     assert results[0].pos_name == "名词"
 
 
+# ==================== 情感分析测试（步骤 42）====================
+
+def test_sentiment_result():
+    """测试 SentimentResult 类"""
+    from AuroraNLP.deep_learning.pretrained import SentimentResult
+    
+    # 正面情感测试
+    result = SentimentResult(
+        text="今天真开心",
+        label="positive",
+        score=0.9,
+        confidence=0.9
+    )
+    assert result.text == "今天真开心"
+    assert result.label == "positive"
+    assert result.polarity == "positive"
+    
+    # 负面情感测试
+    result_neg = SentimentResult("今天真糟糕", "negative", 0.85, 0.85)
+    assert result_neg.polarity == "negative"
+    
+    # 中性测试
+    result_neu = SentimentResult("天气不错", "neutral", 0.6, 0.6)
+    assert result_neu.polarity == "neutral"
+    
+    # to_dict
+    data = result.to_dict()
+    assert data["text"] == "今天真开心"
+    assert "polarity" in data
+
+
+def test_bert_sentiment_init():
+    """测试 BERT 情感分析器初始化"""
+    from AuroraNLP.deep_learning.pretrained import BERTSentiment, PreTrainedModelType, create_bert_sentiment
+    
+    # 默认初始化
+    sa = BERTSentiment()
+    assert sa is not None
+    assert sa.is_available is not None
+    assert hasattr(sa, "predict")
+    assert hasattr(sa, "predict_batch")
+    
+    # ALBERT tiny 版本
+    sa_light = BERTSentiment(model_type=PreTrainedModelType.ALBERT_TINY)
+    assert sa_light is not None
+    
+    # 2分类和3分类
+    sa_2class = BERTSentiment(num_classes=2)
+    assert sa_2class._num_classes == 2
+    
+    # 便捷函数
+    sa_func = create_bert_sentiment()
+    assert sa_func is not None
+
+
+def test_bert_sentiment_predict():
+    """测试 BERT 情感预测（模拟）"""
+    from AuroraNLP.deep_learning.pretrained import BERTSentiment
+    
+    # 创建分析器（仅测试接口）
+    sa = BERTSentiment()
+    
+    # 检查可用性，若不可用则跳过
+    if not sa.is_available:
+        pytest.skip("BERT models not available")
+    
+    # 这里跳过实际加载，仅测试函数结构
+    assert hasattr(sa, "load")
+    assert hasattr(sa, "save")
+    assert hasattr(sa, "predict")
+    assert hasattr(sa, "predict_batch")
+
+
+# ==================== 文本分类测试（步骤 43）====================
+
+def test_classification_result():
+    """测试 ClassificationResult 类"""
+    from AuroraNLP.deep_learning.pretrained import ClassificationResult
+    
+    result = ClassificationResult(
+        text="这个产品真好用",
+        label="tech",
+        score=0.92,
+        all_scores={
+            "tech": 0.92,
+            "business": 0.05,
+            "entertainment": 0.03
+        }
+    )
+    
+    assert result.text == "这个产品真好用"
+    assert result.label == "tech"
+    assert result.score == 0.92
+    assert len(result.all_scores) == 3
+    
+    data = result.to_dict()
+    assert "all_scores" in data
+
+
+def test_bert_classifier_init():
+    """测试 BERT 文本分类器初始化"""
+    from AuroraNLP.deep_learning.pretrained import BERTClassifier, PreTrainedModelType, CLASSIFICATION_LABELS, create_bert_classifier
+    
+    # 默认初始化
+    clf = BERTClassifier()
+    assert clf is not None
+    assert len(clf.labels) > 0
+    assert "tech" in clf.labels
+    
+    # 自定义标签
+    custom_labels = ["商品", "物流", "服务"]
+    clf_custom = BERTClassifier(labels=custom_labels)
+    assert clf_custom.labels == custom_labels
+    
+    # ALBERT 版本
+    clf_light = BERTClassifier(model_type=PreTrainedModelType.ALBERT_TINY)
+    assert clf_light is not None
+    
+    # 便捷函数
+    clf_func = create_bert_classifier()
+    assert clf_func is not None
+    
+    # 检查预定义标签集合
+    assert "topics" in CLASSIFICATION_LABELS
+    assert "domain" in CLASSIFICATION_LABELS
+
+
+def test_bert_classifier_predict():
+    """测试 BERT 分类器预测接口"""
+    from AuroraNLP.deep_learning.pretrained import BERTClassifier, CLASSIFICATION_LABELS
+    
+    # 创建分类器
+    clf = BERTClassifier(labels=CLASSIFICATION_LABELS["domain"])
+    
+    # 检查接口
+    assert hasattr(clf, "load")
+    assert hasattr(clf, "predict")
+    assert hasattr(clf, "predict_batch")
+    assert hasattr(clf, "save")
+
+
+def test_bert_classifier_labels():
+    """测试分类标签功能"""
+    from AuroraNLP.deep_learning.pretrained import BERTClassifier, CLASSIFICATION_LABELS
+    
+    # 测试各种标签
+    for label_set_name, label_set in CLASSIFICATION_LABELS.items():
+        clf = BERTClassifier(labels=label_set)
+        assert clf.labels == label_set
+
+
 if __name__ == "__main__":
     # 简单运行一些测试
     test_module_import()
