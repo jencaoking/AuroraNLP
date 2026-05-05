@@ -36,6 +36,31 @@ from AuroraNLP import (
     generate_k8s_deployment_content,
     generate_k8s_service_content,
     generate_k8s_ingress_content,
+    CircuitState,
+    RateLimitState,
+    TokenBucket,
+    SlidingWindow,
+    CircuitBreaker,
+    TokenType,
+    Permission,
+    Token,
+    AuthContext,
+    Authenticator,
+    Authorizer,
+    ConfigEvent,
+    ConfigWatch,
+    InMemoryConfigStore,
+    FileConfigStore,
+    ConfigManager,
+    DeploymentState,
+    TrafficRule,
+    DeploymentVersion,
+    CanaryDeployer,
+    BackupType,
+    ClusterNode,
+    FailoverStrategy,
+    DataBackupManager,
+    FailoverController,
 )
 
 
@@ -625,6 +650,186 @@ class TestDockerAndK8s(unittest.TestCase):
         content = generate_k8s_ingress_content()
         self.assertIn("apiVersion: networking.k8s.io/v1", content)
         self.assertIn("kind: Ingress", content)
+
+
+class TestCircuitBreaker(unittest.TestCase):
+    """测试熔断器 (步骤86)"""
+
+    def test_circuit_closed_state(self):
+        breaker = CircuitBreaker()
+        self.assertTrue(breaker.allow_request())
+
+    def test_circuit_opens_after_failures(self):
+        breaker = CircuitBreaker(fail_threshold=3)
+        for _ in range(3):
+            breaker.on_failure()
+        self.assertFalse(breaker.allow_request())
+
+    def test_circuit_context_manager_success(self):
+        breaker = CircuitBreaker()
+        with breaker:
+            pass
+        self.assertEqual(breaker.state, CircuitState.CLOSED)
+
+    def test_token_bucket(self):
+        bucket = TokenBucket(capacity=10, rate=1)
+        for i in range(10):
+            self.assertTrue(bucket.acquire())
+        self.assertFalse(bucket.acquire())
+        self.assertAlmostEqual(bucket.get_available_tokens(), 0.0, delta=0.1)
+
+    def test_sliding_window(self):
+        window = SlidingWindow(window_seconds=10, max_requests=5)
+        for i in range(5):
+            self.assertTrue(window.allow())
+        self.assertEqual(window.get_current_count(), 5)
+        self.assertFalse(window.allow())
+
+
+class TestAuth(unittest.TestCase):
+    """测试认证授权 (步骤87)"""
+
+    def test_token_creation(self):
+        token = Token(
+            token_type=TokenType.API_KEY,
+            value="test123",
+            permissions=[Permission.READ, Permission.WRITE],
+        )
+        self.assertEqual(token.value, "test123")
+        self.assertTrue(token.has_permission(Permission.READ))
+        self.assertFalse(token.has_permission(Permission.ADMIN))
+
+    def test_token_expired(self):
+        token = Token(
+            token_type=TokenType.API_KEY,
+            value="expired",
+            expires_at=time.time() - 3600,
+        )
+        self.assertTrue(token.is_expired())
+
+    def test_authenticator_register_and_auth(self):
+        auth = Authenticator()
+        token = Token(TokenType.API_KEY, "valid_key", [Permission.READ])
+        auth.register_token(token)
+        self.assertEqual(auth.authenticate("valid_key"), token)
+        self.assertIsNone(auth.authenticate("invalid_key"))
+
+    def test_authorizer_permissions(self):
+        auth = Authenticator()
+        token = Token(
+            TokenType.API_KEY, 
+            "valid_token", 
+            user_id="user1",
+            permissions=[Permission.READ],
+        )
+        auth.register_token(token)
+        authorizer = Authorizer(auth)
+        self.assertTrue(authorizer.authorize("valid_token", Permission.READ))
+        self.assertFalse(authorizer.authorize("valid_token", Permission.WRITE))
+        self.assertFalse(authorizer.authorize("invalid_token", Permission.READ))
+
+    def test_admin_has_all_permissions(self):
+        token = Token(
+            token_type=TokenType.API_KEY,
+            value="admin",
+            permissions=[Permission.ADMIN],
+        )
+        authorizer = Authorizer()
+        for perm in Permission:
+            self.assertTrue(authorizer.has_permission(token, perm))
+
+
+class TestConfig(unittest.TestCase):
+    """测试配置管理 (步骤88)"""
+
+    def test_in_memory_store(self):
+        store = InMemoryConfigStore()
+        store.set("key1", "value1")
+        self.assertEqual(store.get("key1"), "value1")
+        self.assertEqual(store.get("nonexistent", "default"), "default")
+
+    def test_config_events(self):
+        events = []
+        def callback(event, key, value):
+            events.append((event, key, value))
+        store = InMemoryConfigStore()
+        store.watch.watch("key1", callback)
+        store.set("key1", "new_value")
+        self.assertEqual(len(events), 1)
+        event, key, value = events[0]
+        self.assertEqual(event, ConfigEvent.ADDED)
+        self.assertEqual(key, "key1")
+        self.assertEqual(value, "new_value")
+
+    def test_config_manager(self):
+        manager = ConfigManager()
+        manager.add_store("in_memory", InMemoryConfigStore(), is_default=True)
+        manager.set("config1", "test")
+        self.assertEqual(manager.get("config1"), "test")
+
+
+class TestCanaryDeploy(unittest.TestCase):
+    """测试灰度发布 (步骤89)"""
+
+    def test_deploy_version(self):
+        deployer = CanaryDeployer()
+        deployer.deploy_version("v1")
+        version = deployer.select_version()
+        self.assertEqual(version, "v1")
+
+    def test_deploy_canary(self):
+        deployer = CanaryDeployer()
+        deployer.deploy_version("v1")
+        deployer.deploy_canary("v2", percentage=50)
+        # 选择应该在 v1 和 v2 之间随机
+        selected = set()
+        for _ in range(100):
+            selected.add(deployer.select_version())
+        self.assertIn("v1", selected)
+        self.assertIn("v2", selected)
+
+    def test_rollback(self):
+        deployer = CanaryDeployer()
+        deployer.deploy_version("v1")
+        deployer.deploy_canary("v2", 50)
+        deployer.rollback("v2")
+        self.assertEqual(deployer.select_version(), "v1")
+
+
+class TestBackupAndFailover(unittest.TestCase):
+    """测试灾备方案 (步骤90)"""
+
+    def test_data_backup_manager(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            backup_dir = os.path.join(tmpdir, "backups")
+            source_dir = os.path.join(tmpdir, "source")
+            os.makedirs(source_dir)
+            test_file = os.path.join(source_dir, "test.txt")
+            with open(test_file, "w") as f:
+                f.write("test content")
+            manager = DataBackupManager(backup_dir)
+            backup_name = manager.create_backup(source_dir, BackupType.FULL)
+            self.assertGreater(len(manager.list_backups()), 0)
+            target_dir = os.path.join(tmpdir, "restore")
+            manager.restore(backup_name, target_dir)
+            self.assertTrue(os.path.exists(target_dir))
+
+    def test_failover_controller(self):
+        controller = FailoverController()
+        controller.register_node(ClusterNode("master", is_master=True))
+        controller.register_node(ClusterNode("slave1"))
+        controller.register_node(ClusterNode("slave2"))
+        master = controller.get_current_master()
+        self.assertEqual(master.node_id, "master")
+        new_master = controller.failover()
+        self.assertIsNotNone(new_master)
+        self.assertNotEqual(new_master.node_id, "master")
+
+    def test_node_heartbeat(self):
+        node = ClusterNode("test")
+        node.heartbeat()
+        self.assertTrue(node.is_alive)
 
 
 if __name__ == "__main__":
