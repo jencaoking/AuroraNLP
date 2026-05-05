@@ -23,7 +23,7 @@ MED016	CT扫描	medical	影像学	CT scan	计算机断层扫描	利用X射线对
 MED017	心电图	medical	诊断学	ECG	EKG	记录心脏电活动的检查方法	医学词典
 MED018	超声检查	medical	影像学	ultrasound	B超	利用超声波进行医学检查的技术	医学词典
 MED019	病理学	medical	基础医学	pathology	病理解剖学	研究疾病发生发展规律的学科	医学词典
-MED020	药理学	medical	基础医学 pharmacology	药物学	研究药物与机体相互作用规律的学科	医学词典
+MED020	药理学	medical	基础医学	pharmacology	药物学	研究药物与机体相互作用规律的学科	医学词典
 
 # @legal
 LEG001	合同法	legal	民商法	contract law	契约法	调整合同关系的法律规范总称	法律词典

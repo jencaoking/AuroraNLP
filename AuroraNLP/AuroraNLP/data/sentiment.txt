@@ -96,8 +96,6 @@
 
 # 正面情感词 - 惊喜类
 惊喜	positive	4	surprise_good
-惊讶	positive	3	surprise_good
-意外	positive	3	surprise_good
 惊艳	positive	5	surprise_good
 震撼	positive	4	surprise_good
 
