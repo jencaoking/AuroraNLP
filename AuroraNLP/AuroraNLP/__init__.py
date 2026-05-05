@@ -200,6 +200,21 @@ from .performance import (
     DistributedTask,
     SimpleTaskScheduler
 )
+from .enterprise import (
+    LogLevel,
+    LogFormat,
+    StructuredLogRecord,
+    ConsoleLogHandler,
+    FileLogHandler,
+    TimeRotatingFileLogHandler,
+    MemoryLogHandler,
+    LevelFilter,
+    KeywordFilter,
+    ModuleFilter,
+    Logger,
+    LogManager,
+    get_logger,
+)
 
 __all__ = [
     "Segmentor",
@@ -438,4 +453,18 @@ __all__ = [
     "Metric",
     "DistributedTask",
     "SimpleTaskScheduler",
+    # 企业级功能 (步骤81)
+    "LogLevel",
+    "LogFormat",
+    "StructuredLogRecord",
+    "ConsoleLogHandler",
+    "FileLogHandler",
+    "TimeRotatingFileLogHandler",
+    "MemoryLogHandler",
+    "LevelFilter",
+    "KeywordFilter",
+    "ModuleFilter",
+    "Logger",
+    "LogManager",
+    "get_logger",
 ]
