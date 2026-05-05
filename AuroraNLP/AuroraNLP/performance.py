@@ -747,9 +747,22 @@ class MemoryMappedFile:
     def close(self) -> None:
         """关闭映射和文件"""
         if self._mmap:
-            self._mmap.close()
+            try:
+                self._mmap.close()
+            except Exception:
+                pass
         if self._file_obj:
-            self._file_obj.close()
+            try:
+                self._file_obj.close()
+            except Exception:
+                pass
+
+    def __enter__(self) -> 'MemoryMappedFile':
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.close()
 
 
 # ==================== 步骤77: 词典压缩 ====================

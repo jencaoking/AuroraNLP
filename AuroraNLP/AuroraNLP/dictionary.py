@@ -1,4 +1,5 @@
 import os
+import threading
 import warnings
 from typing import Set, Optional, List, Tuple, Dict, Any
 
@@ -432,32 +433,37 @@ class DictionaryManager:
         self._domain_dictionaries: Dict[str, 'DomainDictionary'] = {}
         self._merged_trie: Optional[Trie] = None
         self._cache_valid: bool = False
+        self._lock = threading.RLock()
 
     def register_dictionary(self, dictionary: Dictionary) -> None:
-        self._dictionaries[dictionary.name] = dictionary
-        self._cache_valid = False
+        with self._lock:
+            self._dictionaries[dictionary.name] = dictionary
+            self._cache_valid = False
 
     def register_user_dictionary(self, user_dict: UserDictionary) -> None:
-        self._user_dictionaries[user_dict.name] = user_dict
-        self._cache_valid = False
+        with self._lock:
+            self._user_dictionaries[user_dict.name] = user_dict
+            self._cache_valid = False
 
     def register_domain_dictionary(self, domain_dict: 'DomainDictionary') -> None:
-        self._domain_dictionaries[domain_dict.domain] = domain_dict
-        self._cache_valid = False
+        with self._lock:
+            self._domain_dictionaries[domain_dict.domain] = domain_dict
+            self._cache_valid = False
 
     def unregister_dictionary(self, name: str) -> bool:
-        if name in self._dictionaries:
-            del self._dictionaries[name]
-            self._cache_valid = False
-            return True
-        if name in self._user_dictionaries:
-            del self._user_dictionaries[name]
-            self._cache_valid = False
-            return True
-        if name in self._domain_dictionaries:
-            del self._domain_dictionaries[name]
-            self._cache_valid = False
-            return True
+        with self._lock:
+            if name in self._dictionaries:
+                del self._dictionaries[name]
+                self._cache_valid = False
+                return True
+            if name in self._user_dictionaries:
+                del self._user_dictionaries[name]
+                self._cache_valid = False
+                return True
+            if name in self._domain_dictionaries:
+                del self._domain_dictionaries[name]
+                self._cache_valid = False
+                return True
         return False
 
     def get_dictionary(self, name: str) -> Optional[Dictionary]:
@@ -470,25 +476,26 @@ class DictionaryManager:
         return self._domain_dictionaries.get(domain)
 
     def _rebuild_cache(self) -> None:
-        if self._cache_valid and self._merged_trie is not None:
-            return
+        with self._lock:
+            if self._cache_valid and self._merged_trie is not None:
+                return
 
-        self._merged_trie = Trie()
+            self._merged_trie = Trie()
 
-        all_dicts: List[Tuple[int, Any]] = []
-        for d in self._dictionaries.values():
-            all_dicts.append((d.priority, d))
-        for d in self._user_dictionaries.values():
-            all_dicts.append((d.priority, d))
-        for d in self._domain_dictionaries.values():
-            all_dicts.append((d.priority, d))
+            all_dicts: List[Tuple[int, Any]] = []
+            for d in self._dictionaries.values():
+                all_dicts.append((d.priority, d))
+            for d in self._user_dictionaries.values():
+                all_dicts.append((d.priority, d))
+            for d in self._domain_dictionaries.values():
+                all_dicts.append((d.priority, d))
 
-        all_dicts.sort(key=lambda x: x[0])
+            all_dicts.sort(key=lambda x: x[0])
 
-        for _, d in all_dicts:
-            self._merge_dictionary(d)
+            for _, d in all_dicts:
+                self._merge_dictionary(d)
 
-        self._cache_valid = True
+            self._cache_valid = True
 
     def _merge_dictionary(self, dictionary) -> None:
         words = dictionary.get_words()
