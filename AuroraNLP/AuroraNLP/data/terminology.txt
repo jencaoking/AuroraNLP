@@ -95,3 +95,13 @@ IT022	持续集成	it	软件开发	continuous integration	CI	频繁集成代码�
 IT023	持续部署	it	软件开发	continuous deployment	CD	自动将代码部署到生产环境的实践	IT词典
 IT024	网络安全	it	信息安全	network security	信息安全	保护计算机网络免受攻击的技术	IT词典
 IT025	加密	it	信息安全	encryption	密码学	将明文转换为密文的过程	IT词典
+IT026	数据挖掘	it	计算机科学	data mining	数据采掘	从大量数据中提取有用信息和知识的过程	IT词典
+IT027	信息检索	it	计算机科学	information retrieval	IR	从文档集合中查找与用户查询相关信息的技术	IT词典
+IT028	计算复杂性	it	计算机科学	computational complexity	复杂度理论	研究算法所需资源（时间、空间）与问题规模关系的理论	IT词典
+IT029	图灵机	it	计算机科学	Turing machine	TM	一种抽象的计算模型，用于定义可计算性	IT词典
+IT030	编译器优化	it	计算机科学	compiler optimization	编译优化	在编译过程中改进代码性能和效率的技术	IT词典
+IT031	形式语言	it	计算机科学	formal language	形式文法	由符号集和规则组成的语言数学模型	IT词典
+IT032	自动机理论	it	计算机科学	automata theory	自动机	研究抽象计算模型及其性质的理论	IT词典
+IT033	算法分析	it	计算机科学	algorithm analysis	算法复杂度分析	评估算法效率和性能的方法	IT词典
+IT034	并行计算	it	计算机科学	parallel computing	并行处理	同时使用多个计算资源解决问题的计算模式	IT词典
+IT035	分布式系统	it	计算机科学	distributed systems	分布式计算	由多个独立计算机组成的系统，通过网络协同工作	IT词典
