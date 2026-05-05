@@ -22,6 +22,20 @@ from AuroraNLP import (
     Logger,
     LogManager,
     get_logger,
+    HealthStatus,
+    HealthCheck,
+    MemoryHealthCheck,
+    DiskHealthCheck,
+    HealthChecker,
+    MetricType,
+    PrometheusMetric,
+    PrometheusCounter,
+    PrometheusGauge,
+    PrometheusRegistry,
+    generate_dockerfile_content,
+    generate_k8s_deployment_content,
+    generate_k8s_service_content,
+    generate_k8s_ingress_content,
 )
 
 
@@ -492,6 +506,125 @@ class TestGetLogger(unittest.TestCase):
         logger = get_logger("quick_test")
         self.assertIsInstance(logger, Logger)
         self.assertEqual(logger.name, "quick_test")
+
+
+class TestHealthCheck(unittest.TestCase):
+    """测试健康检查功能 (步骤82)"""
+
+    def test_health_status_enum(self):
+        self.assertEqual(HealthStatus.HEALTHY.value, "healthy")
+        self.assertEqual(HealthStatus.UNHEALTHY.value, "unhealthy")
+        self.assertEqual(HealthStatus.DEGRADED.value, "degraded")
+        self.assertEqual(HealthStatus.UNKNOWN.value, "unknown")
+
+    def test_memory_health_check(self):
+        check = MemoryHealthCheck()
+        self.assertEqual(check.name, "memory")
+        status, msg, metadata = check.check()
+        # 即使没有resource模块，也应该返回HEALTHY或UNKNOWN
+        self.assertIn(status, [HealthStatus.HEALTHY, HealthStatus.UNKNOWN])
+
+    def test_disk_health_check(self):
+        check = DiskHealthCheck()
+        self.assertEqual(check.name, "disk")
+        status, msg, metadata = check.check()
+        self.assertIsNotNone(status)
+
+    def test_health_checker_basic(self):
+        checker = HealthChecker(version="1.0.0")
+        self.assertEqual(checker.version, "1.0.0")
+        checker.add_check(MemoryHealthCheck())
+        checker.add_check(DiskHealthCheck())
+        result = checker.check_liveness()
+        self.assertIsInstance(result, HealthChecker.AggregatedResult)
+        self.assertIn(result.overall_status, list(HealthStatus))
+        self.assertIsInstance(result.to_dict(), dict)
+        self.assertIsInstance(result.to_json(), str)
+        self.assertGreaterEqual(len(result.checks), 2)
+
+    def test_health_checker_compute_overall(self):
+        checker = HealthChecker()
+        result_healthy = checker._compute_overall([])
+        self.assertEqual(result_healthy, HealthStatus.HEALTHY)
+
+
+class TestPrometheusMetrics(unittest.TestCase):
+    """测试Prometheus指标功能 (步骤83)"""
+
+    def test_counter_basic(self):
+        counter = PrometheusCounter("test_counter", "Test counter")
+        counter.inc()
+        counter.inc(5)
+        exposition = counter.to_exposition()
+        self.assertIn("test_counter", exposition)
+        self.assertIn("Test counter", exposition)
+        self.assertIn("6.0", exposition)
+
+    def test_counter_with_labels(self):
+        counter = PrometheusCounter("requests_total", "Total requests")
+        counter.inc(1, {"endpoint": "/api", "method": "GET"})
+        counter.inc(2, {"endpoint": "/api", "method": "POST"})
+        exposition = counter.to_exposition()
+        self.assertIn('endpoint="/api"', exposition)
+        self.assertIn('method="GET"', exposition)
+
+    def test_counter_negative_error(self):
+        counter = PrometheusCounter("test", "Test")
+        with self.assertRaises(ValueError):
+            counter.inc(-1)
+
+    def test_gauge_basic(self):
+        gauge = PrometheusGauge("active_connections", "Active connections")
+        gauge.set(100)
+        gauge.inc(20)
+        gauge.dec(10)
+        exposition = gauge.to_exposition()
+        self.assertIn("110", exposition)
+
+    def test_registry(self):
+        registry = PrometheusRegistry()
+        counter = PrometheusCounter("req", "Requests")
+        gauge = PrometheusGauge("conn", "Connections")
+        registry.register(counter)
+        registry.register(gauge)
+        counter.inc(42)
+        gauge.set(100)
+        exposition = registry.get_exposition()
+        self.assertIn("req", exposition)
+        self.assertIn("conn", exposition)
+        self.assertIn("42", exposition)
+        self.assertIn("100", exposition)
+
+
+class TestDockerAndK8s(unittest.TestCase):
+    """测试Docker和K8s配置生成 (步骤84-85)"""
+
+    def test_dockerfile_generation(self):
+        content = generate_dockerfile_content()
+        self.assertIn("FROM", content)
+        self.assertIn("WORKDIR", content)
+        self.assertIn("COPY requirements.txt", content)
+        self.assertIn("EXPOSE 8000", content)
+        self.assertIn("HEALTHCHECK", content)
+
+    def test_k8s_deployment(self):
+        content = generate_k8s_deployment_content()
+        self.assertIn("apiVersion: apps/v1", content)
+        self.assertIn("kind: Deployment", content)
+        self.assertIn("livenessProbe", content)
+        self.assertIn("readinessProbe", content)
+        self.assertIn("resources", content)
+
+    def test_k8s_service(self):
+        content = generate_k8s_service_content()
+        self.assertIn("apiVersion: v1", content)
+        self.assertIn("kind: Service", content)
+        self.assertIn("selector", content)
+
+    def test_k8s_ingress(self):
+        content = generate_k8s_ingress_content()
+        self.assertIn("apiVersion: networking.k8s.io/v1", content)
+        self.assertIn("kind: Ingress", content)
 
 
 if __name__ == "__main__":

@@ -214,6 +214,20 @@ from .enterprise import (
     Logger,
     LogManager,
     get_logger,
+    HealthStatus,
+    HealthCheck,
+    MemoryHealthCheck,
+    DiskHealthCheck,
+    HealthChecker,
+    MetricType,
+    PrometheusMetric,
+    PrometheusCounter,
+    PrometheusGauge,
+    PrometheusRegistry,
+    generate_dockerfile_content,
+    generate_k8s_deployment_content,
+    generate_k8s_service_content,
+    generate_k8s_ingress_content,
 )
 
 __all__ = [
@@ -453,7 +467,7 @@ __all__ = [
     "Metric",
     "DistributedTask",
     "SimpleTaskScheduler",
-    # 企业级功能 (步骤81)
+    # 企业级功能 (步骤81-85)
     "LogLevel",
     "LogFormat",
     "StructuredLogRecord",
@@ -467,4 +481,18 @@ __all__ = [
     "Logger",
     "LogManager",
     "get_logger",
+    "HealthStatus",
+    "HealthCheck",
+    "MemoryHealthCheck",
+    "DiskHealthCheck",
+    "HealthChecker",
+    "MetricType",
+    "PrometheusMetric",
+    "PrometheusCounter",
+    "PrometheusGauge",
+    "PrometheusRegistry",
+    "generate_dockerfile_content",
+    "generate_k8s_deployment_content",
+    "generate_k8s_service_content",
+    "generate_k8s_ingress_content",
 ]

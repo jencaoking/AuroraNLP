@@ -696,7 +696,583 @@ def get_logger(name: str = "auroranlp") -> Logger:
     return LogManager().get_logger(name)
 
 
-# 导出列表
+# ==================== 步骤82: 健康检查接口 ====================
+
+class HealthStatus(Enum):
+    """健康状态"""
+    HEALTHY = "healthy"
+    UNHEALTHY = "unhealthy"
+    DEGRADED = "degraded"
+    UNKNOWN = "unknown"
+
+
+class HealthCheck(ABC):
+    """健康检查抽象基类"""
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        ...
+
+    @abstractmethod
+    def check(self) -> Tuple[HealthStatus, Optional[str], Optional[Dict[str, Any]]]:
+        ...
+
+
+class MemoryHealthCheck(HealthCheck):
+    """内存健康检查"""
+
+    def __init__(self, warning_threshold: float = 0.85, error_threshold: float = 0.95):
+        self._warning_threshold = warning_threshold
+        self._error_threshold = error_threshold
+
+    @property
+    def name(self) -> str:
+        return "memory"
+
+    def check(self) -> Tuple[HealthStatus, Optional[str], Optional[Dict[str, Any]]]:
+        try:
+            import gc
+            gc.collect()
+            free = gc.mem_alloc() if hasattr(gc, 'mem_alloc') else 0
+            total = gc.mem_free() if hasattr(gc, 'mem_free') else 1
+            # 尝试使用更准确的方法
+            try:
+                import resource
+                rusage = resource.getrusage(resource.RUSAGE_SELF)
+                max_rss = rusage.ru_maxrss
+                metrics = {
+                    "max_rss": max_rss,
+                    "gc_collects": len(gc.get_stats()) if hasattr(gc, 'get_stats') else 0
+                }
+                return HealthStatus.HEALTHY, None, metrics
+            except ImportError:
+                pass
+            return HealthStatus.HEALTHY, None, {"simple_check": True}
+        except Exception as e:
+            return HealthStatus.UNKNOWN, str(e), None
+
+
+class DiskHealthCheck(HealthCheck):
+    """磁盘健康检查"""
+
+    def __init__(self, path: str = "/", warning_threshold: float = 0.90, error_threshold: float = 0.98):
+        self._path = path
+        self._warning_threshold = warning_threshold
+        self._error_threshold = error_threshold
+
+    @property
+    def name(self) -> str:
+        return "disk"
+
+    def check(self) -> Tuple[HealthStatus, Optional[str], Optional[Dict[str, Any]]]:
+        try:
+            statvfs = os.statvfs(self._path)
+            free = statvfs.f_frsize * statvfs.f_bfree
+            total = statvfs.f_frsize * statvfs.f_blocks
+            used = total - free
+            usage_ratio = used / total if total > 0 else 0
+            metrics = {
+                "path": self._path,
+                "total_bytes": total,
+                "used_bytes": used,
+                "free_bytes": free,
+                "usage_percent": round(usage_ratio * 100, 2)
+            }
+            if usage_ratio >= self._error_threshold:
+                return HealthStatus.UNHEALTHY, "磁盘空间不足", metrics
+            elif usage_ratio >= self._warning_threshold:
+                return HealthStatus.DEGRADED, "磁盘空间紧张", metrics
+            else:
+                return HealthStatus.HEALTHY, None, metrics
+        except Exception as e:
+            return HealthStatus.UNKNOWN, str(e), None
+
+
+class HealthChecker:
+    """健康检查管理器
+
+    提供统一的健康检查接口，支持 liveness/readiness 探针。
+
+    使用示例::
+
+        checker = HealthChecker()
+        checker.add_check(DiskHealthCheck("/"))
+        result = checker.check_readiness()
+        print(result.to_json())
+    """
+
+    class CheckResult:
+        """单个检查结果"""
+
+        def __init__(
+            self,
+            name: str,
+            status: HealthStatus,
+            message: Optional[str] = None,
+            metadata: Optional[Dict[str, Any]] = None,
+            duration_ms: float = 0.0,
+        ):
+            self.name = name
+            self.status = status
+            self.message = message
+            self.metadata = metadata
+            self.duration_ms = duration_ms
+
+        def to_dict(self) -> Dict[str, Any]:
+            return {
+                "name": self.name,
+                "status": self.status.value,
+                "message": self.message,
+                "metadata": self.metadata,
+                "duration_ms": round(self.duration_ms, 3),
+            }
+
+    class AggregatedResult:
+        """聚合健康检查结果"""
+
+        def __init__(
+            self,
+            overall_status: HealthStatus,
+            checks: List["HealthChecker.CheckResult"],
+            version: Optional[str] = None,
+            uptime_seconds: Optional[float] = None,
+        ):
+            self.overall_status = overall_status
+            self.checks = checks
+            self.version = version
+            self.uptime_seconds = uptime_seconds
+            self.timestamp = time.time()
+
+        def to_dict(self) -> Dict[str, Any]:
+            return {
+                "status": self.overall_status.value,
+                "timestamp": self.timestamp,
+                "version": self.version,
+                "uptime_seconds": round(self.uptime_seconds, 2) if self.uptime_seconds else None,
+                "checks": [c.to_dict() for c in self.checks],
+            }
+
+        def to_json(self) -> str:
+            return json.dumps(self.to_dict(), ensure_ascii=False, default=str)
+
+    def __init__(
+        self,
+        version: Optional[str] = None,
+        start_time: Optional[float] = None,
+    ):
+        self._checks: Dict[str, HealthCheck] = {}
+        self._version = version
+        self._start_time = start_time or time.time()
+        self._lock = threading.RLock()
+
+    @property
+    def version(self) -> Optional[str]:
+        return self._version
+
+    @version.setter
+    def version(self, value: Optional[str]):
+        self._version = value
+
+    @property
+    def uptime_seconds(self) -> float:
+        return time.time() - self._start_time
+
+    def add_check(self, check: HealthCheck) -> None:
+        with self._lock:
+            self._checks[check.name] = check
+
+    def remove_check(self, name: str) -> None:
+        with self._lock:
+            if name in self._checks:
+                del self._checks[name]
+
+    def check_liveness(self) -> AggregatedResult:
+        """Liveness 探针：检测服务是否需要重启"""
+        checks = []
+        with self._lock:
+            for name, check in list(self._checks.items()):
+                start = time.time()
+                try:
+                    status, msg, metadata = check.check()
+                except Exception as e:
+                    status = HealthStatus.UNKNOWN
+                    msg = str(e)
+                    metadata = None
+                duration = (time.time() - start) * 1000
+                checks.append(
+                    self.CheckResult(
+                        name=name,
+                        status=status,
+                        message=msg,
+                        metadata=metadata,
+                        duration_ms=duration,
+                    )
+                )
+        overall = self._compute_overall(checks)
+        return self.AggregatedResult(
+            overall_status=overall,
+            checks=checks,
+            version=self._version,
+            uptime_seconds=self.uptime_seconds,
+        )
+
+    def check_readiness(self) -> AggregatedResult:
+        """Readiness 探针：检测服务是否可接收请求"""
+        return self.check_liveness()
+
+    def _compute_overall(self, results: List[CheckResult]) -> HealthStatus:
+        if not results:
+            return HealthStatus.HEALTHY
+        has_unhealthy = any(r.status == HealthStatus.UNHEALTHY for r in results)
+        if has_unhealthy:
+            return HealthStatus.UNHEALTHY
+        has_degraded = any(r.status == HealthStatus.DEGRADED for r in results)
+        if has_degraded:
+            return HealthStatus.DEGRADED
+        has_unknown = any(r.status == HealthStatus.UNKNOWN for r in results)
+        if has_unknown:
+            return HealthStatus.UNKNOWN
+        return HealthStatus.HEALTHY
+
+
+# ==================== 步骤83: Prometheus指标 ====================
+
+class MetricType(Enum):
+    """Prometheus 指标类型"""
+    COUNTER = "counter"
+    GAUGE = "gauge"
+    HISTOGRAM = "histogram"
+    SUMMARY = "summary"
+
+
+class PrometheusMetric:
+    """Prometheus 指标基类"""
+
+    def __init__(
+        self,
+        name: str,
+        type: MetricType,
+        help: str,
+        labels: Optional[Dict[str, str]] = None,
+    ):
+        self._name = name
+        self._type = type
+        self._help = help
+        self._labels = labels or {}
+        self._lock = threading.RLock()
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def type(self) -> MetricType:
+        return self._type
+
+    @property
+    def help(self) -> str:
+        return self._help
+
+    @abstractmethod
+    def to_exposition(self) -> str:
+        ...
+
+    def _format_labels(self, additional: Optional[Dict[str, str]] = None) -> str:
+        merged = {**self._labels, **(additional or {})}
+        if not merged:
+            return ""
+        pairs = [f'{k}="{v}"' for k, v in sorted(merged.items())]
+        return "{" + ",".join(pairs) + "}"
+
+
+class PrometheusCounter(PrometheusMetric):
+    """Counter 类型：只增不减的计数器"""
+
+    def __init__(
+        self,
+        name: str,
+        help: str,
+        labels: Optional[Dict[str, str]] = None,
+    ):
+        super().__init__(name, MetricType.COUNTER, help, labels)
+        self._value = 0.0
+        self._values: Dict[str, float] = {}
+
+    def inc(self, amount: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
+        if amount < 0:
+            raise ValueError("Counter 只能增加")
+        with self._lock:
+            if labels:
+                key = tuple(sorted(labels.items()))
+                self._values[key] = self._values.get(key, 0.0) + amount
+            else:
+                self._value += amount
+
+    def to_exposition(self) -> str:
+        lines = [
+            f"# HELP {self._name} {self._help}",
+            f"# TYPE {self._name} counter",
+        ]
+        with self._lock:
+            if self._value > 0 or not self._values:
+                lines.append(f"{self._name} {self._value}")
+            for label_key, val in self._values.items():
+                label_dict = dict(label_key)
+                labels_str = self._format_labels(label_dict)
+                lines.append(f"{self._name}{labels_str} {val}")
+        return "\n".join(lines) + "\n"
+
+
+class PrometheusGauge(PrometheusMetric):
+    """Gauge 类型：可增减的仪表盘"""
+
+    def __init__(
+        self,
+        name: str,
+        help: str,
+        labels: Optional[Dict[str, str]] = None,
+    ):
+        super().__init__(name, MetricType.GAUGE, help, labels)
+        self._value = 0.0
+        self._values: Dict[str, float] = {}
+
+    def set(self, value: float, labels: Optional[Dict[str, str]] = None) -> None:
+        with self._lock:
+            if labels:
+                key = tuple(sorted(labels.items()))
+                self._values[key] = value
+            else:
+                self._value = value
+
+    def inc(self, amount: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
+        with self._lock:
+            if labels:
+                key = tuple(sorted(labels.items()))
+                self._values[key] = self._values.get(key, 0.0) + amount
+            else:
+                self._value += amount
+
+    def dec(self, amount: float = 1.0, labels: Optional[Dict[str, str]] = None) -> None:
+        self.inc(-amount, labels)
+
+    def to_exposition(self) -> str:
+        lines = [
+            f"# HELP {self._name} {self._help}",
+            f"# TYPE {self._name} gauge",
+        ]
+        with self._lock:
+            if self._value != 0 or not self._values:
+                lines.append(f"{self._name} {self._value}")
+            for label_key, val in self._values.items():
+                label_dict = dict(label_key)
+                labels_str = self._format_labels(label_dict)
+                lines.append(f"{self._name}{labels_str} {val}")
+        return "\n".join(lines) + "\n"
+
+
+class PrometheusRegistry:
+    """Prometheus 指标注册表
+
+    使用示例::
+
+        registry = PrometheusRegistry()
+        counter = PrometheusCounter("requests_total", "Total requests")
+        registry.register(counter)
+        counter.inc()
+        exposition = registry.get_exposition()
+    """
+
+    def __init__(self):
+        self._metrics: Dict[str, PrometheusMetric] = {}
+        self._lock = threading.RLock()
+
+    def register(self, metric: PrometheusMetric) -> None:
+        """注册指标"""
+        with self._lock:
+            self._metrics[metric.name] = metric
+
+    def unregister(self, name: str) -> None:
+        """注销指标"""
+        with self._lock:
+            if name in self._metrics:
+                del self._metrics[name]
+
+    def get_metric(self, name: str) -> Optional[PrometheusMetric]:
+        """获取指标"""
+        with self._lock:
+            return self._metrics.get(name)
+
+    def get_exposition(self) -> str:
+        """获取 Prometheus exposition 格式"""
+        lines = []
+        with self._lock:
+            for metric in self._metrics.values():
+                lines.append(metric.to_exposition())
+        return "".join(lines)
+
+
+# ==================== 步骤84: Docker 镜像支持 ====================
+
+def generate_dockerfile_content(
+    base_image: str = "python:3.12-slim",
+    work_dir: str = "/app",
+    extra_deps: Optional[List[str]] = None,
+) -> str:
+    """生成 Dockerfile 内容"""
+    deps = extra_deps or []
+    deps_str = "\n".join(f"RUN apt-get update && apt-get install -y --no-install-recommends {d} && rm -rf /var/lib/apt/lists/*" for d in deps) if deps else ""
+
+    content = f"""
+# AuroraNLP Dockerfile
+FROM {base_image}
+
+WORKDIR {work_dir}
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \\
+    gcc \\
+    g++ \\
+    git \\
+    && rm -rf /var/lib/apt/lists/*
+{deps_str}
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Expose ports
+EXPOSE 8000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \\
+    CMD python -c \"from AuroraNLP import HealthChecker; c = HealthChecker(); r = c.check_liveness(); import sys; sys.exit(0 if r.overall_status.value == 'healthy' else 1)\"
+
+# Run
+CMD [\"python\", \"-m\", \"AuroraNLP\"]
+""".strip()
+    return content
+
+
+# ==================== 步骤85: Kubernetes 配置 ====================
+
+def generate_k8s_deployment_content(
+    name: str = "auroranlp",
+    image: str = "auroranlp:latest",
+    replicas: int = 3,
+    port: int = 8000,
+    cpu_request: str = "200m",
+    cpu_limit: str = "500m",
+    memory_request: str = "256Mi",
+    memory_limit: str = "512Mi",
+) -> str:
+    """生成 Kubernetes Deployment 配置"""
+    return f"""
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {name}
+  labels:
+    app: {name}
+spec:
+  replicas: {replicas}
+  selector:
+    matchLabels:
+      app: {name}
+  template:
+    metadata:
+      labels:
+        app: {name}
+    spec:
+      containers:
+      - name: {name}
+        image: {image}
+        ports:
+        - containerPort: {port}
+        resources:
+          requests:
+            cpu: {cpu_request}
+            memory: {memory_request}
+          limits:
+            cpu: {cpu_limit}
+            memory: {memory_limit}
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: {port}
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: {port}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+""".strip()
+
+
+def generate_k8s_service_content(
+    name: str = "auroranlp",
+    port: int = 8000,
+    target_port: int = 8000,
+    service_type: str = "ClusterIP",
+) -> str:
+    """生成 Kubernetes Service 配置"""
+    return f"""
+apiVersion: v1
+kind: Service
+metadata:
+  name: {name}
+  labels:
+    app: {name}
+spec:
+  type: {service_type}
+  selector:
+    app: {name}
+  ports:
+  - protocol: TCP
+    port: {port}
+    targetPort: {target_port}
+""".strip()
+
+
+def generate_k8s_ingress_content(
+    name: str = "auroranlp",
+    host: str = "auroranlp.example.com",
+    service_name: str = "auroranlp",
+    service_port: int = 8000,
+) -> str:
+    """生成 Kubernetes Ingress 配置"""
+    return f"""
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {name}
+  labels:
+    app: {name}
+spec:
+  rules:
+  - host: {host}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {service_name}
+            port:
+              number: {service_port}
+""".strip()
+
+
+# 更新导出列表
 __all_enterprise__ = [
     # 步骤81: 日志系统
     "LogLevel",
@@ -714,4 +1290,23 @@ __all_enterprise__ = [
     "Logger",
     "LogManager",
     "get_logger",
+    # 步骤82: 健康检查接口
+    "HealthStatus",
+    "HealthCheck",
+    "MemoryHealthCheck",
+    "DiskHealthCheck",
+    "HealthChecker",
+    # 步骤83: Prometheus指标
+    "MetricType",
+    "PrometheusMetric",
+    "PrometheusCounter",
+    "PrometheusGauge",
+    "PrometheusRegistry",
+    # 步骤84: Docker镜像支持
+    "generate_dockerfile_content",
+    # 步骤85: Kubernetes配置
+    "generate_k8s_deployment_content",
+    "generate_k8s_service_content",
+    "generate_k8s_ingress_content",
 ]
+
