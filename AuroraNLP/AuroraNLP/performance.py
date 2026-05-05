@@ -730,9 +730,6 @@ class MemoryMappedFile:
         
         self._file_obj.seek(0)
         
-        flags = mmap.PROT_READ
-        if self._writeable:
-            flags |= mmap.PROT_WRITE
         self._mmap = mmap.mmap(
             self._file_obj.fileno(), 
             self._size, 
