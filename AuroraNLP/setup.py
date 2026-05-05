@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="AuroraNLP",
+    name="auroranlp_core",
     version="1.0.0",
     packages=find_packages(exclude=['tests', 'tests.*', 'examples', 'examples.*']),
     package_data={
