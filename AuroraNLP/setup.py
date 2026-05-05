@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="AuroraNLP",
-    version="0.3.0b1",
+    version="1.0.0",
     packages=find_packages(exclude=['tests', 'tests.*', 'examples', 'examples.*']),
     package_data={
         'AuroraNLP': ['data/*.txt', 'data/*.dict', 'data/domain_dictionaries/*.txt'],
@@ -51,7 +51,7 @@ setup(
         "Documentation": "https://github.com/AuroraNLP/AuroraNLP/docs",
     },
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",

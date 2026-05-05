@@ -1,6 +1,6 @@
-__version__ = "0.3.0-beta"
+__version__ = "1.0.0"
 __codename__ = "coca"
-__version_info__ = (0, 3, 0, "beta")
+__version_info__ = (1, 0, 0, "final")
 
 from .segmentor import Segmentor
 from .dictionary import Dictionary, UserDictionary, DictionaryManager

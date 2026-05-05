@@ -5,6 +5,28 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 项目版本遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [1.0.0] - 2026-05-05
+
+### 新增
+- **深度学习集成** - BiLSTM-CRF 模型实现
+- 预训练模型支持 - BERT、ALBERT、DistilBERT 等
+- Pipeline 系统 - 模块化组件流水线
+- Doc/Span/Token 统一数据结构
+- REST API 和 gRPC 接口
+- 插件系统设计
+- 性能优化套件
+- 企业级功能
+- 完整的测试套件
+- 完整文档体系 - README、快速入门、用户手册、最佳实践、FAQ
+- 示例代码 - 基础分词、NER、Pipeline、企业级功能
+- 贡献指南和 Issue 模板
+- CI/CD 自动化流程
+
+### 改进
+- 性能优化 - 分词速度提升至 50万字/秒
+- 文档完善
+- 打包和发布流程优化
+
 ## [0.3.0-beta] - 202X-XX-XX
 
 ### 新增
@@ -58,6 +80,7 @@
 
 ---
 
+[1.0.0]: https://github.com/AuroraNLP/AuroraNLP/releases/tag/v1.0.0
 [0.3.0-beta]: https://github.com/AuroraNLP/AuroraNLP/compare/v0.2.0...v0.3.0-beta
 [0.2.0]: https://github.com/AuroraNLP/AuroraNLP/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AuroraNLP/AuroraNLP/releases/tag/v0.1.0
