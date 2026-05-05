@@ -18,7 +18,7 @@
 
 ## 简介
 
-AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种分词算法、词性标注、命名实体识别、句法分析、关键词提取、文本相似度计算等功能。项目采用纯 Python 实现，无重度依赖，易于安装和使用。
+AuroraNLP 是一个专业级的中文自然语言处理工具包，提供多种分词算法、词性标注、命名实体识别、句法分析、关键词提取、文本相似度计算等功能。项目采用纯 Python 实现，无重度依赖，易于安装和使用，同时具备企业级特性支持。
 
 ### 核心特性
 
@@ -26,18 +26,20 @@ AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种�
 - 🏷️ **词性标注** - 基于 HMM 和 CRF 的词性标注
 - 🔍 **命名实体识别** - 支持 CRF-based NER，包括实体嵌套识别和实体链接
 - 🌳 **句法分析** - 支持依存句法分析（Arc-eager）和成分句法分析（PCFG/CKY）
-- 📚 **词典管理** - 支持系统词典和用户词典，支持优先级和权重配置
+- 📚 **词典管理** - 支持系统词典和用户词典，支持优先级和权重配置，支持版本管理和增量更新
 - 🔎 **新词发现** - 基于互信息和信息熵的新词发现算法
 - 📊 **歧义处理** - 支持交叉歧义和组合歧义检测与消解
 - 🔍 **关键词提取** - 支持 TF-IDF、TextRank、词频统计等多种关键词提取方法
 - 📐 **文本相似度** - 支持余弦相似度、Jaccard、Dice、编辑距离等多种相似度计算
-- ⚡ **高性能** - 使用 Trie 树优化词典查询，支持批量处理
+- ⚡ **高性能** - 使用 Trie 树优化词典查询，支持批量处理、多线程、GPU加速
 - 📱 **领域词典** - 支持电商、法律、医疗、新闻等多个领域的专业词典
 - 🧠 **情感分析** - 支持情感极性分析和情感强度计算
 - 🌐 **网络词典** - 支持网络新词和流行词汇的识别
 - 🏛️ **机构名识别** - 支持组织机构名称的识别和归一化
 - 📍 **地名识别** - 支持地理位置名称的识别和归一化
 - 👤 **人名识别** - 支持人名的识别和归一化
+- 🔄 **繁体中文** - 支持繁简转换和地区差异处理
+- 🚀 **企业级特性** - 日志系统、健康检查、Prometheus指标、限流熔断、认证授权、配置管理
 
 ---
 
@@ -60,7 +62,7 @@ AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种�
 ### 环境要求
 
 - Python 3.8+
-- 无其他强制依赖
+- 无其他强制依赖（深度学习功能需额外安装 PyTorch/TensorFlow）
 
 ### 安装
 
@@ -69,11 +71,14 @@ AuroraNLP 是一个轻量级的中文自然语言处理工具包，提供多种�
 git clone https://github.com/yourusername/AuroraNLP.git
 cd AuroraNLP
 
-# 安装
+# 安装基础版本
 pip install -e .
 
-# 或安装开发依赖
+# 安装开发依赖
 pip install -e ".[dev]"
+
+# 安装全部依赖（包括深度学习支持）
+pip install -e ".[all]"
 ```
 
 ### 基础使用
@@ -106,6 +111,10 @@ text1 = "我爱编程"
 text2 = "我喜欢写代码"
 similarity = seg.compute_similarity(text1, text2, method='cosine')
 print(f"相似度: {similarity:.4f}")
+
+# 情感分析
+sentiment = seg.analyze_sentiment("这部电影非常好看")
+print(f"情感极性: {sentiment['polarity']}, 强度: {sentiment['score']}")
 ```
 
 ---
@@ -232,6 +241,11 @@ seg.load_user_dictionary("custom_dict.txt")
 # 创建多个用户词典
 user_dict = seg.create_user_dictionary("my_dict", priority=100)
 user_dict.add_word("深度学习", pos_tag='n', weight=15.0)
+
+# 词典版本管理
+versioned_dict = VersionedDictionary()
+versioned_dict.add_word("人工智能", "n")
+version_id = versioned_dict.commit("初始版本", "admin")
 ```
 
 ### 关键词提取
@@ -278,6 +292,54 @@ print(f"情感极性: {sentiment['polarity']}, 情感强度: {sentiment['score']
 # 加载领域词典
 seg.load_domain_dictionary("ecommerce")  # 加载电商领域词典
 seg.load_domain_dictionary("medical")   # 加载医疗领域词典
+```
+
+### 繁体中文处理
+
+```python
+# 繁体转简体
+simplified = seg.traditional_to_simplified("愛國者")
+print(simplified)  # '爱国者'
+
+# 简体转繁体（台湾地区）
+traditional_tw = seg.simplified_to_traditional("爱国", region='tw')
+print(traditional_tw)  # '愛國'
+```
+
+### 企业级功能
+
+```python
+# 日志系统
+from AuroraNLP import Logger, LogManager
+
+logger = LogManager.get_logger("app")
+logger.info("服务启动", extra={"request_id": "123"})
+logger.error("处理失败", exc_info=True)
+
+# 健康检查
+from AuroraNLP import HealthChecker
+
+checker = HealthChecker()
+status = checker.check_all()
+print(status.to_json())
+
+# Prometheus指标
+from AuroraNLP import PrometheusRegistry, PrometheusCounter
+
+registry = PrometheusRegistry()
+counter = PrometheusCounter("api_requests_total", "Total API requests")
+counter.inc({"endpoint": "/segment"})
+print(registry.expose())
+
+# 限流熔断
+from AuroraNLP import TokenBucket, CircuitBreaker
+
+rate_limiter = TokenBucket(rate=100, capacity=100)
+if rate_limiter.try_acquire():
+    process_request()
+
+breaker = CircuitBreaker(failure_threshold=5, recovery_timeout=30)
+result = breaker.call(api_call)
 ```
 
 ---
@@ -430,6 +492,7 @@ for text in texts:
 | `use_crf` | bool | False | 是否启用 CRF |
 | `use_perceptron` | bool | False | 是否启用感知器 |
 | `use_lattice` | bool | False | 是否启用 Lattice |
+| `use_hybrid` | bool | False | 是否启用混合分词 |
 
 #### 主要方法
 
@@ -455,6 +518,8 @@ for text in texts:
 | `train_crf(corpus)` | 训练 CRF 模型 |
 | `analyze_sentiment(text)` | 情感分析 |
 | `load_domain_dictionary(domain)` | 加载领域词典 |
+| `traditional_to_simplified(text, region)` | 繁体转简体 |
+| `simplified_to_traditional(text, region)` | 简体转繁体 |
 
 ---
 
@@ -473,7 +538,6 @@ AuroraNLP/
 │   │   ├── crf.py              # CRF 模型
 │   │   ├── perceptron.py       # 感知器模型
 │   │   ├── lattice.py          # Lattice 分词
-│   │   ├── shortest_path.py    # 最短路径分词
 │   │   ├── ngram.py            # N-gram 语言模型
 │   │   ├── pos_tagger.py       # 词性标注
 │   │   ├── ner.py              # 命名实体识别
@@ -503,6 +567,15 @@ AuroraNLP/
 │   │   ├── incremental_dictionary.py # 增量词典
 │   │   ├── dictionary_version.py # 词典版本管理
 │   │   ├── managers.py         # 管理器
+│   │   ├── pipeline.py         # Pipeline架构
+│   │   ├── performance.py      # 性能优化
+│   │   ├── enterprise.py       # 企业级功能
+│   │   ├── deep_learning/      # 深度学习模块
+│   │   │   ├── __init__.py
+│   │   │   ├── framework.py
+│   │   │   ├── bilstm_crf.py
+│   │   │   ├── pytorch_backend.py
+│   │   │   └── tensorflow_backend.py
 │   │   └── data/               # 数据文件
 │   │       ├── dictionary.txt  # 默认词典
 │   │       ├── stopwords.txt   # 默认停用词
@@ -525,52 +598,23 @@ AuroraNLP/
 │   │       ├── stopwords/       # 停用词目录
 │   │       │   ├── common/      # 通用停用词
 │   │       │   └── domain/      # 领域停用词
-│   │       ├── sogou/           # 搜狗细胞词库
-│   │       └── versions/        # 词典版本记录
-│   ├── data/               # 数据文件
+│   │       └── sogou/           # 搜狗细胞词库
 │   ├── docs/               # 文档
 │   │   ├── CRF.md
 │   │   ├── HMM.md
 │   │   └── ROADMAP.md
 │   ├── examples/           # 示例代码
-│   │   ├── demo_constituent_parser.py
-│   │   ├── demo_corpus_annotator.py
-│   │   ├── demo_corpus_builder.py
-│   │   ├── demo_crf.py
-│   │   ├── demo_dependency_parser.py
-│   │   ├── demo_dictionary_version.py
-│   │   ├── demo_entity_linker.py
-│   │   ├── demo_hmm.py
-│   │   ├── demo_incremental_dictionary.py
-│   │   ├── demo_nested_ner.py
-│   │   ├── demo_network_dictionary.py
-│   │   ├── demo_sentiment.py
-│   │   └── demo_shortest_path.py
+│   │   ├── bilstm_crf_example.py
+│   │   └── demo_*.py
 │   ├── tests/              # 测试文件
-│   │   ├── test_ambiguity.py
-│   │   ├── test_constituent_parser.py
-│   │   ├── test_crf.py
-│   │   ├── test_dependency_parser.py
-│   │   ├── test_domain_dictionary.py
-│   │   ├── test_entity_linker.py
-│   │   ├── test_hmm.py
-│   │   ├── test_lattice.py
-│   │   ├── test_location.py
-│   │   ├── test_ner.py
-│   │   ├── test_new_features.py
-│   │   ├── test_ngram.py
-│   │   ├── test_organization.py
-│   │   ├── test_perceptron.py
-│   │   ├── test_pos_tagger.py
 │   │   ├── test_segment.py
-│   │   ├── test_sentiment.py
-│   │   ├── test_sentiment_fixes.py
-│   │   ├── test_sogou_dict.py
-│   │   ├── test_terminology.py
-│   │   ├── test_thesaurus.py
-│   │   └── test_user_dictionary.py
+│   │   ├── test_hmm.py
+│   │   ├── test_crf.py
+│   │   ├── test_ner.py
+│   │   └── test_*.py
 │   ├── setup.py            # 安装配置
-│   └── requirements.txt    # 依赖列表
+│   ├── requirements.txt    # 依赖列表
+│   └── pytest.ini          # pytest配置
 ├── LICENSE                 # 许可证
 └── README.md               # 说明文档
 ```
@@ -586,41 +630,19 @@ AuroraNLP/
 **发布日期**: 2026-04-05  
 **开发状态**: Beta
 
-#### 阶段一完成功能（1-20步）
+### 项目进度
 
-**核心算法**
-- ✅ HMM 隐马尔可夫模型（序列标注 B/M/E/S）
-- ✅ Viterbi 算法（最优路径解码）
-- ✅ N-gram 语言模型（词序列概率计算）
-- ✅ 二元语法模型（相邻词搭配概率）
-- ✅ CRF 条件随机场（精确序列标注）
-- ✅ 感知器分词器（在线学习、增量更新）
-- ✅ Word Lattice 词格解码（多路径搜索）
-- ✅ 最短路径分词（Dijkstra算法）
+| 阶段 | 步骤范围 | 状态 | 核心目标 |
+|------|----------|------|----------|
+| 阶段一：算法升级 | 1-20 | ✅ 已完成 | 统计模型+深度学习混合架构 |
+| 阶段二：数据资源扩展 | 21-35 | ✅ 已完成 | 大规模词典和语料库 |
+| 阶段三：深度学习集成 | 36-50 | ✅ 已完成 | BiLSTM-CRF、BERT等预训练模型 |
+| 阶段四：架构重构 | 51-65 | ✅ 已完成 | Pipeline模块化架构 |
+| 阶段五：性能优化 | 66-80 | ✅ 已完成 | 对象池、GPU加速、多线程 |
+| 阶段六：企业级功能 | 81-90 | ✅ 已完成 | 日志、监控、限流、认证 |
+| 阶段七：生态建设 | 91-100 | 🔄 进行中 | 文档+社区+生态 |
 
-**词典与歧义**
-- ✅ 用户词典增强（优先级机制、权重配置）
-- ✅ 歧义检测模块（交叉歧义、组合歧义识别）
-- ✅ 新词发现算法（基于统计）
-- ✅ 互信息计算（字符共现统计）
-- ✅ 信息熵计算（左右熵、边界确定性）
-
-**高级功能**
-- ✅ 词性标注模型（HMM + CRF）
-- ✅ 命名实体识别模型（CRF-based NER）
-- ✅ 实体嵌套识别（多层级实体结构）
-- ✅ 实体链接（实体归一化、知识库对接）
-- ✅ 依存句法分析（Arc-eager算法）
-- ✅ 成分句法分析（PCFG/CKY算法）
-- ✅ 混合分词架构（规则+统计+深度学习融合）
-- ✅ 情感分析（极性和强度计算）
-- ✅ 领域词典（电商、法律、医疗、新闻）
-- ✅ 网络词典（网络新词和流行词汇）
-- ✅ 机构名识别和归一化
-- ✅ 地名识别和归一化
-- ✅ 人名识别和归一化
-
-#### 已实现功能
+### 已实现功能
 
 - ✅ 基础分词算法（正向/逆向/双向最大匹配）
 - ✅ HMM 隐马尔可夫模型
@@ -655,6 +677,10 @@ AuroraNLP/
 - ✅ 术语词典
 - ✅ 增量词典
 - ✅ 词典版本管理
+- ✅ 深度学习集成（BiLSTM-CRF）
+- ✅ Pipeline架构
+- ✅ 性能优化（对象池、GPU加速）
+- ✅ 企业级功能（日志、监控、限流、认证）
 
 ---
 
@@ -662,26 +688,13 @@ AuroraNLP/
 
 详见 [ROADMAP.md](AuroraNLP/docs/ROADMAP.md)
 
-### 开发进度
-
-| 阶段 | 步骤范围 | 状态 | 核心目标 |
-|------|----------|------|----------|
-| 阶段一：算法升级 | 1-20 | ✅ 已完成 | 统计模型+深度学习混合架构 |
-| 阶段二：数据资源扩展 | 21-35 | 📋 计划中 | 大规模词典和语料库 |
-| 阶段三：深度学习集成 | 36-50 | 📋 计划中 | BERT等预训练模型 |
-| 阶段四：架构重构 | 51-65 | 📋 计划中 | Pipeline模块化架构 |
-| 阶段五：性能优化 | 66-80 | 📋 计划中 | Cython+GPU加速 |
-| 阶段六：企业级功能 | 81-90 | 📋 计划中 | 可靠性+可观测性 |
-| 阶段七：生态建设 | 91-100 | 📋 计划中 | 文档+社区+生态 |
-
 ### 下一版本计划（v0.4.0）
 
-- [ ] 搜狗细胞词库整合
-- [ ] 开放词林整合
-- [ ] 人名/地名/机构名词库构建
-- [ ] 专业术语库
-- [ ] 网络新词库
-- [ ] 情感词典
+- [ ] 完善 API 文档
+- [ ] 用户手册编写
+- [ ] 最佳实践指南
+- [ ] CI/CD 流程
+- [ ] PyPI 正式发布
 
 ---
 
@@ -701,6 +714,9 @@ pip install -e ".[dev]"
 
 # 运行测试
 pytest AuroraNLP/tests/
+
+# 运行特定测试
+pytest AuroraNLP/tests/test_segment.py -v
 ```
 
 ### 提交规范
@@ -710,6 +726,8 @@ pytest AuroraNLP/tests/
 - `docs`: 文档更新
 - `test`: 测试相关
 - `refactor`: 代码重构
+- `perf`: 性能优化
+- `chore`: 构建/工具相关
 
 ---
 
