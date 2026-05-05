@@ -476,26 +476,25 @@ class DictionaryManager:
         return self._domain_dictionaries.get(domain)
 
     def _rebuild_cache(self) -> None:
-        with self._lock:
-            if self._cache_valid and self._merged_trie is not None:
-                return
+        if self._cache_valid and self._merged_trie is not None:
+            return
 
-            self._merged_trie = Trie()
+        self._merged_trie = Trie()
 
-            all_dicts: List[Tuple[int, Any]] = []
-            for d in self._dictionaries.values():
-                all_dicts.append((d.priority, d))
-            for d in self._user_dictionaries.values():
-                all_dicts.append((d.priority, d))
-            for d in self._domain_dictionaries.values():
-                all_dicts.append((d.priority, d))
+        all_dicts: List[Tuple[int, Any]] = []
+        for d in self._dictionaries.values():
+            all_dicts.append((d.priority, d))
+        for d in self._user_dictionaries.values():
+            all_dicts.append((d.priority, d))
+        for d in self._domain_dictionaries.values():
+            all_dicts.append((d.priority, d))
 
-            all_dicts.sort(key=lambda x: x[0])
+        all_dicts.sort(key=lambda x: x[0])
 
-            for _, d in all_dicts:
-                self._merge_dictionary(d)
+        for _, d in all_dicts:
+            self._merge_dictionary(d)
 
-            self._cache_valid = True
+        self._cache_valid = True
 
     def _merge_dictionary(self, dictionary) -> None:
         words = dictionary.get_words()
@@ -508,24 +507,29 @@ class DictionaryManager:
                 self._merged_trie.insert(word, pos_tag, weight, priority)
 
     def search(self, word: str) -> bool:
-        self._rebuild_cache()
-        return self._merged_trie.search(word)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.search(word)
 
     def search_with_pos(self, word: str) -> Tuple[bool, Optional[str]]:
-        self._rebuild_cache()
-        return self._merged_trie.search_with_pos(word)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.search_with_pos(word)
 
     def search_with_info(self, word: str) -> Tuple[bool, Optional[str], float, int]:
-        self._rebuild_cache()
-        return self._merged_trie.search_with_info(word)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.search_with_info(word)
 
     def get_max_match_length(self, text: str, start: int = 0, max_len: int = 15) -> int:
-        self._rebuild_cache()
-        return self._merged_trie.get_max_match_length(text, start, max_len)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.get_max_match_length(text, start, max_len)
 
     def get_max_match_with_pos(self, text: str, start: int = 0, max_len: int = 15) -> Tuple[int, Optional[str]]:
-        self._rebuild_cache()
-        return self._merged_trie.get_max_match_with_pos(text, start, max_len)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.get_max_match_with_pos(text, start, max_len)
 
     def get_max_match_with_info(
         self,
@@ -533,8 +537,9 @@ class DictionaryManager:
         start: int = 0,
         max_len: int = 15
     ) -> Tuple[int, Optional[str], float, int]:
-        self._rebuild_cache()
-        return self._merged_trie.get_max_match_with_info(text, start, max_len)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.get_max_match_with_info(text, start, max_len)
 
     def get_all_matches_with_info(
         self,
@@ -542,8 +547,9 @@ class DictionaryManager:
         start: int = 0,
         max_len: int = 15
     ) -> List[Tuple[int, str, Optional[str], float, int]]:
-        self._rebuild_cache()
-        return self._merged_trie.get_all_matches_with_info(text, start, max_len)
+        with self._lock:
+            self._rebuild_cache()
+            return self._merged_trie.get_all_matches_with_info(text, start, max_len)
 
     def get_all_dictionaries_info(self) -> List[Dict[str, Any]]:
         result = []
