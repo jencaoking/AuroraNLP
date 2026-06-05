@@ -473,7 +473,7 @@ __all__ = [
     # 性能优化 (步骤66-80)
     "ObjectPool",
     "PoolContext",
-    "BatchProcessor",
+    "PerformanceBatchProcessor",
     "MemoryPool",
     "MemoryBlock",
     "DelayedGC",
