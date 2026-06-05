@@ -304,7 +304,7 @@ class ParserState:
         return len(self.stack) > 0 and len(self.buffer) > 0 and self.stack[-1] not in self._heads
     
     def can_right_arc(self) -> bool:
-        return len(self.stack) > 0 and len(self.buffer) > 0
+        return len(self.stack) > 0 and len(self.buffer) > 0 and self.buffer[0] not in self._heads
     
     def can_reduce(self) -> bool:
         return len(self.stack) > 0 and self.stack[-1] in self._heads

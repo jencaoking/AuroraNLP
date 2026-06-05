@@ -98,30 +98,62 @@ class BatchProcessor:
         mode: Optional[str] = None,
         overlap: int = 50
     ) -> List[str]:
+        """对长文本分词，避免跨越 chunk 边界的词被错误切分。
+
+        切分策略：
+        1. 在 ``[chunk_end - overlap, chunk_end]`` 内从后向前搜索标点/空白等
+           安全切分点；找到则在该点切分（不产生重叠）。
+        2. 窗口内未找到安全切分点时，回退到真实 overlap 机制：在 ``chunk_end``
+           处切分，下一 chunk 从 ``chunk_end - overlap`` 开始使边界处被切断的
+           token 在下一 chunk 中被完整重新分词，同时丢弃当前 chunk 末尾位于
+           overlap 区域的 token 以避免重复。
+        """
         if len(text) <= chunk_size:
             return self.segmentor.segment(text, mode)
 
-        results = []
+        BREAK_CHARS = frozenset('，。！？；：、\n\t\r ')
+        results: List[str] = []
         i = 0
-        
-        while i < len(text):
-            chunk_end = min(i + chunk_size, len(text))
-            
-            if chunk_end < len(text):
-                break_point = chunk_end
-                for j in range(chunk_end, max(i + chunk_size - overlap, i), -1):
-                    if j < len(text) and text[j] in '，。！？；：、\n\t ':
-                        break_point = j + 1
-                        break
-                
-                chunk = text[i:break_point]
+        text_len = len(text)
+
+        while i < text_len:
+            remaining = text_len - i
+            if remaining <= chunk_size:
+                results.extend(self.segmentor.segment(text[i:], mode))
+                break
+
+            chunk_end = i + chunk_size
+            # 在 [max(i + 1, chunk_end - overlap), chunk_end] 内从后向前搜索安全切分点
+            break_point = -1
+            search_start = max(i + 1, chunk_end - overlap)
+            for j in range(chunk_end, search_start - 1, -1):
+                if text[j] in BREAK_CHARS:
+                    break_point = j + 1
+                    break
+
+            if break_point != -1:
+                # 找到安全切分点：直接切分，无重叠无重复
+                results.extend(self.segmentor.segment(text[i:break_point], mode))
                 i = break_point
             else:
-                chunk = text[i:]
-                i = len(text)
-            
-            if chunk:
-                results.extend(self.segmentor.segment(chunk, mode))
+                # 未找到安全切分点：使用真实 overlap 机制
+                chunk_tokens = self.segmentor.segment(text[i:chunk_end], mode)
+                if overlap > 0 and chunk_tokens:
+                    # 丢弃 chunk 末尾位于 overlap 区域的 token（将在下一 chunk 重分）
+                    overlap_offset_in_chunk = chunk_size - overlap
+                    consumed = 0
+                    cutoff = len(chunk_tokens)
+                    for idx, tok in enumerate(chunk_tokens):
+                        if consumed >= overlap_offset_in_chunk:
+                            cutoff = idx
+                            break
+                        consumed += len(tok)
+                    results.extend(chunk_tokens[:cutoff])
+                    # 下一 chunk 从 chunk_end - overlap 开始，让边界 token 被完整重分
+                    i = chunk_end - overlap
+                else:
+                    results.extend(chunk_tokens)
+                    i = chunk_end
 
         return results
 
