@@ -239,10 +239,10 @@ class HMMSegmentor:
             f.write(serialized)
             
             if key:
-                signature = hmac.new(
-                    key.encode('utf-8'),
-                    HMM_MODEL_SIGNATURE + serialized,
-                    hashlib.sha256
+                signature = hmac.HMAC(
+                    key=key.encode('utf-8'),
+                    msg=HMM_MODEL_SIGNATURE + serialized,
+                    digestmod=hashlib.sha256
                 ).digest()
                 f.write(signature)
     
@@ -258,10 +258,12 @@ class HMMSegmentor:
             
             if verify and key:
                 stored_signature = f.read(32)
-                expected_signature = hmac.new(
-                    key.encode('utf-8'),
-                    HMM_MODEL_SIGNATURE + serialized,
-                    hashlib.sha256
+                if len(stored_signature) != 32:
+                    raise ValueError("Model file does not contain a signature. Expected signed model but found unsigned.")
+                expected_signature = hmac.HMAC(
+                    key=key.encode('utf-8'),
+                    msg=HMM_MODEL_SIGNATURE + serialized,
+                    digestmod=hashlib.sha256
                 ).digest()
                 if not hmac.compare_digest(stored_signature, expected_signature):
                     raise ValueError("Model signature verification failed. File may be tampered.")

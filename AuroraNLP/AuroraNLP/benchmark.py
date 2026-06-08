@@ -24,6 +24,7 @@ class PerformanceBenchmark:
         func: Callable,
         iterations: int,
         *args,
+        operation: Optional[str] = None,
         **kwargs
     ) -> BenchmarkResult:
         times = []
@@ -40,8 +41,10 @@ class PerformanceBenchmark:
         max_time = max(times)
         ops_per_second = iterations / total_time if total_time > 0 else 0
 
+        operation_name = operation if operation is not None else func.__name__
+
         return BenchmarkResult(
-            operation=func.__name__,
+            operation=operation_name,
             total_time=total_time,
             iterations=iterations,
             avg_time=avg_time,

@@ -281,6 +281,9 @@ class LatticeSegmentor:
             raise ValueError(f"Invalid scoring method: {method}. Valid methods: {valid_methods}")
         self._scoring_method = method
     
+    def get_scoring_method(self) -> str:
+        return self._scoring_method
+    
     def build_lattice(self, text: str) -> Lattice:
         if self.word_freq:
             return self.builder.build_with_freq(text, self.word_freq)

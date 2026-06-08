@@ -126,7 +126,7 @@ class BatchProcessor:
             # 在 [max(i + 1, chunk_end - overlap), chunk_end] 内从后向前搜索安全切分点
             break_point = -1
             search_start = max(i + 1, chunk_end - overlap)
-            for j in range(chunk_end, search_start - 1, -1):
+            for j in range(chunk_end - 1, search_start - 1, -1):
                 if text[j] in BREAK_CHARS:
                     break_point = j + 1
                     break

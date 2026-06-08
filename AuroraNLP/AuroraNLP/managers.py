@@ -495,6 +495,9 @@ class LatticeSegmentorManager:
     def set_scoring_method(self, method: str) -> None:
         self.lattice_segmentor.set_scoring_method(method)
     
+    def get_scoring_method(self) -> str:
+        return self.lattice_segmentor.get_scoring_method()
+    
     def set_ngram_model(self, ngram_model) -> None:
         self.lattice_segmentor.set_ngram_model(ngram_model)
     

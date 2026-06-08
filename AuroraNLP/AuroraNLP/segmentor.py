@@ -92,6 +92,7 @@ class Segmentor:
         # 繁体中文支持
         self.traditional_converter = TraditionalChineseConverter()
         self.traditional_dictionary = TraditionalChineseDictionary(self.traditional_converter)
+        self._traditional_chars_cache = self.traditional_converter.get_traditional_chars()
         
         self.mode: str = 'bidirectional'
         self.use_weighted = use_weighted
@@ -210,13 +211,17 @@ class Segmentor:
         self.use_weighted = use_weighted
     
     def segment(self, text: str, mode: Optional[str] = None) -> List[str]:
+        if not text:
+            return []
         if mode is None:
             mode = self.mode
         
-        if mode == 'hybrid':
-            return self.hybrid_manager.segment(text)
-        
         active_dict = self.dict_manager._get_active_dictionary()
+        
+        if mode == 'hybrid':
+            if self.use_weighted:
+                return bidirectional_max_match_weighted(text, active_dict)
+            return self.hybrid_manager.segment(text)
         
         if mode == 'hmm':
             return self.ml_segmentor_manager.segment_hmm(text)
@@ -257,6 +262,10 @@ class Segmentor:
             raise ValueError("CRF mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'perceptron':
             raise ValueError("Perceptron mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
+        elif mode == 'lattice':
+            raise ValueError("Lattice mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
+        elif mode == 'hybrid':
+            raise ValueError("Hybrid mode does not support POS tagging. Use 'forward', 'backward', or 'bidirectional' mode for POS tagging.")
         elif mode == 'forward':
             if self.use_weighted:
                 return forward_max_match_weighted_with_pos(text, active_dict)
@@ -270,7 +279,7 @@ class Segmentor:
                 return bidirectional_max_match_weighted_with_pos(text, active_dict)
             return bidirectional_max_match_with_pos(text, active_dict)
         else:
-            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', or 'bidirectional'.")
+            raise ValueError(f"Unknown mode: {mode}. Use 'forward', 'backward', 'bidirectional', 'hmm', 'crf', 'perceptron', 'lattice', or 'hybrid'.")
     
     def segment_without_stopwords_with_pos(self, text: str, mode: Optional[str] = None) -> List[Tuple[str, str]]:
         words_with_pos = self.segment_with_pos(text, mode)
@@ -541,11 +550,19 @@ class Segmentor:
         if method == 'shortest':
             return self.segment(text, mode='lattice')
         elif method == 'ngram':
+            original_method = self.lattice_manager.get_scoring_method()
             self.lattice_manager.set_scoring_method('ngram')
-            return self.lattice_manager.segment(text)
+            try:
+                return self.lattice_manager.segment(text)
+            finally:
+                self.lattice_manager.set_scoring_method(original_method)
         elif method == 'frequency':
+            original_method = self.lattice_manager.get_scoring_method()
             self.lattice_manager.set_scoring_method('frequency')
-            return self.lattice_manager.segment(text)
+            try:
+                return self.lattice_manager.segment(text)
+            finally:
+                self.lattice_manager.set_scoring_method(original_method)
         else:
             return self.segment(text, mode='lattice')
     
@@ -761,7 +778,7 @@ class Segmentor:
         # 验证region参数
         self._validate_region(region)
         # 检测是否包含繁体中文
-        has_traditional = any(char in self.traditional_converter.get_traditional_chars() for char in text)
+        has_traditional = any(char in self._traditional_chars_cache for char in text)
         
         if has_traditional:
             # 转换为简体中文后分词

@@ -405,6 +405,10 @@ class AmbiguityDetector:
                 for i in range(pos, max_end):
                     processed.add(i)
             else:
+                unique_words = set(e.word for e in outgoing)
+                if len(unique_words) < 2:
+                    continue
+                
                 max_end = max(e.end for e in outgoing)
                 region_text = lattice.text[pos:max_end]
                 

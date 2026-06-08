@@ -89,7 +89,7 @@ class CorpusAnnotator:
         chars = set(sample)
         return len(chars) / len(sample) if sample else 0
     
-    def evaluate_annotation_quality(self, annotated_data: List[Dict] = None):
+    def evaluate_annotation_quality(self, annotated_data: Optional[List[Dict]] = None):
         if not annotated_data:
             annotated_data = self.annotated_data
         
@@ -100,7 +100,7 @@ class CorpusAnnotator:
             'average_confidence': 0.0,
             'confidence_std': 0.0,
             'annotation_coverage': 0.0,
-            'method_distribution': defaultdict(int)
+            'method_distribution': {}
         }
         
         confidences = []
@@ -108,7 +108,8 @@ class CorpusAnnotator:
             if isinstance(item, dict) and 'confidence' in item:
                 confidences.append(item['confidence'])
             if isinstance(item, dict) and 'method' in item:
-                metrics['method_distribution'][item['method']] += 1
+                method = item['method']
+                metrics['method_distribution'][method] = metrics['method_distribution'].get(method, 0) + 1
         
         if confidences:
             metrics['average_confidence'] = np.mean(confidences)
@@ -129,6 +130,19 @@ class CorpusAnnotator:
                     report[f'{key}_mean'] = np.mean(values)
                     report[f'{key}_std'] = np.std(values)
                     report[f'{key}_latest'] = values[-1]
+                elif isinstance(values[0], dict):
+                    merged_dist = {}
+                    for v in values:
+                        for method, count in v.items():
+                            merged_dist[method] = merged_dist.get(method, 0) + count
+                    report[f'{key}_accumulated'] = merged_dist
+                    report[f'{key}_latest'] = values[-1]
+                    if len(values) > 1:
+                        avg_dist = {}
+                        for method in merged_dist:
+                            total = sum(v.get(method, 0) for v in values)
+                            avg_dist[method] = total / len(values)
+                        report[f'{key}_mean'] = avg_dist
                 else:
                     report[f'{key}_latest'] = values[-1]
         return report
@@ -180,6 +194,20 @@ class AnnotationManager:
                 if isinstance(values[0], (int, float, np.number)):
                     report[f'{key}_mean'] = np.mean(values)
                     report[f'{key}_std'] = np.std(values)
+                    report[f'{key}_latest'] = values[-1]
+                elif isinstance(values[0], dict):
+                    merged_dist = {}
+                    for v in values:
+                        for method, count in v.items():
+                            merged_dist[method] = merged_dist.get(method, 0) + count
+                    report[f'{key}_accumulated'] = merged_dist
+                    report[f'{key}_latest'] = values[-1]
+                    if len(values) > 1:
+                        avg_dist = {}
+                        for method in merged_dist:
+                            total = sum(v.get(method, 0) for v in values)
+                            avg_dist[method] = total / len(values)
+                        report[f'{key}_mean'] = avg_dist
                 else:
                     report[f'{key}_latest'] = values[-1]
         return report
@@ -271,8 +299,12 @@ class AnnotationQualityEvaluator:
         if len(annotated_data) != len(ground_truth):
             raise ValueError(f"Length mismatch: annotated_data={len(annotated_data)}, ground_truth={len(ground_truth)}")
         
-        predicted = [item['annotation'] for item in annotated_data if isinstance(item, dict) and 'annotation' in item]
-        truth = ground_truth
+        predicted = []
+        truth = []
+        for item, gt in zip(annotated_data, ground_truth):
+            if isinstance(item, dict) and 'annotation' in item:
+                predicted.append(item['annotation'])
+                truth.append(gt)
         
         precision = AnnotationQualityEvaluator.calculate_precision(predicted, truth)
         recall = AnnotationQualityEvaluator.calculate_recall(predicted, truth)

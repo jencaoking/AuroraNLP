@@ -84,8 +84,8 @@ class CorpusBuilder:
     def _process_people_daily(self, line: str) -> str:
         """处理人民日报语料"""
         # 移除标记和注释
-        line = re.sub(r'\\[.*?\\]', '', line)
-        line = re.sub(r'\\(.*?\\)', '', line)
+        line = re.sub(r'\[.*?\]', '', line)
+        line = re.sub(r'\(.*?\)', '', line)
         return line
     
     def _process_ctb(self, line: str) -> str:
@@ -127,7 +127,7 @@ class CorpusBuilder:
             elif format_type == "plain":
                 # 转换为纯文本
                 # 移除分词标记
-                plain_line = re.sub(r'\\s+', '', line)
+                plain_line = re.sub(r'\s+', '', line)
                 converted_lines.append(plain_line)
         
         return converted_lines
@@ -256,7 +256,7 @@ class CorpusBuilder:
             tokens = line.split()
             total_tokens += len(tokens)
             # 计算字符数（去除空格）
-            total_chars += len(re.sub(r'\\s+', '', line))
+            total_chars += len(re.sub(r'\s+', '', line))
         
         avg_tokens_per_line = total_tokens / total_lines if total_lines > 0 else 0
         avg_chars_per_line = total_chars / total_lines if total_lines > 0 else 0
