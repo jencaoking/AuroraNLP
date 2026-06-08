@@ -93,14 +93,13 @@ class Segmentor:
         self.traditional_converter = TraditionalChineseConverter()
         self.traditional_dictionary = TraditionalChineseDictionary(self.traditional_converter)
         
-        self._init_hybrid_manager(hybrid_config)
-        
         self.mode: str = 'bidirectional'
         self.use_weighted = use_weighted
         self.use_hybrid = use_hybrid
         
+        self._init_hybrid_manager(hybrid_config)
         if use_hybrid:
-            self.hybrid_manager.enable(hybrid_config)
+            self.hybrid_manager.enable()
     
     def _init_hybrid_manager(self, hybrid_config: Optional[HybridConfig]) -> None:
         self.hybrid_manager = HybridSegmentorManager(
@@ -542,7 +541,6 @@ class Segmentor:
         if method == 'shortest':
             return self.segment(text, mode='lattice')
         elif method == 'ngram':
-            lattice = self.build_lattice(text)
             self.lattice_manager.set_scoring_method('ngram')
             return self.lattice_manager.segment(text)
         elif method == 'frequency':

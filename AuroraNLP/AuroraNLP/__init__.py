@@ -21,6 +21,7 @@ from .similarity import Similarity
 from .trie import Trie
 from .benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
 from .batch_processor import BatchProcessor
+from .traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
 from .hmm import HMMSegmentor, train_from_file
 from .ngram import NGramModel, BigramModel, TrigramModel
 from .crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
@@ -171,7 +172,7 @@ from .corpus_builder import CorpusBuilder, CorpusManager
 from .corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
 from .deep_learning import Framework, FrameworkType, get_framework, PyTorchBackend, TensorFlowBackend, BiLSTMCRF
 from .pipeline import (
-    StringStore, Doc, Span, Token,
+    StringStore, Doc, Span, Token as PipelineToken,
     PipelineComponent, ConditionalBranch, Pipeline,
     ComponentRegistry, PipelineConfig, ConfigSchema, FreezableParams,
     ModelVersion, ModelLifecycle, LRUCache, ModelCache,
@@ -181,12 +182,12 @@ from .pipeline import (
 )
 from .performance import (
     ObjectPool, PoolContext,
-    BatchProcessor,
+    BatchProcessor as PerformanceBatchProcessor,
     MemoryPool, MemoryBlock,
     DelayedGC,
-    ThreadPoolExecutor,
+    ThreadPoolExecutor as NLPThreadPoolExecutor,
     ParallelTokenizer,
-    ProcessPoolExecutor,
+    ProcessPoolExecutor as NLPProcessPoolExecutor,
     GPUInterface,
     BatchInference,
     MixedPrecisionInference,
