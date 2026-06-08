@@ -92,3 +92,12 @@ pip-delete-this-directory.txt
 
 # Model files (generated)
 *.pkl
+*.pth
+*.pt
+
+# Build artifacts
+build/
+dist/
+
+# PyPI upload
+*.whl

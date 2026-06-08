@@ -2,15 +2,12 @@
 
 <div align="center">
 
-[![Version](https://img.shields.io/badge/version-0.3.0b1-blue.svg)](https://github.com/yourusername/AuroraNLP/releases)
-[![Codename](https://img.shields.io/badge/codename-coca-purple.svg)]()
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/AuroraNLP/AuroraNLP/releases)
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-Beta-yellow.svg)]()
+[![Status](https://img.shields.io/badge/status-Production%20Stable-green.svg)]()
 
-**AuroraNLP - 轻量级中文自然语言处理工具包**
-
-[快速开始](#快速开始) • [功能特性](#功能特性) • [文档](#文档) • [示例](#示例)
+**AuroraNLP - 专业级中文自然语言处理工具包**
 
 </div>
 
@@ -20,7 +17,7 @@
 
 AuroraNLP 是一个专业级的中文自然语言处理工具包，提供多种分词算法、词性标注、命名实体识别、句法分析、关键词提取、文本相似度计算等功能。项目采用纯 Python 实现，无重度依赖，易于安装和使用，同时具备企业级特性支持。
 
-### 核心特性
+## 核心特性
 
 - 🔤 **多种分词算法** - 支持正向/逆向/双向最大匹配、HMM、CRF、感知器、Lattice、最短路径等多种分词方法
 - 🏷️ **词性标注** - 基于 HMM 和 CRF 的词性标注
@@ -29,9 +26,6 @@ AuroraNLP 是一个专业级的中文自然语言处理工具包，提供多种�
 - 📚 **词典管理** - 支持系统词典和用户词典，支持优先级和权重配置，支持版本管理和增量更新
 - 🔎 **新词发现** - 基于互信息和信息熵的新词发现算法
 - 📊 **歧义处理** - 支持交叉歧义和组合歧义检测与消解
-- 🔍 **关键词提取** - 支持 TF-IDF、TextRank、词频统计等多种关键词提取方法
-- 📐 **文本相似度** - 支持余弦相似度、Jaccard、Dice、编辑距离等多种相似度计算
-- ⚡ **高性能** - 使用 Trie 树优化词典查询，支持批量处理、多线程、GPU加速
 - 📱 **领域词典** - 支持电商、法律、医疗、新闻等多个领域的专业词典
 - 🧠 **情感分析** - 支持情感极性分析和情感强度计算
 - 🌐 **网络词典** - 支持网络新词和流行词汇的识别
@@ -41,44 +35,28 @@ AuroraNLP 是一个专业级的中文自然语言处理工具包，提供多种�
 - 🔄 **繁体中文** - 支持繁简转换和地区差异处理
 - 🚀 **企业级特性** - 日志系统、健康检查、Prometheus指标、限流熔断、认证授权、配置管理
 
----
-
-## 目录
-
-- [快速开始](#快速开始)
-- [安装](#安装)
-- [功能特性](#功能特性)
-- [示例](#示例)
-- [API 文档](#api-文档)
-- [项目结构](#项目结构)
-- [路线图](#路线图)
-- [贡献指南](#贡献指南)
-- [许可证](#许可证)
-
----
-
 ## 快速开始
 
 ### 环境要求
 
 - Python 3.8+
-- 无其他强制依赖（深度学习功能需额外安装 PyTorch/TensorFlow）
+- 无其他强制依赖（深度学习功能需额外安装 PyTorch）
 
 ### 安装
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/AuroraNLP.git
+git clone https://github.com/AuroraNLP/AuroraNLP.git
 cd AuroraNLP
 
 # 安装基础版本
-pip install -e .
+pip install -e AuroraNLP/
 
 # 安装开发依赖
-pip install -e ".[dev]"
+pip install -e "AuroraNLP/[dev]"
 
-# 安装全部依赖（包括深度学习支持）
-pip install -e ".[all]"
+# 安装全部依赖
+pip install -e "AuroraNLP/[all]"
 ```
 
 ### 基础使用
@@ -97,650 +75,57 @@ print(words)  # ['我', '爱', '自然语言处理']
 # 带词性标注的分词
 words_with_pos = seg.segment_with_pos(text)
 print(words_with_pos)  # [('我', 'r'), ('爱', 'v'), ('自然语言处理', 'n')]
-
-# 去除停用词
-words_no_stop = seg.segment_without_stopwords(text)
-print(words_no_stop)
-
-# 关键词提取
-keywords = seg.extract_keywords(text, top_k=5, method='tfidf')
-print(keywords)
-
-# 文本相似度计算
-text1 = "我爱编程"
-text2 = "我喜欢写代码"
-similarity = seg.compute_similarity(text1, text2, method='cosine')
-print(f"相似度: {similarity:.4f}")
-
-# 情感分析
-sentiment = seg.analyze_sentiment("这部电影非常好看")
-print(f"情感极性: {sentiment['polarity']}, 强度: {sentiment['score']}")
 ```
-
----
-
-## 功能特性
-
-### 分词算法
-
-AuroraNLP 支持多种分词算法，可根据场景选择：
-
-| 算法 | 模式 | 特点 |
-|------|------|------|
-| 正向最大匹配 | `forward` | 基于词典，速度快 |
-| 逆向最大匹配 | `backward` | 基于词典，准确率略高 |
-| 双向最大匹配 | `bidirectional` | 默认模式，结合正逆向优点 |
-| HMM | `hmm` | 统计模型，支持未登录词识别 |
-| CRF | `crf` | 序列标注，准确率高 |
-| 感知器 | `perceptron` | 在线学习，支持增量更新 |
-| Lattice | `lattice` | 词格解码，支持歧义消解 |
-| 最短路径 | `shortest_path` | Dijkstra算法，最优路径选择 |
-| 混合模式 | `hybrid` | 规则+统计+深度学习融合 |
-
-```python
-# 使用不同分词模式
-seg = Segmentor()
-
-# 词典分词（默认双向最大匹配）
-words = seg.segment(text, mode='bidirectional')
-
-# HMM 分词（需要先训练）
-seg.train_hmm(corpus)
-words = seg.segment(text, mode='hmm')
-
-# CRF 分词（需要先训练）
-seg.train_crf(corpus)
-words = seg.segment(text, mode='crf')
-
-# 最短路径分词
-words = seg.segment(text, mode='shortest_path')
-
-# 混合分词
-words = seg.segment(text, mode='hybrid')
-```
-
-### 词性标注
-
-```python
-# 基于 HMM 的词性标注
-pos_tags = seg.tag_pos_hmm(text)
-
-# 基于 CRF 的词性标注
-pos_tags = seg.tag_pos_crf(text)
-
-# 分词并标注词性
-words_with_pos = seg.segment_with_pos(text)
-```
-
-### 命名实体识别
-
-```python
-# 基于 CRF 的 NER
-entities = seg.recognize_entities_crf("张三在北京工作")
-print(entities)  # [('张三', 'PERSON'), ('北京', 'LOCATION')]
-
-# 实体嵌套识别
-nested_entities = seg.recognize_nested_entities("中国科学院北京基因组研究所")
-print(nested_entities)  # 支持多层级实体结构
-
-# 实体链接
-linked_entities = seg.link_entities("马云在阿里巴巴工作")
-print(linked_entities)  # 实体归一化到知识库
-```
-
-### 句法分析
-
-```python
-# 依存句法分析（基于 Arc-eager 算法）
-dependencies = seg.parse_dependency("我爱自然语言处理")
-for dep in dependencies:
-    print(f"{dep['word']} -> {dep['head']} ({dep['relation']})")
-
-# 成分句法分析（基于 PCFG/CKY 算法）
-constituency_tree = seg.parse_constituency("我爱自然语言处理")
-print(constituency_tree)
-```
-
-### 歧义检测与消解
-
-```python
-# 检测交叉歧义
-ambiguities = seg.detect_ambiguity("研究生命的起源")
-print(ambiguities)  # [('研究', '生命'), ('研究生', '命')]
-
-# 检测组合歧义
-comb_ambiguities = seg.detect_combination_ambiguity("南京市长江大桥")
-
-# Lattice 歧义消解
-words = seg.segment("研究生命", mode='lattice')
-```
-
-### 新词发现
-
-```python
-# 基于互信息和信息熵的新词发现
-new_words = seg.discover_new_words(corpus, min_pmi=3.0, min_entropy=1.0)
-print(new_words)
-
-# 自动扩充词典
-seg.auto_expand_dictionary(corpus)
-```
-
-### 词典管理
-
-```python
-# 添加自定义词汇
-seg.add_word("自然语言处理", pos_tag='n', weight=10.0)
-
-# 添加停用词
-seg.add_stopword("的")
-
-# 加载用户词典
-seg.load_user_dictionary("custom_dict.txt")
-
-# 创建多个用户词典
-user_dict = seg.create_user_dictionary("my_dict", priority=100)
-user_dict.add_word("深度学习", pos_tag='n', weight=15.0)
-
-# 词典版本管理
-versioned_dict = VersionedDictionary()
-versioned_dict.add_word("人工智能", "n")
-version_id = versioned_dict.commit("初始版本", "admin")
-```
-
-### 关键词提取
-
-```python
-# TF-IDF 方法
-keywords = seg.extract_keywords(text, top_k=10, method='tfidf')
-
-# TextRank 方法
-keywords = seg.extract_keywords(text, top_k=10, method='textrank')
-
-# 词频统计
-keywords = seg.extract_keywords(text, top_k=10, method='freq')
-```
-
-### 文本相似度
-
-```python
-# 余弦相似度
-sim = seg.compute_similarity(text1, text2, method='cosine')
-
-# Jaccard 相似度
-sim = seg.compute_similarity(text1, text2, method='jaccard')
-
-# 编辑距离
-sim = seg.compute_similarity(text1, text2, method='edit')
-
-# 批量相似度计算
-documents = ["文本1", "文本2", "文本3"]
-results = seg.batch_similarity(query, documents, method='cosine')
-```
-
-### 情感分析
-
-```python
-# 情感极性分析
-sentiment = seg.analyze_sentiment("这部电影非常好看，我很喜欢")
-print(f"情感极性: {sentiment['polarity']}, 情感强度: {sentiment['score']}")
-```
-
-### 领域词典
-
-```python
-# 加载领域词典
-seg.load_domain_dictionary("ecommerce")  # 加载电商领域词典
-seg.load_domain_dictionary("medical")   # 加载医疗领域词典
-```
-
-### 繁体中文处理
-
-```python
-# 繁体转简体
-simplified = seg.traditional_to_simplified("愛國者")
-print(simplified)  # '爱国者'
-
-# 简体转繁体（台湾地区）
-traditional_tw = seg.simplified_to_traditional("爱国", region='tw')
-print(traditional_tw)  # '愛國'
-```
-
-### 企业级功能
-
-```python
-# 日志系统
-from AuroraNLP import Logger, LogManager
-
-logger = LogManager.get_logger("app")
-logger.info("服务启动", extra={"request_id": "123"})
-logger.error("处理失败", exc_info=True)
-
-# 健康检查
-from AuroraNLP import HealthChecker
-
-checker = HealthChecker()
-status = checker.check_all()
-print(status.to_json())
-
-# Prometheus指标
-from AuroraNLP import PrometheusRegistry, PrometheusCounter
-
-registry = PrometheusRegistry()
-counter = PrometheusCounter("api_requests_total", "Total API requests")
-counter.inc({"endpoint": "/segment"})
-print(registry.expose())
-
-# 限流熔断
-from AuroraNLP import TokenBucket, CircuitBreaker
-
-rate_limiter = TokenBucket(rate=100, capacity=100)
-if rate_limiter.try_acquire():
-    process_request()
-
-breaker = CircuitBreaker(failure_threshold=5, recovery_timeout=30)
-result = breaker.call(api_call)
-```
-
----
-
-## 示例
-
-### HMM 分词示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 训练语料（词列表的列表）
-corpus = [
-    ['我', '爱', '自然语言处理'],
-    ['今天', '天气', '很好'],
-    ['北京', '是', '中国', '的', '首都']
-]
-
-# 训练 HMM 模型
-seg.train_hmm(corpus)
-
-# 分词
-text = "我爱自然语言处理"
-words = seg.segment(text, mode='hmm')
-print(words)
-
-# 保存模型
-seg.save_hmm_model('hmm_model.pkl')
-
-# 加载模型
-seg.load_hmm_model('hmm_model.pkl')
-```
-
-### CRF 分词示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 训练语料
-corpus = [
-    ['我', '爱', '中国'],
-    ['他', '是', '学生'],
-    ['北京', '是', '首都']
-]
-
-# 训练 CRF 模型
-seg.train_crf(corpus, max_iter=100, verbose=True)
-
-# 分词
-text = "我爱北京"
-words = seg.segment(text, mode='crf')
-print(words)
-
-# 保存模型
-seg.save_crf_model('crf_model.pkl')
-```
-
-### Lattice 分词示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 使用 Lattice 分词
-words = seg.segment("研究生命的起源", mode='lattice')
-print(words)
-
-# 获取所有可能的分词结果
-all_results = seg.get_all_lattice_segmentations("南京市长江大桥", max_results=10)
-for result in all_results:
-    print(result)
-
-# 检测歧义
-ambiguities = seg.detect_lattice_ambiguity("研究生命")
-print(ambiguities)
-```
-
-### 依存句法分析示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 依存句法分析
-text = "我爱自然语言处理"
-result = seg.parse_dependency(text)
-
-for item in result:
-    print(f"词语: {item['word']}, 词性: {item['pos']}, 依存关系: {item['relation']}, 指向: {item['head']}")
-```
-
-### 成分句法分析示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 成分句法分析
-text = "我爱自然语言处理"
-tree = seg.parse_constituency(text)
-
-# 打印句法树
-print(tree.pretty_print())
-```
-
-### 情感分析示例
-
-```python
-from AuroraNLP import Segmentor
-
-seg = Segmentor()
-
-# 情感分析
-texts = [
-    "这部电影非常好看，我很喜欢",
-    "这个产品质量很差，非常失望",
-    "今天天气不错，心情很好"
-]
-
-for text in texts:
-    result = seg.analyze_sentiment(text)
-    print(f"文本: {text}")
-    print(f"情感极性: {result['polarity']}, 情感强度: {result['score']:.4f}")
-    print()
-```
-
----
-
-## API 文档
-
-### Segmentor 类
-
-主要分词器类，整合所有分词功能。
-
-#### 初始化参数
-
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `dictionary` | Dictionary | None | 自定义词典 |
-| `load_default_dict` | bool | True | 是否加载默认词典 |
-| `load_default_stopwords` | bool | True | 是否加载默认停用词 |
-| `use_hmm` | bool | False | 是否启用 HMM |
-| `use_crf` | bool | False | 是否启用 CRF |
-| `use_perceptron` | bool | False | 是否启用感知器 |
-| `use_lattice` | bool | False | 是否启用 Lattice |
-| `use_hybrid` | bool | False | 是否启用混合分词 |
-
-#### 主要方法
-
-| 方法 | 说明 |
-|------|------|
-| `segment(text, mode)` | 分词 |
-| `segment_with_pos(text, mode)` | 分词并返回词性 |
-| `segment_without_stopwords(text, mode)` | 分词并过滤停用词 |
-| `tag_pos_hmm(text)` | HMM 词性标注 |
-| `tag_pos_crf(text)` | CRF 词性标注 |
-| `recognize_entities_crf(text)` | CRF 命名实体识别 |
-| `recognize_nested_entities(text)` | 嵌套实体识别 |
-| `link_entities(text)` | 实体链接 |
-| `parse_dependency(text)` | 依存句法分析 |
-| `parse_constituency(text)` | 成分句法分析 |
-| `detect_ambiguity(text)` | 歧义检测 |
-| `discover_new_words(corpus)` | 新词发现 |
-| `extract_keywords(text, top_k, method)` | 关键词提取 |
-| `compute_similarity(text1, text2, method)` | 文本相似度计算 |
-| `add_word(word, pos_tag, weight)` | 添加词汇 |
-| `add_stopword(word)` | 添加停用词 |
-| `train_hmm(corpus)` | 训练 HMM 模型 |
-| `train_crf(corpus)` | 训练 CRF 模型 |
-| `analyze_sentiment(text)` | 情感分析 |
-| `load_domain_dictionary(domain)` | 加载领域词典 |
-| `traditional_to_simplified(text, region)` | 繁体转简体 |
-| `simplified_to_traditional(text, region)` | 简体转繁体 |
-
----
 
 ## 项目结构
 
 ```
 AuroraNLP/
 ├── AuroraNLP/              # 核心源代码
+│   ├── .github/            # GitHub 配置
 │   ├── AuroraNLP/          # 主要源码目录
-│   │   ├── __init__.py         # 包初始化
-│   │   ├── segmentor.py        # 主分词器
-│   │   ├── tokenizer.py        # 分词算法接口
-│   │   ├── dictionary.py       # 词典管理
-│   │   ├── trie.py             # Trie 树实现
-│   │   ├── hmm.py              # HMM 模型
-│   │   ├── crf.py              # CRF 模型
-│   │   ├── perceptron.py       # 感知器模型
-│   │   ├── lattice.py          # Lattice 分词
-│   │   ├── ngram.py            # N-gram 语言模型
-│   │   ├── pos_tagger.py       # 词性标注
-│   │   ├── ner.py              # 命名实体识别
-│   │   ├── entity_linker.py    # 实体链接
-│   │   ├── dependency_parser.py # 依存句法分析
-│   │   ├── constituent_parser.py # 成分句法分析
-│   │   ├── ambiguity.py        # 歧义检测
-│   │   ├── new_word_detector.py # 新词发现
-│   │   ├── keyword_extractor.py # 关键词提取
-│   │   ├── similarity.py       # 文本相似度
-│   │   ├── stopwords.py        # 停用词处理
-│   │   ├── batch_processor.py  # 批量处理
-│   │   ├── benchmark.py        # 性能测试
-│   │   ├── sentiment.py        # 情感分析
-│   │   ├── domain_dictionary.py # 领域词典
-│   │   ├── network_dictionary.py # 网络词典
-│   │   ├── person_name.py      # 人名识别
-│   │   ├── organization.py     # 机构名识别
-│   │   ├── location.py         # 地名识别
-│   │   ├── corpus_annotator.py # 语料标注工具
-│   │   ├── corpus_builder.py   # 语料构建工具
-│   │   ├── scel_parser.py      # 搜狗细胞词库解析
-│   │   ├── traditional_chinese.py # 繁体中文处理
-│   │   ├── thesaurus.py        # 同义词词典
-│   │   ├── terminology.py      # 术语词典
-│   │   ├── hybrid.py           # 混合分词器
-│   │   ├── incremental_dictionary.py # 增量词典
-│   │   ├── dictionary_version.py # 词典版本管理
-│   │   ├── managers.py         # 管理器
-│   │   ├── pipeline.py         # Pipeline架构
-│   │   ├── performance.py      # 性能优化
-│   │   ├── enterprise.py       # 企业级功能
-│   │   ├── deep_learning/      # 深度学习模块
-│   │   │   ├── __init__.py
-│   │   │   ├── framework.py
-│   │   │   ├── bilstm_crf.py
-│   │   │   ├── pytorch_backend.py
-│   │   │   └── tensorflow_backend.py
-│   │   └── data/               # 数据文件
-│   │       ├── dictionary.txt  # 默认词典
-│   │       ├── stopwords.txt   # 默认停用词
-│   │       ├── train_corpus.txt # 训练语料
-│   │       ├── pos_corpus.txt  # 词性标注语料
-│   │       ├── sentiment.txt   # 情感词典
-│   │       ├── person_names.txt # 人名词典
-│   │       ├── locations.txt   # 地名词典
-│   │       ├── organizations.txt # 机构名词典
-│   │       ├── terminology.txt # 术语词典
-│   │       ├── thesaurus.txt   # 同义词词典
-│   │       ├── network_words.json # 网络词典
-│   │       ├── degree_words.txt # 程度词词典
-│   │       ├── negation_words.txt # 否定词词典
-│   │       ├── domain_dictionaries/ # 领域词典
-│   │       │   ├── ecommerce.txt # 电商领域词典
-│   │       │   ├── legal.txt    # 法律领域词典
-│   │       │   ├── medical.txt  # 医疗领域词典
-│   │       │   └── news.txt     # 新闻领域词典
-│   │       ├── stopwords/       # 停用词目录
-│   │       │   ├── common/      # 通用停用词
-│   │       │   └── domain/      # 领域停用词
-│   │       └── sogou/           # 搜狗细胞词库
+│   │   ├── __init__.py     # 包初始化
+│   │   ├── data/           # 数据文件（词典、停用词、语料等）
+│   │   ├── deep_learning/  # 深度学习模块
+│   │   └── *.py            # 各功能模块
 │   ├── docs/               # 文档
-│   │   ├── CRF.md
-│   │   ├── HMM.md
-│   │   └── ROADMAP.md
 │   ├── examples/           # 示例代码
-│   │   ├── bilstm_crf_example.py
-│   │   └── demo_*.py
 │   ├── tests/              # 测试文件
-│   │   ├── test_segment.py
-│   │   ├── test_hmm.py
-│   │   ├── test_crf.py
-│   │   ├── test_ner.py
-│   │   └── test_*.py
 │   ├── setup.py            # 安装配置
-│   ├── requirements.txt    # 依赖列表
-│   └── pytest.ini          # pytest配置
+│   └── requirements.txt    # 依赖列表
 ├── LICENSE                 # 许可证
 └── README.md               # 说明文档
 ```
 
----
+## 详细文档
 
-## 版本信息
+请查看 `AuroraNLP/docs/` 目录获取详细文档：
+- [快速开始](AuroraNLP/docs/getting-started.md)
+- [用户手册](AuroraNLP/docs/user-guide.md)
+- [最佳实践](AuroraNLP/docs/best-practices.md)
+- [FAQ](AuroraNLP/docs/faq.md)
+- [CRF 文档](AuroraNLP/docs/CRF.md)
+- [HMM 文档](AuroraNLP/docs/HMM.md)
+- [路线图](AuroraNLP/docs/ROADMAP.md)
 
-### 当前版本 (v0.3.0b1 "coca")
+## 示例
 
-**版本号**: 0.3.0b1  
-**内部代号**: coca  
-**发布日期**: 2026-04-05  
-**开发状态**: Beta
+查看 `AuroraNLP/examples/` 目录获取示例代码：
+- [基础分词](AuroraNLP/examples/basic_segmentation.py)
+- [BiLSTM-CRF 示例](AuroraNLP/examples/bilstm_crf_example.py)
+- [命名实体识别](AuroraNLP/examples/ner.py)
+- [Pipeline 使用](AuroraNLP/examples/pipeline.py)
 
-### 项目进度
-
-| 阶段 | 步骤范围 | 状态 | 核心目标 |
-|------|----------|------|----------|
-| 阶段一：算法升级 | 1-20 | ✅ 已完成 | 统计模型+深度学习混合架构 |
-| 阶段二：数据资源扩展 | 21-35 | ✅ 已完成 | 大规模词典和语料库 |
-| 阶段三：深度学习集成 | 36-50 | ✅ 已完成 | BiLSTM-CRF、BERT等预训练模型 |
-| 阶段四：架构重构 | 51-65 | ✅ 已完成 | Pipeline模块化架构 |
-| 阶段五：性能优化 | 66-80 | ✅ 已完成 | 对象池、GPU加速、多线程 |
-| 阶段六：企业级功能 | 81-90 | ✅ 已完成 | 日志、监控、限流、认证 |
-| 阶段七：生态建设 | 91-100 | 🔄 进行中 | 文档+社区+生态 |
-
-### 已实现功能
-
-- ✅ 基础分词算法（正向/逆向/双向最大匹配）
-- ✅ HMM 隐马尔可夫模型
-- ✅ CRF 条件随机场
-- ✅ 感知器分词器
-- ✅ Lattice 词格解码
-- ✅ 最短路径分词
-- ✅ N-gram 语言模型
-- ✅ 词性标注（HMM + CRF）
-- ✅ 命名实体识别
-- ✅ 实体嵌套识别
-- ✅ 实体链接
-- ✅ 依存句法分析
-- ✅ 成分句法分析
-- ✅ 歧义检测与消解
-- ✅ 新词发现
-- ✅ 关键词提取（TF-IDF, TextRank, 词频）
-- ✅ 文本相似度计算（5 种算法）
-- ✅ 用户词典管理
-- ✅ 停用词过滤
-- ✅ 批量处理接口
-- ✅ 性能基准测试工具
-- ✅ 情感分析
-- ✅ 领域词典
-- ✅ 网络词典
-- ✅ 机构名识别
-- ✅ 地名识别
-- ✅ 人名识别
-- ✅ 搜狗细胞词库支持
-- ✅ 繁体中文处理
-- ✅ 同义词词典
-- ✅ 术语词典
-- ✅ 增量词典
-- ✅ 词典版本管理
-- ✅ 深度学习集成（BiLSTM-CRF）
-- ✅ Pipeline架构
-- ✅ 性能优化（对象池、GPU加速）
-- ✅ 企业级功能（日志、监控、限流、认证）
-
----
-
-## 路线图
-
-详见 [ROADMAP.md](AuroraNLP/docs/ROADMAP.md)
-
-### 下一版本计划（v0.4.0）
-
-- [ ] 完善 API 文档
-- [ ] 用户手册编写
-- [ ] 最佳实践指南
-- [ ] CI/CD 流程
-- [ ] PyPI 正式发布
-
----
-
-## 贡献指南
-
-欢迎贡献代码、报告问题或提出建议！
-
-### 开发环境
+## 运行测试
 
 ```bash
-# 克隆仓库
-git clone https://github.com/yourusername/AuroraNLP.git
 cd AuroraNLP
-
-# 安装开发依赖
-pip install -e ".[dev]"
-
-# 运行测试
-pytest AuroraNLP/tests/
-
-# 运行特定测试
-pytest AuroraNLP/tests/test_segment.py -v
+pytest tests/ -v
 ```
-
-### 提交规范
-
-- `feat`: 新功能
-- `fix`: 修复 bug
-- `docs`: 文档更新
-- `test`: 测试相关
-- `refactor`: 代码重构
-- `perf`: 性能优化
-- `chore`: 构建/工具相关
-
----
 
 ## 许可证
 
 本项目采用 [Apache 2.0](LICENSE) 许可证。
-
----
-
-## 联系方式
-
-- 项目主页: [GitHub](https://github.com/yourusername/AuroraNLP)
-- 问题反馈: [Issues](https://github.com/yourusername/AuroraNLP/issues)
 
 ---
 

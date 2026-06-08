@@ -9,7 +9,15 @@ setup(
     version="1.0.0",
     packages=find_packages(exclude=['tests', 'tests.*', 'examples', 'examples.*']),
     package_data={
-        'AuroraNLP': ['data/*.txt', 'data/*.dict', 'data/domain_dictionaries/*.txt'],
+        'AuroraNLP': [
+            'data/*.txt',
+            'data/*.json',
+            'data/*.dict',
+            'data/domain_dictionaries/*.txt',
+            'data/stopwords/**/*.txt',
+            'data/stopwords/**/*.json',
+            'data/sogou/*.scel',
+        ],
     },
     include_package_data=True,
     python_requires=">=3.8",
