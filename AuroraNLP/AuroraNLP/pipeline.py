@@ -452,7 +452,7 @@ class Doc:
 
     def copy(self) -> 'Doc':
         """
-        创建文档的浅拷贝
+        创建文档的深拷贝
 
         Returns:
             新的Doc对象
@@ -464,9 +464,57 @@ class Doc:
         )
         new_doc._attrs = dict(self._attrs)
         new_doc._user_data = dict(self._user_data)
-        new_doc._tokens = list(self._tokens)
-        new_doc._spans = list(self._spans)
-        new_doc._entities = list(self._entities)
+        
+        new_doc._tokens = []
+        for token in self._tokens:
+            new_token = Token(
+                doc=new_doc,
+                start=token._start,
+                end=token._end,
+                text=token._text,
+                string_store=token._string_store
+            )
+            new_token._pos = token._pos
+            new_token._lemma = token._lemma
+            new_token._tag = token._tag
+            new_token._dep = token._dep
+            new_token._ner_label = token._ner_label
+            new_token._attrs = dict(token._attrs)
+            new_token._relations = {k: list(v) for k, v in token._relations.items()}
+            new_doc._tokens.append(new_token)
+        
+        for i, new_token in enumerate(new_doc._tokens):
+            old_token = self._tokens[i]
+            if old_token._head is not None:
+                head_idx = self._tokens.index(old_token._head)
+                new_token._head = new_doc._tokens[head_idx]
+        
+        new_doc._spans = []
+        for span in self._spans:
+            new_span = Span(
+                doc=new_doc,
+                start=span._start,
+                end=span._end,
+                label=span._label,
+                string_store=span._string_store,
+                **dict(span._attrs)
+            )
+            new_span._relations = {k: list(v) for k, v in span._relations.items()}
+            new_doc._spans.append(new_span)
+        
+        new_doc._entities = []
+        for entity in self._entities:
+            new_entity = Span(
+                doc=new_doc,
+                start=entity._start,
+                end=entity._end,
+                label=entity._label,
+                string_store=entity._string_store,
+                **dict(entity._attrs)
+            )
+            new_entity._relations = {k: list(v) for k, v in entity._relations.items()}
+            new_doc._entities.append(new_entity)
+        
         return new_doc
 
 
@@ -1017,7 +1065,7 @@ class Token:
             return []
         descendants = []
         for token in doc.tokens:
-            if token.is_ancestor(self):
+            if self.is_ancestor(token):
                 descendants.append(token)
         return descendants
 
@@ -3469,7 +3517,7 @@ class APIServer:
         route, params = result
 
         if route.validator is not None:
-            data = request.json if request.json else {}
+            data = request.json if isinstance(request.json, dict) else {}
             data.update(params)
             is_valid, errors = route.validator.validate(data)
             if not is_valid:
@@ -3920,12 +3968,15 @@ class RPCServer:
 
                 buffer.seek(0)
                 while True:
+                    start_pos = buffer.tell()
                     header = buffer.read(4)
                     if len(header) < 4:
+                        buffer.seek(start_pos)
                         break
                     msg_len = struct.unpack('!I', header)[0]
                     msg_data = buffer.read(msg_len)
                     if len(msg_data) < msg_len:
+                        buffer.seek(start_pos)
                         break
 
                     try:

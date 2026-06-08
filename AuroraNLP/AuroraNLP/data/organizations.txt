@@ -50,6 +50,26 @@ ENT037	丰田汽车公司	enterprise	foreign	日本	丰田,Toyota	https://www.to
 ENT038	大众汽车集团	enterprise	foreign	德国	大众,Volkswagen	https://www.volkswagen.com	全球领先的汽车制造商	1937	德国	汽车
 ENT039	西门子股份公司	enterprise	foreign	德国	西门子,Siemens	https://www.siemens.com	全球领先的工业制造企业	1847	德国	工业
 ENT040	英特尔公司	enterprise	foreign	美国	英特尔,Intel	https://www.intel.com	全球最大的半导体芯片制造商	1968	美国加利福尼亚州	半导体
+ENT041	英伟达公司	enterprise	foreign	美国	英伟达,NVIDIA	https://www.nvidia.com	全球领先的图形处理器制造商	1993	美国加利福尼亚州	半导体
+ENT042	AMD公司	enterprise	foreign	美国	超威半导体,AMD	https://www.amd.com	全球领先的半导体公司	1969	美国加利福尼亚州	半导体
+ENT043	甲骨文公司	enterprise	foreign	美国	甲骨文,Oracle	https://www.oracle.com	全球领先的企业软件公司	1977	美国加利福尼亚州	软件
+ENT044	IBM公司	enterprise	foreign	美国	国际商业机器,IBM	https://www.ibm.com	全球领先的科技公司	1911	美国纽约州	科技
+ENT045	脸书公司	enterprise	foreign	美国	脸书,Facebook,Meta	https://www.meta.com	全球领先的社交平台	2004	美国加利福尼亚州	互联网
+ENT046	推特公司	enterprise	foreign	美国	推特,Twitter,X	https://twitter.com	全球领先的社交媒体平台	2006	美国加利福尼亚州	互联网
+ENT047	阿里巴巴云计算有限公司	enterprise	private	浙江	阿里云,Alibaba Cloud	https://www.aliyun.com	全球领先的云计算服务商	2009	浙江省杭州市	云计算
+ENT048	腾讯云计算有限公司	enterprise	private	广东	腾讯云,Tencent Cloud	https://cloud.tencent.com	中国领先的云计算服务商	2010	广东省深圳市	云计算
+ENT049	百度在线网络技术(北京)有限公司	enterprise	private	北京	百度云,Baidu Cloud	https://cloud.baidu.com	中国领先的AI云服务商	2015	北京市	云计算
+ENT050	京东物流股份有限公司	enterprise	private	北京	京东物流,JD Logistics	https://www.jdl.com	中国领先的物流服务商	2007	北京市	物流
+ENT051	顺丰控股股份有限公司	enterprise	private	广东	顺丰,SF Express	https://www.sf-express.com	中国领先的快递物流企业	1993	广东省深圳市	物流
+ENT052	圆通速递股份有限公司	enterprise	private	上海	圆通,YTO Express	https://www.yto.net.cn	中国领先的快递企业	2000	上海市	物流
+ENT053	中通快递股份有限公司	enterprise	private	上海	中通,ZTO Express	https://www.zto.com	中国领先的快递企业	2002	上海市	物流
+ENT054	韵达控股股份有限公司	enterprise	private	上海	韵达,Yunda	https://www.yundaex.com	中国领先的快递企业	1999	上海市	物流
+ENT055	小红书	enterprise	private	上海	小红书,RED	https://www.xiaohongshu.com	中国领先的生活方式平台	2013	上海市	互联网
+ENT056	哔哩哔哩	enterprise	private	上海	B站,Bilibili	https://www.bilibili.com	中国领先的年轻人社区	2009	上海市	互联网
+ENT057	快手科技	enterprise	private	北京	快手,Kuaishou	https://www.kuaishou.com	中国领先的短视频平台	2011	北京市	互联网
+ENT058	携程旅行网	enterprise	private	上海	携程,Ctrip	https://www.ctrip.com	中国领先的在线旅游平台	1999	上海市	旅游
+ENT059	同程旅行	enterprise	private	江苏	同程,Tongcheng	https://www.ly.com	中国领先的在线旅游平台	2004	江苏省苏州市	旅游
+ENT060	美团点评	enterprise	private	北京	美团点评,Meituan Dianping	https://www.meituan.com	中国领先的本地生活服务平台	2015	北京市	互联网
 
 # @schools
 SCH001	北京大学	school	university	北京	北大,燕京大学	https://www.pku.edu.cn	中国最高学府之一	1898	北京市海淀区	985
@@ -82,6 +102,26 @@ SCH027	北京市第一实验小学	school	primary_school	北京	北京实验一�
 SCH028	北京市中关村第一小学	school	primary_school	北京	中关村一小	https://www.zgcyx.com	北京市重点小学	1949	北京市海淀区	重点
 SCH029	上海市实验小学	school	primary_school	上海	上海实验小学	https://www.syps.edu.cn	上海市重点小学	1911	上海市黄浦区	重点
 SCH030	北京市第一幼儿园	school	kindergarten	北京	北京一幼	https://www.bjyy.edu.cn	北京市示范幼儿园	1949	北京市东城区	示范
+SCH031	上海市宋庆龄幼儿园	school	kindergarten	上海	宋庆龄幼儿园	https://www.songqingling-edu.cn	上海市示范幼儿园	1991	上海市长宁区	示范
+SCH032	广州华南师范大学附属中学	school	high_school	广东	华师附中	https://www.hsfz.net	广东省重点中学	1952	广东省广州市	重点
+SCH033	江苏省苏州中学	school	high_school	江苏	苏州中学	https://www.szzx.cn	江苏省重点中学	1035	江苏省苏州市	重点
+SCH034	浙江省杭州学军中学	school	high_school	浙江	学军中学	https://www.xjhs.net	浙江省重点中学	1956	浙江省杭州市	重点
+SCH035	成都七中	school	high_school	四川	成都七中	https://www.cdqz.net	四川省重点中学	1905	四川省成都市	重点
+SCH036	重庆南开中学	school	high_school	重庆	重庆南开	https://www.cqnkzx.com	重庆市重点中学	1936	重庆市沙坪坝区	重点
+SCH037	天津南开中学	school	high_school	天津	天津南开	https://www.nkzx.cn	天津市重点中学	1904	天津市南开区	重点
+SCH038	西安高新第一中学	school	high_school	陕西	高新一中	https://www.gxyzh.com	陕西省重点中学	1995	陕西省西安市	重点
+SCH039	哈尔滨师范大学附属中学	school	high_school	黑龙江	哈师大附中	https://www.hsfz.net.cn	黑龙江省重点中学	1958	黑龙江省哈尔滨市	重点
+SCH040	南京大学附属中学	school	high_school	江苏	南大附中	https://www.njfz.net	江苏省重点中学	1914	江苏省南京市	重点
+SCH041	浙江大学附属中学	school	high_school	浙江	浙大附中	https://www.zjdfz.cn	浙江省重点中学	1947	浙江省杭州市	重点
+SCH042	华南理工大学	school	university	广东	华工	https://www.scut.edu.cn	中国顶尖理工科大学	1952	广东省广州市	211
+SCH043	电子科技大学	school	university	四川	电子科大	https://www.uestc.edu.cn	中国顶尖电子信息大学	1956	四川省成都市	211
+SCH044	西安电子科技大学	school	university	陕西	西电	https://www.xidian.edu.cn	中国顶尖电子信息大学	1931	陕西省西安市	211
+SCH045	北京邮电大学	school	university	北京	北邮	https://www.bupt.edu.cn	中国顶尖邮电大学	1955	北京市海淀区	211
+SCH046	南京航空航天大学	school	university	江苏	南航	https://www.nuaa.edu.cn	中国顶尖航空航天大学	1952	江苏省南京市	211
+SCH047	南京理工大学	school	university	江苏	南理工	https://www.njust.edu.cn	中国顶尖理工科大学	1953	江苏省南京市	211
+SCH048	西北工业大学	school	university	陕西	西工大	https://www.nwpu.edu.cn	中国顶尖理工科大学	1938	陕西省西安市	985
+SCH049	东北大学	school	university	辽宁	东大	https://www.neu.edu.cn	中国顶尖理工科大学	1923	辽宁省沈阳市	985
+SCH050	湖南大学	school	university	湖南	湖大	https://www.hnu.edu.cn	中国顶尖综合性大学	1903	湖南省长沙市	985
 
 # @hospitals
 HOS001	北京协和医院	hospital	general	北京	协和医院,协和,PUMCH	https://www.pumch.cn	中国顶尖综合性医院	1921	北京市东城区	三级甲等
@@ -107,6 +147,20 @@ HOS020	北京中医药大学东直门医院	hospital	tcm	北京	东直门医院	
 HOS021	中国中医科学院广安门医院	hospital	tcm	北京	广安门医院	https://www.gamhospital.ac.cn	中国顶尖中医院	1955	北京市西城区	三级甲等
 HOS022	首都儿科研究所附属儿童医院	hospital	children	北京	儿童医院	https://www.shouer.com.cn	北京顶尖儿童医院	1958	北京市朝阳区	三级甲等
 HOS023	北京市妇幼保健院	hospital	maternity	北京	北京妇产医院	https://www.bjogh.com.cn	北京顶尖妇幼保健院	1959	北京市东城区	三级甲等
+HOS024	上海儿童医学中心	hospital	children	上海	上海儿医中心	https://www.scmc.com.cn	上海顶尖儿童医院	1998	上海市浦东新区	三级甲等
+HOS025	广州市妇女儿童医疗中心	hospital	maternity	广东	广州妇儿中心	https://www.gzfezx.com	广东顶尖妇幼保健院	1956	广东省广州市	三级甲等
+HOS026	浙江大学医学院附属儿童医院	hospital	children	浙江	浙大儿院	https://www.zjuch.cn	浙江顶尖儿童医院	1951	浙江省杭州市	三级甲等
+HOS027	重庆医科大学附属儿童医院	hospital	children	重庆	重医儿童医院	https://www.cqch.cn	西南地区顶尖儿童医院	1956	重庆市渝中区	三级甲等
+HOS028	天津医科大学总医院	hospital	general	天津	天津总医院	https://www.tjmu.edu.cn	天津顶尖综合性医院	1946	天津市和平区	三级甲等
+HOS029	南京鼓楼医院	hospital	general	江苏	鼓楼医院	https://www.njglyy.com	江苏顶尖综合性医院	1892	江苏省南京市	三级甲等
+HOS030	广东省中医院	hospital	tcm	广东	省中医	https://www.gdhtcm.com	广东顶尖中医院	1933	广东省广州市	三级甲等
+HOS031	上海中医药大学附属龙华医院	hospital	tcm	上海	龙华医院	https://www.longhua.net	上海顶尖中医院	1960	上海市徐汇区	三级甲等
+HOS032	四川省骨科医院	hospital	specialized	四川	四川骨科医院	https://www.scgkyy.com	四川顶尖骨科医院	1958	四川省成都市	三级甲等
+HOS033	西安交通大学第一附属医院	hospital	general	陕西	交大一附院	https://www.dyyy.xjtu.edu.cn	陕西顶尖综合性医院	1956	陕西省西安市	三级甲等
+HOS034	山东大学齐鲁医院	hospital	general	山东	齐鲁医院	https://www.qiluhospital.com	山东顶尖综合性医院	1890	山东省济南市	三级甲等
+HOS035	武汉大学人民医院	hospital	general	湖北	武大人民医院	https://www.rmhospital.com	湖北顶尖综合性医院	1923	湖北省武汉市	三级甲等
+HOS036	中山大学附属第一医院	hospital	general	广东	中山一院	https://www.gzsums.net	广东顶尖综合性医院	1910	广东省广州市	三级甲等
+HOS037	南方医科大学南方医院	hospital	general	广东	南方医院	https://www.nfyy.com	广东顶尖综合性医院	1941	广东省广州市	三级甲等
 
 # @governments
 GOV001	中华人民共和国国务院	government	central	北京	国务院,中央政府	https://www.gov.cn	中华人民共和国最高国家权力机关的执行机关	1954	北京市西城区	中央
@@ -129,3 +183,26 @@ GOV017	北京市教育局	government	city	北京	北京教育局	https://jw.beij
 GOV018	上海市教育局	government	city	上海	上海教育局	https://edu.sh.gov.cn	上海市教育行政主管部门	1949	上海市黄浦区	市级
 GOV019	北京市公安局	government	city	北京	北京市公安局	https://gaj.beijing.gov.cn	北京市公安行政主管部门	1949	北京市东城区	市级
 GOV020	上海市公安局	government	city	上海	上海市公安局	https://gaj.sh.gov.cn	上海市公安行政主管部门	1949	上海市黄浦区	市级
+GOV021	中华人民共和国工业和信息化部	government	central	北京	工信部	https://www.miit.gov.cn	中华人民共和国工业和信息化主管部门	1949	北京市西城区	中央
+GOV022	中华人民共和国人力资源和社会保障部	government	central	北京	人社部	https://www.mohrss.gov.cn	中华人民共和国人力资源和社会保障主管部门	1949	北京市东城区	中央
+GOV023	中华人民共和国自然资源部	government	central	北京	自然资源部	https://www.mnr.gov.cn	中华人民共和国自然资源主管部门	2018	北京市西城区	中央
+GOV024	中华人民共和国生态环境部	government	central	北京	生态环境部	https://www.mee.gov.cn	中华人民共和国生态环境主管部门	2018	北京市东城区	中央
+GOV025	中华人民共和国住房和城乡建设部	government	central	北京	住建部	https://www.mohurd.gov.cn	中华人民共和国住房和城乡建设主管部门	1988	北京市海淀区	中央
+GOV026	中华人民共和国交通运输部	government	central	北京	交通部	https://www.mot.gov.cn	中华人民共和国交通运输主管部门	2008	北京市东城区	中央
+GOV027	中华人民共和国水利部	government	central	北京	水利部	https://www.mwr.gov.cn	中华人民共和国水利主管部门	1949	北京市西城区	中央
+GOV028	中华人民共和国农业农村部	government	central	北京	农业农村部	https://www.moa.gov.cn	中华人民共和国农业农村主管部门	2018	北京市朝阳区	中央
+GOV029	中华人民共和国商务部	government	central	北京	商务部	https://www.mofcom.gov.cn	中华人民共和国商务主管部门	2003	北京市东城区	中央
+GOV030	中华人民共和国文化和旅游部	government	central	北京	文旅部	https://www.mct.gov.cn	中华人民共和国文化和旅游主管部门	2018	北京市东城区	中央
+GOV031	中华人民共和国退役军人事务部	government	central	北京	退役军人事务部	https://www.mva.gov.cn	中华人民共和国退役军人事务主管部门	2018	北京市朝阳区	中央
+GOV032	中华人民共和国应急管理部	government	central	北京	应急管理部	https://www.mem.gov.cn	中华人民共和国应急管理主管部门	2018	北京市西城区	中央
+GOV033	中华人民共和国审计署	government	central	北京	审计署	https://www.audit.gov.cn	中华人民共和国审计主管部门	1983	北京市丰台区	中央
+GOV034	中华人民共和国市场监督管理总局	government	central	北京	市场监管总局	https://www.samr.gov.cn	中华人民共和国市场监督管理主管部门	2018	北京市西城区	中央
+GOV035	北京市卫生健康委员会	government	city	北京	北京卫健委	https://wjw.beijing.gov.cn	北京市卫生健康行政主管部门	2018	北京市西城区	市级
+GOV036	上海市卫生健康委员会	government	city	上海	上海卫健委	https://wsjkw.sh.gov.cn	上海市卫生健康行政主管部门	2018	上海市黄浦区	市级
+GOV037	四川省人民政府	government	province	四川	四川省政府	https://www.sc.gov.cn	四川省行政机关	1949	四川省成都市	省级
+GOV038	湖北省人民政府	government	province	湖北	湖北省政府	https://www.hubei.gov.cn	湖北省行政机关	1949	湖北省武汉市	省级
+GOV039	湖南省人民政府	government	province	湖南	湖南省政府	https://www.hunan.gov.cn	湖南省行政机关	1949	湖南省长沙市	省级
+GOV040	河南省人民政府	government	province	河南	河南省政府	https://www.henan.gov.cn	河南省行政机关	1949	河南省郑州市	省级
+GOV041	四川省成都市人民政府	government	city	四川	成都市政府	https://www.chengdu.gov.cn	成都市行政机关	1949	四川省成都市	市级
+GOV042	湖北省武汉市人民政府	government	city	湖北	武汉市政府	https://www.wuhan.gov.cn	武汉市行政机关	1949	湖北省武汉市	市级
+GOV043	江苏省南京市人民政府	government	city	江苏	南京市政府	https://www.nanjing.gov.cn	南京市行政机关	1949	江苏省南京市	市级
