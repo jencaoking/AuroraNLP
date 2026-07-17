@@ -20,7 +20,7 @@ from typing import Dict, List, Set, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from enum import Enum
 
-from .scel_parser import ScelParser, ScelWord
+from AuroraNLP.dictionary.scel_parser import ScelParser, ScelWord
 
 
 class TermDomain(Enum):

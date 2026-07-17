@@ -1,6 +1,6 @@
 """CRF 模型测试"""
 import pytest
-from AuroraNLP.crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
+from AuroraNLP.segmentation.crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
 
 
 class TestCRFModelInit:

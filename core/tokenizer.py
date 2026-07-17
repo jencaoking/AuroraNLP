@@ -1,7 +1,7 @@
 from typing import List, Tuple, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from .dictionary import Dictionary, UserDictionary, DictionaryManager
+    from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary, DictionaryManager
 
 
 def forward_max_match(text: str, dictionary: Union['Dictionary', 'UserDictionary', 'DictionaryManager'], max_len: int = 15) -> List[str]:

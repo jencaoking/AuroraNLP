@@ -1,6 +1,6 @@
 """PerformanceBenchmark 性能基准测试"""
 import pytest
-from AuroraNLP.benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
+from AuroraNLP.core.benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
 
 
 class TestPerformanceBenchmark:

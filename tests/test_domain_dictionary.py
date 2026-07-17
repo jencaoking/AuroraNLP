@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.domain_dictionary import DomainDictionary, DomainDictionaryManager
+from AuroraNLP.dictionary.domain_dictionary import DomainDictionary, DomainDictionaryManager
 
 
 class TestDomainDictionary:

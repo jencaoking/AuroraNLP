@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
+from AuroraNLP.dictionary.sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
 
 
 class TestSogouDictionary:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.organization import (
+from AuroraNLP.ner.organization import (
     OrganizationDatabase,
     OrganizationManager,
     Organization,

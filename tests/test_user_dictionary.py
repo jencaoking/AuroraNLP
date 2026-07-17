@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.dictionary import UserDictionary
+from AuroraNLP.dictionary.dictionary import UserDictionary
 
 
 class TestUserDictionary:

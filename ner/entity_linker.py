@@ -15,7 +15,7 @@ import re
 import pickle
 from abc import ABC, abstractmethod
 
-from .ner import Entity, NERRecognizer, NER_ENTITY_TYPES
+from AuroraNLP.ner.ner import Entity, NERRecognizer, NER_ENTITY_TYPES
 
 
 @dataclass

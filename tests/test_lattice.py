@@ -1,6 +1,6 @@
 """词格分词测试"""
 import pytest
-from AuroraNLP.lattice import Lattice, LatticeBuilder, LatticeSegmentor, LatticeNode, LatticeEdge, PathScorer
+from AuroraNLP.segmentation.lattice import Lattice, LatticeBuilder, LatticeSegmentor, LatticeNode, LatticeEdge, PathScorer
 
 
 class TestLatticeInit:

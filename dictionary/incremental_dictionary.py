@@ -4,8 +4,8 @@ import threading
 from typing import Set, Optional, List, Tuple, Dict, Any, Callable
 from datetime import datetime
 
-from .dictionary import Dictionary, UserDictionary, DictionaryManager
-from .trie import Trie
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary, DictionaryManager
+from AuroraNLP.dictionary.trie import Trie
 
 
 class DictionaryUpdateEvent:

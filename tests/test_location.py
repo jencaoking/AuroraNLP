@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.location import (
+from AuroraNLP.ner.location import (
     LocationDatabase,
     LocationManager,
     Location,

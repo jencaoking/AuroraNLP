@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional, Iterator
-from .segmentor import Segmentor
+from AuroraNLP.segmentation.segmentor import Segmentor
 
 
 class BatchProcessor:

@@ -5,8 +5,8 @@ import hashlib
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 
-from .dictionary import Dictionary, UserDictionary
-from .trie import Trie
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary
+from AuroraNLP.dictionary.trie import Trie
 
 
 class DictionaryVersion:

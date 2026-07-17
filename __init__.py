@@ -2,12 +2,12 @@ __version__ = "1.0.0"
 __codename__ = "coca"
 __version_info__ = (1, 0, 0, "final")
 
-from .segmentor import Segmentor
-from .dictionary import Dictionary, UserDictionary, DictionaryManager
-from .dictionary_version import DictionaryVersion, DictionaryVersionManager, VersionedDictionary, VersionedUserDictionary
-from .domain_dictionary import DomainDictionary, DomainDictionaryManager
-from .network_dictionary import NetworkDictionary
-from .incremental_dictionary import (
+from .segmentation.segmentor import Segmentor
+from .dictionary.dictionary import Dictionary, UserDictionary, DictionaryManager
+from .dictionary.dictionary_version import DictionaryVersion, DictionaryVersionManager, VersionedDictionary, VersionedUserDictionary
+from .dictionary.domain_dictionary import DomainDictionary, DomainDictionaryManager
+from .dictionary.network_dictionary import NetworkDictionary
+from .dictionary.incremental_dictionary import (
     DictionaryUpdateEvent,
     DictionaryObserver,
     IncrementalDictionary,
@@ -15,22 +15,22 @@ from .incremental_dictionary import (
     DictionaryUpdateManager,
     HotUpdateDictionaryManager
 )
-from .stopwords import StopWords
-from .keyword_extractor import KeywordExtractor
-from .similarity import Similarity
-from .trie import Trie
-from .benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
-from .batch_processor import BatchProcessor
-from .traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
-from .hmm import HMMSegmentor, train_from_file
-from .ngram import NGramModel, BigramModel, TrigramModel
-from .crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
-from .perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFeatureTemplate
-from .lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
-from .ambiguity import AmbiguityType, AmbiguityRegion, AmbiguityResult, AmbiguityDetector
-from .new_word_detector import NewWordDetector, MutualInformation, EntropyCalculator
-from .pos_tagger import POS_TAGS, DEFAULT_TAGS, HMMPOSTagger, CRFPOSTagger, train_pos_from_file
-from .ner import (
+from .dictionary.stopwords import StopWords
+from .text_analysis.keyword_extractor import KeywordExtractor
+from .text_analysis.similarity import Similarity
+from .dictionary.trie import Trie
+from .core.benchmark import PerformanceBenchmark, BenchmarkResult, measure_time
+from .core.batch_processor import BatchProcessor
+from .core.traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
+from .segmentation.hmm import HMMSegmentor, train_from_file
+from .segmentation.ngram import NGramModel, BigramModel, TrigramModel
+from .segmentation.crf import CRFModel, CRFSegmentor, CRFFeatureTemplate
+from .segmentation.perceptron import StructuredPerceptron, PerceptronSegmentor, PerceptronFeatureTemplate
+from .segmentation.lattice import Lattice, LatticeEdge, LatticeNode, LatticeBuilder, LatticeSegmentor, PathScorer
+from .segmentation.ambiguity import AmbiguityType, AmbiguityRegion, AmbiguityResult, AmbiguityDetector
+from .segmentation.new_word_detector import NewWordDetector, MutualInformation, EntropyCalculator
+from .parsing.pos_tagger import POS_TAGS, DEFAULT_TAGS, HMMPOSTagger, CRFPOSTagger, train_pos_from_file
+from .ner.ner import (
     NER_ENTITY_TYPES,
     NER_TAGS,
     DEFAULT_NER_TAGS,
@@ -46,7 +46,7 @@ from .ner import (
     NestedNERRecognizer,
     create_nested_ner_corpus,
 )
-from .entity_linker import (
+from .ner.entity_linker import (
     KnowledgeEntity,
     LinkedEntity,
     KnowledgeBase,
@@ -55,7 +55,7 @@ from .entity_linker import (
     create_sample_knowledge_base,
     create_sample_normalizer,
 )
-from .dependency_parser import (
+from .parsing.dependency_parser import (
     Transition,
     DEPENDENCY_RELATIONS,
     DEFAULT_RELATIONS,
@@ -69,7 +69,7 @@ from .dependency_parser import (
     create_sample_dependency_corpus,
     train_dependency_parser_from_file,
 )
-from .constituent_parser import (
+from .parsing.constituent_parser import (
     CONSTITUENT_LABELS,
     POS_LABELS,
     DEFAULT_NON_TERMINALS,
@@ -83,7 +83,7 @@ from .constituent_parser import (
     create_sample_constituent_trees,
     train_constituent_parser_from_file,
 )
-from .hybrid import (
+from .segmentation.hybrid import (
     HybridStrategy,
     SegmenterType,
     SegmenterResult,
@@ -105,9 +105,9 @@ from .hybrid import (
     DeepLearningInterface,
     HybridSegmentor,
 )
-from .scel_parser import ScelParser, ScelWord, ScelMetadata, ScelBatchParser
-from .sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
-from .managers import (
+from .dictionary.scel_parser import ScelParser, ScelWord, ScelMetadata, ScelBatchParser
+from .dictionary.sogou_dict import ScelConverter, SogouDictionary, SogouDictionaryManager
+from .managers.managers import (
     DictionaryService,
     StopWordsManager,
     KeywordExtractorManager,
@@ -118,7 +118,7 @@ from .managers import (
     NewWordDetectorManager,
     HybridSegmentorManager,
 )
-from .thesaurus import (
+from .dictionary.thesaurus import (
     WordRelation,
     CATEGORY_NAMES,
     SUBCATEGORY_NAMES,
@@ -127,7 +127,7 @@ from .thesaurus import (
     Thesaurus,
     ThesaurusManager,
 )
-from .person_name import (
+from .ner.person_name import (
     Gender,
     SurnameType,
     Surname,
@@ -137,13 +137,13 @@ from .person_name import (
     PersonNameDictionary,
     PersonNameManager,
 )
-from .location import (
+from .ner.location import (
     AdminLevel,
     Location,
     LocationDatabase,
     LocationManager,
 )
-from .organization import (
+from .ner.organization import (
     OrgType,
     EnterpriseType,
     SchoolType,
@@ -161,17 +161,17 @@ from .organization import (
     OrganizationDatabase,
     OrganizationManager,
 )
-from .terminology import (
+from .dictionary.terminology import (
     TermDomain,
     DOMAIN_SCEL_MAPPING,
     Term,
     TerminologyDatabase,
     TerminologyManager,
 )
-from .corpus_builder import CorpusBuilder, CorpusManager
-from .corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
+from .corpus.corpus_builder import CorpusBuilder, CorpusManager
+from .corpus.corpus_annotator import CorpusAnnotator, AnnotationManager, ActiveLearningStrategy, AnnotationQualityEvaluator
 from .deep_learning import Framework, FrameworkType, get_framework, PyTorchBackend, TensorFlowBackend, BiLSTMCRF
-from .pipeline import (
+from .pipeline.pipeline import (
     StringStore, Doc, Span, Token as PipelineToken,
     PipelineComponent, ConditionalBranch, Pipeline,
     ComponentRegistry, PipelineConfig, ConfigSchema, FreezableParams,
@@ -180,7 +180,7 @@ from .pipeline import (
     AsyncPipeline, AsyncTaskManager, StreamProcessor, ProgressCallback,
     Plugin, PluginManager, PluginDependency
 )
-from .performance import (
+from .core.performance import (
     ObjectPool, PoolContext,
     BatchProcessor as PerformanceBatchProcessor,
     MemoryPool, MemoryBlock,
@@ -201,7 +201,7 @@ from .performance import (
     DistributedTask,
     SimpleTaskScheduler
 )
-from .enterprise import (
+from .enterprise.enterprise import (
     LogLevel,
     LogFormat,
     StructuredLogRecord,

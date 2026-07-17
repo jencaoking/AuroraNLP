@@ -1,6 +1,6 @@
 """CorpusBuilder 语料构建测试"""
 import pytest
-from AuroraNLP.corpus_builder import CorpusBuilder, CorpusManager
+from AuroraNLP.corpus.corpus_builder import CorpusBuilder, CorpusManager
 
 
 class TestCorpusBuilder:

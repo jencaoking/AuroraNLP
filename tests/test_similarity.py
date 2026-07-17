@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.similarity import Similarity
+from AuroraNLP.text_analysis.similarity import Similarity
 
 
 class MockSegmentor:

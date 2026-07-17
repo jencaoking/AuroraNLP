@@ -17,25 +17,25 @@ def main():
     print("\n1. 核心模块导入检查...")
     
     modules_to_check = [
-        "AuroraNLP.trie",
-        "AuroraNLP.dictionary",
-        "AuroraNLP.tokenizer",
-        "AuroraNLP.stopwords",
-        "AuroraNLP.segmentor",
-        "AuroraNLP.hmm",
-        "AuroraNLP.crf",
-        "AuroraNLP.perceptron",
-        "AuroraNLP.ngram",
-        "AuroraNLP.lattice",
-        "AuroraNLP.ner",
-        "AuroraNLP.pos_tagger",
-        "AuroraNLP.sentiment",
-        "AuroraNLP.keyword_extractor",
-        "AuroraNLP.similarity",
-        "AuroraNLP.ambiguity",
-        "AuroraNLP.new_word_detector",
-        "AuroraNLP.domain_dictionary",
-        "AuroraNLP.hybrid",
+        "AuroraNLP.dictionary.trie",
+        "AuroraNLP.dictionary.dictionary",
+        "AuroraNLP.core.tokenizer",
+        "AuroraNLP.dictionary.stopwords",
+        "AuroraNLP.segmentation.segmentor",
+        "AuroraNLP.segmentation.hmm",
+        "AuroraNLP.segmentation.crf",
+        "AuroraNLP.segmentation.perceptron",
+        "AuroraNLP.segmentation.ngram",
+        "AuroraNLP.segmentation.lattice",
+        "AuroraNLP.ner.ner",
+        "AuroraNLP.parsing.pos_tagger",
+        "AuroraNLP.text_analysis.sentiment",
+        "AuroraNLP.text_analysis.keyword_extractor",
+        "AuroraNLP.text_analysis.similarity",
+        "AuroraNLP.segmentation.ambiguity",
+        "AuroraNLP.segmentation.new_word_detector",
+        "AuroraNLP.dictionary.domain_dictionary",
+        "AuroraNLP.segmentation.hybrid",
         # 深度学习模块
         "AuroraNLP.deep_learning",
         "AuroraNLP.deep_learning.framework",
@@ -61,7 +61,7 @@ def main():
     print("\n2. 分段器基本功能检查...")
     
     try:
-        from AuroraNLP.segmentor import Segmentor
+        from AuroraNLP.segmentation.segmentor import Segmentor
         seg = Segmentor(load_default_dict=False, load_default_stopwords=False)
         
         # 添加一些测试词
@@ -133,10 +133,10 @@ def main():
     print("\n4. 统计模块检查...")
     
     try:
-        from AuroraNLP.hmm import HMMSegmentor
-        from AuroraNLP.crf import CRFModel
-        from AuroraNLP.perceptron import PerceptronSegmentor
-        from AuroraNLP.ngram import NGramModel
+        from AuroraNLP.segmentation.hmm import HMMSegmentor
+        from AuroraNLP.segmentation.crf import CRFModel
+        from AuroraNLP.segmentation.perceptron import PerceptronSegmentor
+        from AuroraNLP.segmentation.ngram import NGramModel
         
         print("  ✓ HMM/CRF/Perceptron/NGram 导入成功")
         success_count += 1
@@ -149,9 +149,9 @@ def main():
     print("\n5. 高级功能模块检查...")
     
     try:
-        from AuroraNLP.sentiment import SentimentDictionary
-        from AuroraNLP.keyword_extractor import KeywordExtractor
-        from AuroraNLP.similarity import Similarity
+        from AuroraNLP.text_analysis.sentiment import SentimentDictionary
+        from AuroraNLP.text_analysis.keyword_extractor import KeywordExtractor
+        from AuroraNLP.text_analysis.similarity import Similarity
         
         sentiment = SentimentDictionary(load_default=False)
         extractor = KeywordExtractor()

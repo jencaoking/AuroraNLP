@@ -383,7 +383,7 @@ class TestDictionaryCompressor(unittest.TestCase):
 
     def test_bz2_compression(self):
         """测试bz2压缩"""
-        from AuroraNLP.performance import CompressionType
+        from AuroraNLP.core.performance import CompressionType
         
         compressor = DictionaryCompressor(method=CompressionType.BZ2)
         

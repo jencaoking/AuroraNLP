@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.terminology import (
+from AuroraNLP.dictionary.terminology import (
     TerminologyDatabase,
     TerminologyManager,
     Term,

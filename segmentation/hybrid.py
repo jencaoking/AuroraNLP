@@ -8,11 +8,11 @@ import pickle
 import os
 
 if TYPE_CHECKING:
-    from .dictionary import Dictionary, DictionaryManager
-    from .hmm import HMMSegmentor
-    from .crf import CRFSegmentor
-    from .perceptron import PerceptronSegmentor
-    from .lattice import LatticeSegmentor, Lattice
+    from AuroraNLP.dictionary.dictionary import Dictionary, DictionaryManager
+    from AuroraNLP.segmentation.hmm import HMMSegmentor
+    from AuroraNLP.segmentation.crf import CRFSegmentor
+    from AuroraNLP.segmentation.perceptron import PerceptronSegmentor
+    from AuroraNLP.segmentation.lattice import LatticeSegmentor, Lattice
 
 
 class HybridStrategy(Enum):
@@ -863,7 +863,7 @@ class HybridSegmentor:
         if self._dictionary is None:
             return None
         
-        from .tokenizer import bidirectional_max_match
+        from AuroraNLP.core.tokenizer import bidirectional_max_match
         
         words = bidirectional_max_match(text, self._dictionary)
         

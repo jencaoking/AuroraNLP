@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.person_name import (
+from AuroraNLP.ner.person_name import (
     PersonNameDictionary,
     PersonNameManager,
     PersonName,

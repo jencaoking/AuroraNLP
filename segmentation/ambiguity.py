@@ -4,8 +4,8 @@ from enum import Enum
 from collections import defaultdict
 
 if TYPE_CHECKING:
-    from .dictionary import Dictionary
-    from .lattice import Lattice, LatticeEdge
+    from AuroraNLP.dictionary.dictionary import Dictionary
+    from AuroraNLP.segmentation.lattice import Lattice, LatticeEdge
 
 
 class AmbiguityType(Enum):

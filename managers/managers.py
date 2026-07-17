@@ -1,16 +1,16 @@
 from typing import List, Tuple, Optional, Set, Dict, Any
-from .dictionary import Dictionary, UserDictionary, DictionaryManager
-from .network_dictionary import NetworkDictionary
-from .stopwords import StopWords
-from .keyword_extractor import KeywordExtractor
-from .similarity import Similarity
-from .hmm import HMMSegmentor
-from .crf import CRFSegmentor
-from .perceptron import PerceptronSegmentor
-from AuroraNLP.lattice import LatticeSegmentor, Lattice
-from AuroraNLP.ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
-from .new_word_detector import NewWordDetector
-from .hybrid import HybridSegmentor, HybridConfig
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary, DictionaryManager
+from AuroraNLP.dictionary.network_dictionary import NetworkDictionary
+from AuroraNLP.dictionary.stopwords import StopWords
+from AuroraNLP.text_analysis.keyword_extractor import KeywordExtractor
+from AuroraNLP.text_analysis.similarity import Similarity
+from AuroraNLP.segmentation.hmm import HMMSegmentor
+from AuroraNLP.segmentation.crf import CRFSegmentor
+from AuroraNLP.segmentation.perceptron import PerceptronSegmentor
+from AuroraNLP.segmentation.lattice import LatticeSegmentor, Lattice
+from AuroraNLP.segmentation.ambiguity import AmbiguityDetector, AmbiguityResult, AmbiguityType, AmbiguityRegion
+from AuroraNLP.segmentation.new_word_detector import NewWordDetector
+from AuroraNLP.segmentation.hybrid import HybridSegmentor, HybridConfig
 
 
 class DictionaryService:
@@ -335,7 +335,7 @@ class MLSegmentorManager:
         self.hmm_segmentor.train(corpus, smooth)
     
     def train_hmm_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
-        from .hmm import train_from_file
+        from AuroraNLP.segmentation.hmm import train_from_file
         train_from_file(self.hmm_segmentor, filepath, encoding)
     
     def load_hmm_model(self, filepath: str, key: Optional[str] = None, verify: bool = True) -> None:
@@ -449,7 +449,7 @@ class MLSegmentorManager:
         self.perceptron_segmentor.partial_fit(corpus, learning_rate, verbose)
     
     def train_perceptron_from_file(self, filepath: str, encoding: str = 'utf-8') -> None:
-        from .perceptron import train_from_file as perceptron_train_from_file
+        from AuroraNLP.segmentation.perceptron import train_from_file as perceptron_train_from_file
         perceptron_train_from_file(self.perceptron_segmentor, filepath, encoding)
     
     def load_perceptron_model(self, filepath: str) -> None:

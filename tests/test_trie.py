@@ -1,6 +1,6 @@
 """Trie 树测试"""
 import pytest
-from AuroraNLP.trie import Trie
+from AuroraNLP.dictionary.trie import Trie
 
 
 class TestTrieInsertAndSearch:

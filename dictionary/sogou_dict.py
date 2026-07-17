@@ -3,8 +3,8 @@ import json
 from typing import List, Dict, Optional, Set
 from pathlib import Path
 
-from .scel_parser import ScelParser, ScelWord, ScelBatchParser, ScelMetadata
-from .dictionary import Dictionary, UserDictionary
+from AuroraNLP.dictionary.scel_parser import ScelParser, ScelWord, ScelBatchParser, ScelMetadata
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary
 
 
 class ScelConverter:

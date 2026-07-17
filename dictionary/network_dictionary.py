@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Set, Optional, List, Dict, Any
 
-from .dictionary import Dictionary
+from AuroraNLP.dictionary.dictionary import Dictionary
 
 class NetworkDictionary(Dictionary):
     DEFAULT_NETWORK_DICT_PATH = os.path.join(os.path.dirname(__file__), 'data', 'network_words.json')

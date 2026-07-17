@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.ambiguity import (
+from AuroraNLP.segmentation.ambiguity import (
     AmbiguityDetector,
     AmbiguityType,
     AmbiguityRegion,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.ner import (
+from AuroraNLP.ner.ner import (
     NERRecognizer,
     CRFNERModel,
     Entity,

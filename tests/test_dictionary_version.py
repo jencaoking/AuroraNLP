@@ -4,7 +4,7 @@ import pytest
 import tempfile
 import shutil
 
-from AuroraNLP.dictionary_version import (
+from AuroraNLP.dictionary.dictionary_version import (
     DictionaryVersion,
     DictionaryVersionManager,
     VersionedDictionary,

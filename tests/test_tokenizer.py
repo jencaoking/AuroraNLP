@@ -1,6 +1,6 @@
 """分词算法测试"""
 import pytest
-from AuroraNLP.tokenizer import (
+from AuroraNLP.core.tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match,

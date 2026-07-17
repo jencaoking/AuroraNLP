@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.sentiment import (
+from AuroraNLP.text_analysis.sentiment import (
     SentimentDictionary,
     SentimentAnalyzer,
     SentimentPolarity,

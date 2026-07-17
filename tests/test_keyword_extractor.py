@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.keyword_extractor import KeywordExtractor
+from AuroraNLP.text_analysis.keyword_extractor import KeywordExtractor
 
 
 class MockSegmentor:

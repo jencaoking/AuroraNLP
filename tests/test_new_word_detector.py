@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.new_word_detector import (
+from AuroraNLP.segmentation.new_word_detector import (
     NewWordDetector,
     MutualInformation,
     EntropyCalculator,

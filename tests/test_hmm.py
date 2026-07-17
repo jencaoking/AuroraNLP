@@ -1,6 +1,6 @@
 """HMM 模型测试"""
 import pytest
-from AuroraNLP.hmm import HMMSegmentor, train_from_file
+from AuroraNLP.segmentation.hmm import HMMSegmentor, train_from_file
 
 
 class TestHMMInit:

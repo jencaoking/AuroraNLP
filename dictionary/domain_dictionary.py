@@ -1,6 +1,6 @@
 import os
 from typing import Optional, Dict, List, Any
-from .dictionary import Dictionary
+from AuroraNLP.dictionary.dictionary import Dictionary
 
 
 class DomainDictionary(Dictionary):

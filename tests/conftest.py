@@ -6,10 +6,10 @@ import pytest
 # 确保项目根目录在 sys.path 中
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from AuroraNLP.trie import Trie
-from AuroraNLP.dictionary import Dictionary, UserDictionary
-from AuroraNLP.stopwords import StopWords
-from AuroraNLP.segmentor import Segmentor
+from AuroraNLP.dictionary.trie import Trie
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary
+from AuroraNLP.dictionary.stopwords import StopWords
+from AuroraNLP.segmentation.segmentor import Segmentor
 
 
 @pytest.fixture

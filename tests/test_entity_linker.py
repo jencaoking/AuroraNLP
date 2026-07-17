@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.entity_linker import (
+from AuroraNLP.ner.entity_linker import (
     EntityLinker,
     KnowledgeBase,
     KnowledgeEntity,
@@ -11,7 +11,7 @@ from AuroraNLP.entity_linker import (
     create_sample_knowledge_base,
     create_sample_normalizer,
 )
-from AuroraNLP.ner import Entity
+from AuroraNLP.ner.ner import Entity
 
 
 class TestEntityLinker:

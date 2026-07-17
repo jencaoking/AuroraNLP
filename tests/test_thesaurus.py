@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.thesaurus import (
+from AuroraNLP.dictionary.thesaurus import (
     Thesaurus,
     ThesaurusManager,
     ThesaurusEntry,

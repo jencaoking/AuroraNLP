@@ -5,8 +5,8 @@ import heapq
 import math
 
 if TYPE_CHECKING:
-    from .dictionary import Dictionary
-    from .ngram import NGramModel, BigramModel
+    from AuroraNLP.dictionary.dictionary import Dictionary
+    from AuroraNLP.segmentation.ngram import NGramModel, BigramModel
 
 
 @dataclass

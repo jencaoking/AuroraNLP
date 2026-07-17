@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.constituent_parser import (
+from AuroraNLP.parsing.constituent_parser import (
     ConstituentParser,
     ConstituentTree,
     ConstituentNode,

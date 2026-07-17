@@ -11,7 +11,7 @@ import asyncio
 import tempfile
 import pytest
 
-from AuroraNLP.pipeline import (
+from AuroraNLP.pipeline.pipeline import (
     StringStore,
     Doc,
     Span,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from AuroraNLP.dependency_parser import (
+from AuroraNLP.parsing.dependency_parser import (
     DependencyParser,
     DependencyTree,
     DependencyNode,

@@ -1,5 +1,5 @@
 from typing import List, Tuple, Optional, Set, Dict, Any
-from .tokenizer import (
+from AuroraNLP.core.tokenizer import (
     forward_max_match,
     backward_max_match,
     bidirectional_max_match,
@@ -13,9 +13,9 @@ from .tokenizer import (
     backward_max_match_weighted_with_pos,
     bidirectional_max_match_weighted_with_pos
 )
-from .dictionary import Dictionary, UserDictionary, DictionaryManager
-from .traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
-from .managers import (
+from AuroraNLP.dictionary.dictionary import Dictionary, UserDictionary, DictionaryManager
+from AuroraNLP.core.traditional_chinese import TraditionalChineseConverter, TraditionalChineseDictionary
+from AuroraNLP.managers.managers import (
     DictionaryService,
     StopWordsManager,
     KeywordExtractorManager,
@@ -26,9 +26,9 @@ from .managers import (
     NewWordDetectorManager,
     HybridSegmentorManager
 )
-from AuroraNLP.lattice import Lattice
-from AuroraNLP.ambiguity import AmbiguityResult, AmbiguityType, AmbiguityRegion
-from .hybrid import HybridConfig, HybridStrategy
+from AuroraNLP.segmentation.lattice import Lattice
+from AuroraNLP.segmentation.ambiguity import AmbiguityResult, AmbiguityType, AmbiguityRegion
+from AuroraNLP.segmentation.hybrid import HybridConfig, HybridStrategy
 
 
 POS_TAG_NAMES = {

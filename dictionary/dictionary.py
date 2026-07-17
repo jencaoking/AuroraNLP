@@ -3,7 +3,7 @@ import threading
 import warnings
 from typing import Set, Optional, List, Tuple, Dict, Any
 
-from .trie import Trie
+from AuroraNLP.dictionary.trie import Trie
 
 
 class Dictionary:
