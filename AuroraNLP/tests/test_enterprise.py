@@ -43,7 +43,7 @@ from AuroraNLP import (
     CircuitBreaker,
     TokenType,
     Permission,
-    Token,
+    EnterpriseToken as Token,
     AuthContext,
     Authenticator,
     Authorizer,

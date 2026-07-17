@@ -9,12 +9,12 @@ from typing import List
 
 from AuroraNLP import (
     ObjectPool,
-    BatchProcessor,
+    PerformanceBatchProcessor as BatchProcessor,
     MemoryPool, MemoryBlock,
     DelayedGC,
-    ThreadPoolExecutor,
+    NLPThreadPoolExecutor as ThreadPoolExecutor,
     ParallelTokenizer,
-    ProcessPoolExecutor,
+    NLPProcessPoolExecutor as ProcessPoolExecutor,
     GPUInterface,
     BatchInference,
     MixedPrecisionInference,
@@ -261,10 +261,14 @@ class TestProcessPool(unittest.TestCase):
     def tearDown(self):
         self.executor.stop()
 
+    @unittest.skipIf(
+        __import__("sys").platform.startswith("win"),
+        "Windows + pytest 下 multiprocessing spawn 会与 pytest capture 死锁",
+    )
     def test_process_pool_map(self):
         """测试进程池map"""
         items = list(range(10))
-        results = self.executor.map(square, items)
+        results = self.executor.map(square, items, timeout=10)
         expected = [x * x for x in items]
         self.assertEqual(results, expected)
 

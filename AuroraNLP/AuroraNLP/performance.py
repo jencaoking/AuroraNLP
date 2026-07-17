@@ -456,10 +456,14 @@ class ThreadPoolExecutor:
                     t.start()
                     self._threads.append(t)
 
-    def stop(self) -> None:
+    def stop(self, timeout: Optional[float] = 5.0) -> None:
         """停止线程池"""
         with self._lock:
             self._running = False
+            threads = self._threads
+            self._threads = []
+        for t in threads:
+            t.join(timeout=timeout)
 
     def _worker(self):
         """工作线程"""
@@ -523,6 +527,17 @@ class ParallelTokenizer:
         self._pool = ThreadPoolExecutor(num_workers)
         self._pool.start()
 
+    def close(self) -> None:
+        """关闭内部线程池"""
+        self._pool.stop()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+        return False
+
     def tokenize_batch(self, texts: List[str]) -> List[List[str]]:
         """批量并行分词"""
         task_ids = [self._pool.submit(self._tokenizer, text) for text in texts]
@@ -543,14 +558,21 @@ class ProcessPoolExecutor:
 
     def stop(self):
         if self._pool:
-            self._pool.close()
-            self._pool.join()
-            self._pool = None
+            try:
+                self._pool.close()
+                self._pool.join()
+            except Exception:
+                try:
+                    self._pool.terminate()
+                except Exception:
+                    pass
+            finally:
+                self._pool = None
 
-    def map(self, func: Callable, items: List[Any]) -> List[Any]:
+    def map(self, func: Callable, items: List[Any], timeout: Optional[float] = None) -> List[Any]:
         if not self._pool:
             raise RuntimeError("Pool not started")
-        return self._pool.map(func, items)
+        return self._pool.map(func, items) if timeout is None else self._pool.map_async(func, items).get(timeout=timeout)
 
     def apply_async(self, func: Callable, *args):
         if not self._pool:
